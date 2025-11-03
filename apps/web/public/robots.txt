@@ -1,0 +1,16 @@
+# Eliana Beauty - robots.txt
+
+User-agent: *
+Allow: /
+
+# Disallow admin pages from search engines
+Disallow: /admin
+Disallow: /admin/*
+
+# Allow important pages
+Allow: /
+Allow: /services
+Allow: /booking
+
+# Sitemap location (à créer plus tard)
+Sitemap: https://votre-domaine.com/sitemap.xml

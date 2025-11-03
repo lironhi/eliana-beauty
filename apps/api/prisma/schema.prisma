@@ -1,0 +1,197 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  STAFF
+  CLIENT
+}
+
+enum Locale {
+  en
+  he
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+  NO_SHOW
+  RESCHEDULE_PENDING
+}
+
+enum ImageType {
+  main
+  gallery
+}
+
+enum TimeOffType {
+  SICK_LEAVE
+  VACATION
+  OTHER
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  phone     String?
+  name      String
+  password  String
+  role      Role     @default(CLIENT)
+  locale    Locale   @default(en)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  appointments  Appointment[]
+  refreshTokens RefreshToken[]
+
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  revokedAt DateTime?
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  active    Boolean  @default(true)
+  order     Int?
+  imageUrl  String?  @map("image_url")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  services Service[]
+
+  @@map("categories")
+}
+
+model Service {
+  id          String   @id @default(cuid())
+  categoryId  String   @map("category_id")
+  name        String
+  description String?
+  durationMin Int      @map("duration_min")
+  priceIls    Float    @map("price_ils")
+  active      Boolean  @default(true)
+  imageUrl    String?  @map("image_url")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  category        Category          @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  images          ServiceImage[]
+  staffServices   StaffService[]
+  appointments    Appointment[]
+
+  @@map("services")
+}
+
+model ServiceImage {
+  id         String    @id @default(cuid())
+  serviceId  String    @map("service_id")
+  url        String
+  type       ImageType @default(gallery)
+  order      Int?
+  altText    String?   @map("alt_text")
+  uploadedAt DateTime? @map("uploaded_at") @default(now())
+
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@map("service_images")
+}
+
+model Staff {
+  id        String   @id @default(cuid())
+  name      String
+  bio       String?
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  staffServices StaffService[]
+  workingHours  WorkingHours[]
+  timeOffs      TimeOff[]
+  appointments  Appointment[]
+
+  @@map("staff")
+}
+
+model StaffService {
+  staffId   String @map("staff_id")
+  serviceId String @map("service_id")
+
+  staff   Staff   @relation(fields: [staffId], references: [id], onDelete: Cascade)
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@id([staffId, serviceId])
+  @@map("staff_services")
+}
+
+model WorkingHours {
+  id        String   @id @default(cuid())
+  staffId   String   @map("staff_id")
+  weekday   Int      // 0=Sunday, 6=Saturday
+  startHhmm String   @map("start_hhmm") // format: "HH:MM"
+  endHhmm   String   @map("end_hhmm")   // format: "HH:MM"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  staff Staff @relation(fields: [staffId], references: [id], onDelete: Cascade)
+
+  @@map("working_hours")
+}
+
+model TimeOff {
+  id        String      @id @default(cuid())
+  staffId   String      @map("staff_id")
+  type      TimeOffType @default(OTHER)
+  startsAt  DateTime    @map("starts_at")
+  endsAt    DateTime    @map("ends_at")
+  reason    String?
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  staff Staff @relation(fields: [staffId], references: [id], onDelete: Cascade)
+
+  @@map("time_offs")
+}
+
+model Appointment {
+  id        String            @id @default(cuid())
+  clientId  String            @map("client_id")
+  serviceId String            @map("service_id")
+  staffId   String?           @map("staff_id")
+  startsAt  DateTime          @map("starts_at")
+  endsAt    DateTime          @map("ends_at")
+  status    AppointmentStatus @default(PENDING)
+  notes     String?
+  source    String?           // e.g., "web", "mobile", "admin"
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  client  User     @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  service Service  @relation(fields: [serviceId], references: [id], onDelete: Restrict)
+  staff   Staff?   @relation(fields: [staffId], references: [id], onDelete: SetNull)
+
+  @@index([staffId, startsAt])
+  @@index([clientId])
+  @@map("appointments")
+}
