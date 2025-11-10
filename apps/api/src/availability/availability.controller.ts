@@ -6,11 +6,17 @@ export class AvailabilityController {
   constructor(private availabilityService: AvailabilityService) {}
 
   @Get()
-  getAvailability(@Query('staffId') staffId?: string, @Query('date') date?: string) {
+  getAvailability(
+    @Query('staffId') staffId?: string,
+    @Query('date') date?: string,
+    @Query('durationMin') durationMin?: string,
+  ) {
     if (!staffId || !date) {
       throw new BadRequestException('staffId and date are required');
     }
 
-    return this.availabilityService.getAvailability(staffId, date);
+    const duration = durationMin ? parseInt(durationMin, 10) : undefined;
+
+    return this.availabilityService.getAvailability(staffId, date, duration);
   }
 }

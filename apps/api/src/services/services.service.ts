@@ -5,7 +5,31 @@ import { PrismaService } from '../prisma/prisma.service';
 export class ServicesService {
   constructor(private prisma: PrismaService) {}
 
-  async getPublicServices() {
+  // Helper method to localize service data
+  private localizeService(service: any, locale?: string) {
+    if (locale === 'he') {
+      return {
+        ...service,
+        name: service.nameHe || service.name,
+        description: service.descriptionHe || service.description,
+      };
+    }
+    return service;
+  }
+
+  // Helper method to localize category data
+  private localizeCategory(category: any, locale?: string) {
+    if (locale === 'he') {
+      return {
+        ...category,
+        name: category.nameHe || category.name,
+        description: category.descriptionHe || category.description,
+      };
+    }
+    return category;
+  }
+
+  async getPublicServices(locale?: string) {
     const services = await this.prisma.service.findMany({
       where: { active: true },
       include: {
@@ -13,6 +37,9 @@ export class ServicesService {
           select: {
             id: true,
             name: true,
+            nameHe: true,
+            description: true,
+            descriptionHe: true,
             slug: true,
             imageUrl: true,
           },
@@ -21,19 +48,25 @@ export class ServicesService {
       orderBy: [{ category: { order: 'asc' } }, { name: 'asc' }],
     });
 
-    return services.map((service) => ({
-      id: service.id,
-      name: service.name,
-      description: service.description,
-      durationMin: service.durationMin,
-      priceIls: service.priceIls,
-      imageUrl: service.imageUrl,
-      category: service.category,
-    }));
+    return services.map((service) => {
+      const localizedService = this.localizeService(service, locale);
+      const localizedCategory = this.localizeCategory(service.category, locale);
+
+      return {
+        id: localizedService.id,
+        name: localizedService.name,
+        description: localizedService.description,
+        durationMin: localizedService.durationMin,
+        priceIls: localizedService.priceIls,
+        priceFrom: localizedService.priceFrom,
+        imageUrl: localizedService.imageUrl,
+        category: localizedCategory,
+      };
+    });
   }
 
-  async getServiceById(id: string) {
-    return this.prisma.service.findUnique({
+  async getServiceById(id: string, locale?: string) {
+    const service = await this.prisma.service.findUnique({
       where: { id },
       include: {
         category: true,
@@ -42,6 +75,16 @@ export class ServicesService {
         },
       },
     });
+
+    if (!service) return null;
+
+    const localizedService = this.localizeService(service, locale);
+    const localizedCategory = this.localizeCategory(service.category, locale);
+
+    return {
+      ...localizedService,
+      category: localizedCategory,
+    };
   }
 
   async getAllServices(page: number = 1, limit: number = 10) {
@@ -72,10 +115,13 @@ export class ServicesService {
 
   async createService(data: {
     name: string;
+    nameHe?: string;
     description?: string;
+    descriptionHe?: string;
     categoryId: string;
     durationMin: number;
     priceIls: number;
+    priceFrom?: boolean;
     imageUrl?: string;
     active?: boolean;
   }) {
@@ -89,10 +135,13 @@ export class ServicesService {
     id: string,
     data: {
       name?: string;
+      nameHe?: string;
       description?: string;
+      descriptionHe?: string;
       categoryId?: string;
       durationMin?: number;
       priceIls?: number;
+      priceFrom?: boolean;
       imageUrl?: string;
       active?: boolean;
     },
@@ -127,6 +176,9 @@ export class ServicesService {
 
   async createCategory(data: {
     name: string;
+    nameHe?: string;
+    description?: string;
+    descriptionHe?: string;
     slug: string;
     imageUrl?: string;
     order?: number;
@@ -139,6 +191,9 @@ export class ServicesService {
     id: string,
     data: {
       name?: string;
+      nameHe?: string;
+      description?: string;
+      descriptionHe?: string;
       slug?: string;
       imageUrl?: string;
       order?: number;

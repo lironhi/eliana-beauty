@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
+import { api } from '@/lib/api';
 
 interface TimeOff {
   id: string;
@@ -28,22 +29,11 @@ export default function TimeOffList({ staffId, refreshTrigger, onEdit, onDelete 
 
   const loadTimeOffs = async () => {
     try {
-      const response = await fetch(`http://localhost:3001/staff/${staffId}/time-off`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-        credentials: 'include',
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to load time offs');
-      }
-
-      const data = await response.json();
+      const data = await api.getStaffTimeOffs(staffId);
       setTimeOffs(data);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error loading time offs:', error);
-      toast.error('Failed to load time offs');
+      toast.error(error.message || 'Failed to load time offs');
     } finally {
       setLoading(false);
     }
@@ -55,26 +45,15 @@ export default function TimeOffList({ staffId, refreshTrigger, onEdit, onDelete 
     }
 
     try {
-      const response = await fetch(`http://localhost:3001/staff/time-off/${id}`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-        credentials: 'include',
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to delete time off');
-      }
-
+      await api.deleteTimeOff(id);
       toast.success('Time off deleted successfully');
       loadTimeOffs();
       if (onDelete) {
         onDelete();
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error deleting time off:', error);
-      toast.error('Failed to delete time off');
+      toast.error(error.message || 'Failed to delete time off');
     }
   };
 

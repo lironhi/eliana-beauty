@@ -253,17 +253,23 @@ export default function Staff() {
           <div className="flex flex-wrap gap-2">
             <button
               onClick={handleExportCSV}
-              className="flex-1 sm:flex-none px-3 md:px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors font-medium text-sm"
+              className="flex items-center gap-2 px-3 md:px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all shadow-md hover:shadow-lg font-medium text-sm"
               title="Export to CSV"
             >
-              📊 <span className="hidden sm:inline">CSV</span>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <span className="hidden sm:inline">CSV</span>
             </button>
             <button
               onClick={handleExportPDF}
-              className="flex-1 sm:flex-none px-3 md:px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors font-medium text-sm"
+              className="flex items-center gap-2 px-3 md:px-4 py-2 bg-gradient-to-r from-red-500 to-rose-600 text-white rounded-lg hover:from-red-600 hover:to-rose-700 transition-all shadow-md hover:shadow-lg font-medium text-sm"
               title="Export to PDF"
             >
-              📄 <span className="hidden sm:inline">PDF</span>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+              </svg>
+              <span className="hidden sm:inline">PDF</span>
             </button>
             <button
               onClick={handleCreateStaff}
@@ -278,117 +284,172 @@ export default function Staff() {
       {/* Staff Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
         {staff.map((member, index) => (
-          <div key={member.id} className="card-premium hover-lift group" style={{ animationDelay: `${index * 50}ms` }}>
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex-1 min-w-0">
-                <h3 className="text-base md:text-lg font-semibold text-gray-900 group-hover:text-gradient transition-all truncate">
+          <div key={member.id} className="card-premium hover-lift group overflow-hidden" style={{ animationDelay: `${index * 50}ms` }}>
+            {/* Staff Header with Gradient Background */}
+            <div className="bg-gradient-to-r from-pink-500 via-purple-500 to-pink-500 p-6 relative overflow-hidden">
+              <div className="absolute inset-0 bg-black/10"></div>
+              <div className="relative z-10">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm border-4 border-white/30 flex items-center justify-center text-white shadow-xl">
+                    <span className="text-2xl font-bold">
+                      {member.name?.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  <span
+                    className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm ${
+                      member.active
+                        ? 'bg-green-500/90 text-white border-2 border-white/50'
+                        : 'bg-gray-500/90 text-white border-2 border-white/50'
+                    }`}
+                  >
+                    {member.active ? '● Active' : '○ Inactive'}
+                  </span>
+                </div>
+                <h3 className="text-xl font-bold text-white mb-1 drop-shadow-lg">
                   {member.name}
                 </h3>
-                {member.bio && <p className="text-xs md:text-sm text-gray-600 mt-1 line-clamp-2">{member.bio}</p>}
-              </div>
-              <span
-                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ml-2 ${
-                  member.active
-                    ? 'bg-green-100 text-green-800 border-green-200'
-                    : 'bg-gray-100 text-gray-800 border-gray-200'
-                }`}
-              >
-                {member.active ? 'Active' : 'Inactive'}
-              </span>
-            </div>
-
-            {/* Services */}
-            <div className="mb-4">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs md:text-sm font-medium text-gray-700">Services</span>
-                <button
-                  onClick={() => handleManageServices(member)}
-                  className="text-xs text-blue-600 hover:text-blue-800 font-medium transition-colors"
-                >
-                  Edit
-                </button>
-              </div>
-              <div className="flex flex-wrap gap-1">
-                {member.staffServices.length > 0 ? (
-                  member.staffServices.map((ss) => (
-                    <span
-                      key={ss.service.id}
-                      className="inline-flex items-center px-2 py-1 rounded-md text-xs bg-gradient-to-r from-pink-100 to-purple-100 text-purple-700 border border-purple-200"
-                    >
-                      {ss.service.name}
-                    </span>
-                  ))
-                ) : (
-                  <span className="text-xs md:text-sm text-gray-400">No services assigned</span>
+                {member.bio && (
+                  <p className="text-sm text-white/90 line-clamp-2 drop-shadow">
+                    {member.bio}
+                  </p>
                 )}
               </div>
             </div>
 
-            {/* Working Hours */}
-            <div className="mb-4">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs md:text-sm font-medium text-gray-700">Working Hours</span>
-                <button
-                  onClick={() => handleManageWorkingHours(member)}
-                  className="text-xs text-blue-600 hover:text-blue-800 font-medium transition-colors"
-                >
-                  Edit
-                </button>
-              </div>
-              <div className="text-xs md:text-sm text-gray-600 bg-gradient-to-r from-pink-50 to-purple-50 rounded-lg p-3">
-                {member.workingHours.length > 0 ? (
-                  <div className="space-y-1">
-                    {member.workingHours.slice(0, 3).map((wh) => (
-                      <div key={wh.id} className="flex justify-between">
-                        <span className="font-medium">{WEEKDAYS[wh.weekday]}</span>
-                        <span className="text-gray-500">{wh.startHhmm} - {wh.endHhmm}</span>
-                      </div>
-                    ))}
-                    {member.workingHours.length > 3 && (
-                      <div className="text-xs text-gray-400 mt-1">
-                        +{member.workingHours.length - 3} more
-                      </div>
-                    )}
+            {/* Card Content */}
+            <div className="p-4">
+
+              {/* Services */}
+              <div className="mb-4">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
+                    <span className="text-sm font-semibold text-gray-900">Services</span>
                   </div>
-                ) : (
-                  <span className="text-gray-400">No hours set</span>
-                )}
-              </div>
-            </div>
-
-            {/* Stats */}
-            {member._count && (
-              <div className="mb-4 pt-4 border-t border-gray-200">
-                <div className="text-xs md:text-sm text-gray-600">
-                  <span className="font-bold text-gradient text-base md:text-lg">{member._count.appointments}</span> total appointments
+                  <button
+                    onClick={() => handleManageServices(member)}
+                    className="flex items-center gap-1 px-2 py-1 text-xs bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-md font-medium transition-all border border-blue-200"
+                  >
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    Edit
+                  </button>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {member.staffServices.length > 0 ? (
+                    member.staffServices.map((ss) => (
+                      <span
+                        key={ss.service.id}
+                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-gradient-to-r from-pink-100 to-purple-100 text-purple-700 border border-purple-200 hover:shadow-sm transition-shadow"
+                      >
+                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                        {ss.service.name}
+                      </span>
+                    ))
+                  ) : (
+                    <div className="w-full py-3 text-center text-sm text-gray-400 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
+                      No services assigned
+                    </div>
+                  )}
                 </div>
               </div>
-            )}
 
-            {/* Actions */}
-            <div className="flex gap-2">
-              <button
-                onClick={() => navigate(`/admin/staff/${member.id}`)}
-                className="flex-1 px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-lg hover:from-pink-600 hover:to-purple-700 transition-all text-xs md:text-sm font-medium shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-                View Profile
-              </button>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setStaffToDelete(member);
-                  setShowDeleteModal(true);
-                }}
-                className="px-3 py-2 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition-colors text-xs md:text-sm font-medium border border-red-200"
-                title="Delete staff member"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                </svg>
-              </button>
+              {/* Working Hours */}
+              <div className="mb-4">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span className="text-sm font-semibold text-gray-900">Working Hours</span>
+                  </div>
+                  <button
+                    onClick={() => handleManageWorkingHours(member)}
+                    className="flex items-center gap-1 px-2 py-1 text-xs bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-md font-medium transition-all border border-blue-200"
+                  >
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    Edit
+                  </button>
+                </div>
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100">
+                  {member.workingHours.length > 0 ? (
+                    <div className="space-y-2">
+                      {member.workingHours.slice(0, 3).map((wh) => (
+                        <div key={wh.id} className="flex items-center justify-between bg-white/60 backdrop-blur-sm rounded-lg px-3 py-2">
+                          <span className="text-xs font-semibold text-gray-700 flex items-center gap-2">
+                            <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                            {WEEKDAYS[wh.weekday]}
+                          </span>
+                          <span className="text-xs text-gray-600 font-medium">{wh.startHhmm} - {wh.endHhmm}</span>
+                        </div>
+                      ))}
+                      {member.workingHours.length > 3 && (
+                        <div className="text-xs text-gray-500 text-center pt-1 font-medium">
+                          +{member.workingHours.length - 3} more days
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="py-3 text-center text-sm text-gray-400 bg-white/60 rounded-lg">
+                      No hours set
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Stats */}
+              {member._count && (
+                <div className="mb-4">
+                  <div className="bg-gradient-to-r from-pink-50 to-purple-50 rounded-xl p-4 border border-pink-100">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-purple-600 rounded-lg flex items-center justify-center">
+                          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-600 font-medium">Total Appointments</p>
+                          <p className="text-2xl font-bold text-gradient">{member._count.appointments}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Actions */}
+              <div className="flex gap-2">
+                <button
+                  onClick={() => navigate(`/admin/staff/${member.id}`)}
+                  className="flex-1 px-4 py-2.5 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-lg hover:from-pink-600 hover:to-purple-700 transition-all text-sm font-semibold shadow-lg hover:shadow-xl flex items-center justify-center gap-2 hover:-translate-y-0.5"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                  View Profile
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setStaffToDelete(member);
+                    setShowDeleteModal(true);
+                  }}
+                  className="px-3 py-2.5 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-all text-sm font-semibold border border-red-200 hover:border-red-300 hover:shadow-md"
+                  title="Delete staff member"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              </div>
             </div>
           </div>
         ))}

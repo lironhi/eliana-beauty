@@ -14,6 +14,8 @@
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
     "db:seed": "ts-node prisma/seed.ts",
+    "db:backup": "ts-node scripts/backup-prisma.ts",
+    "db:restore": "ts-node scripts/restore-prisma.ts",
     "prisma:generate": "prisma generate",
     "clean": "rm -rf dist"
   },
@@ -27,6 +29,7 @@
     "bcryptjs": "^2.4.3",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
+    "dotenv": "^17.2.3",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "reflect-metadata": "^0.2.1",

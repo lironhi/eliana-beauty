@@ -5,7 +5,7 @@ import { useI18n } from '@/i18n';
 import LoadingSpinner from '@/components/LoadingSpinner';
 
 export default function Services() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const [services, setServices] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -18,7 +18,7 @@ export default function Services() {
     if (categoryParam) {
       setSelectedCategory(categoryParam);
     }
-  }, [searchParams]);
+  }, [searchParams, locale]); // Ajout de locale comme dépendance
 
   useEffect(() => {
     if (loading) return;
@@ -206,6 +206,7 @@ export default function Services() {
                       <span className="text-sm">{service.durationMin} {t('services.minutes')}</span>
                     </div>
                     <div className="text-2xl font-bold text-gradient">
+                      {service.priceFrom && <span className="text-base font-normal mr-1">{t('common.from')}</span>}
                       ₪{service.priceIls}
                     </div>
                   </div>

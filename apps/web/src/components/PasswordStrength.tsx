@@ -63,8 +63,8 @@ export function PasswordStrength({ password }: PasswordStrengthProps) {
 
       <div className="text-xs text-gray-600 space-y-0.5">
         <div className="flex items-center gap-1.5">
-          <span className={password.length >= 8 && password.length <= 24 ? 'text-green-600' : 'text-gray-400'}>
-            {password.length >= 8 && password.length <= 24 ? '✓' : '○'}
+          <span className={password.length >= 6 && password.length <= 24 ? 'text-green-600' : 'text-gray-400'}>
+            {password.length >= 6 && password.length <= 24 ? '✓' : '○'}
           </span>
           <span>{t('auth.passwordStrength.minLength')}</span>
         </div>

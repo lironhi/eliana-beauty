@@ -15,15 +15,23 @@ interface Service {
   };
 }
 
+interface WorkingHours {
+  weekday: number; // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+  startHhmm: string; // e.g., "09:00"
+  endHhmm: string; // e.g., "17:00"
+}
+
 interface StaffMember {
   id: string;
   name: string;
-  email: string;
+  email?: string;
+  workingHours?: WorkingHours[];
 }
 
 interface TimeSlot {
   time: string;
   available: boolean;
+  reason?: 'booked' | 'insufficient_time'; // Why slot is unavailable
 }
 
 interface TimeOff {
@@ -33,7 +41,7 @@ interface TimeOff {
 }
 
 export default function Booking() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const navigate = useNavigate();
   const { user } = useAuthStore();
   const [searchParams] = useSearchParams();
@@ -61,7 +69,7 @@ export default function Booking() {
       return;
     }
     loadInitialData();
-  }, [user, navigate, serviceId]);
+  }, [user, navigate, serviceId, locale]); // Ajout de locale comme dépendance
 
   const loadInitialData = async () => {
     try {
@@ -127,6 +135,7 @@ export default function Booking() {
       const params: any = {
         date: selectedDate,
         serviceId: selectedService.id,
+        durationMin: selectedService.durationMin,
       };
       if (selectedStaff) {
         params.staffId = selectedStaff;
@@ -212,10 +221,52 @@ export default function Booking() {
   const getAvailableDates = () => {
     const dates = [];
     const today = new Date();
-    for (let i = 0; i < 30; i++) {
+    today.setHours(0, 0, 0, 0); // Start of today
+
+    const oneMonthFromToday = new Date(today);
+    oneMonthFromToday.setMonth(oneMonthFromToday.getMonth() + 1);
+
+    // Calculate number of days between today and one month from today
+    const daysDiff = Math.ceil((oneMonthFromToday.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+
+    // Get selected staff member's working hours
+    const selectedStaffMember = staff.find(s => s.id === selectedStaff);
+    const workingDays = selectedStaffMember?.workingHours?.map(wh => wh.weekday) || [];
+
+    // Debug: Log working hours
+    if (selectedStaff && selectedStaffMember) {
+      console.log('Selected Staff:', selectedStaffMember.name);
+      console.log('Working Hours:', selectedStaffMember.workingHours);
+      console.log('Working Days (weekday numbers):', workingDays);
+    }
+
+    for (let i = 0; i < daysDiff; i++) {
       const date = new Date(today);
       date.setDate(today.getDate() + i);
-      dates.push(date.toISOString().split('T')[0]);
+      const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, etc.
+
+      // Format date as YYYY-MM-DD in local timezone (not UTC)
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const dateStr = `${year}-${month}-${day}`;
+
+      // If a staff is selected, only include days they work
+      if (selectedStaff && selectedStaffMember && workingDays.length > 0) {
+        const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const included = workingDays.includes(dayOfWeek);
+
+        // Debug: Log first few dates
+        if (i < 10) {
+          console.log(`Date: ${dateStr} (${dayNames[dayOfWeek]}, weekday=${dayOfWeek}) - Included: ${included}`);
+        }
+
+        if (!included) {
+          continue; // Skip this day if staff doesn't work
+        }
+      }
+
+      dates.push(dateStr);
     }
     return dates;
   };
@@ -457,6 +508,8 @@ export default function Booking() {
                     className={`card p-3 text-center transition-all font-semibold ${
                       slot.available
                         ? 'hover:bg-gradient-to-r hover:from-pink-500 hover:to-purple-600 hover:text-white cursor-pointer'
+                        : slot.reason === 'insufficient_time'
+                        ? 'opacity-70 cursor-not-allowed bg-red-100 text-red-600 border border-red-300'
                         : 'opacity-50 cursor-not-allowed bg-gray-100'
                     }`}
                   >

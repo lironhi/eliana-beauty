@@ -173,6 +173,23 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
+@keyframes rotate-y-2 {
+  0%, 100% {
+    transform: perspective(1000px) rotateY(2deg);
+  }
+  50% {
+    transform: perspective(1000px) rotateY(-1deg);
+  }
+}
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.rotate-y-2 {
+  transform: perspective(1000px) rotateY(2deg);
+}
+
 /* Animation Classes */
 .animate-fade-in {
   animation: fadeIn 0.8s ease-out;

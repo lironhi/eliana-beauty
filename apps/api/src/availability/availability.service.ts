@@ -5,7 +5,7 @@ import { PrismaService } from '../prisma/prisma.service';
 export class AvailabilityService {
   constructor(private prisma: PrismaService) {}
 
-  async getAvailability(staffId: string, date: string) {
+  async getAvailability(staffId: string, date: string, durationMin?: number) {
     // Parse date (YYYY-MM-DD)
     const targetDate = new Date(date);
     if (isNaN(targetDate.getTime())) {
@@ -70,6 +70,7 @@ export class AvailabilityService {
       workingHours.startHhmm,
       workingHours.endHhmm,
       appointments,
+      durationMin,
     );
 
     return {
@@ -85,8 +86,9 @@ export class AvailabilityService {
     startHhmm: string,
     endHhmm: string,
     appointments: any[],
+    durationMin?: number,
   ) {
-    const slots: { time: string; available: boolean }[] = [];
+    const slots: { time: string; available: boolean; reason?: string }[] = [];
     const [startHour, startMin] = startHhmm.split(':').map(Number);
     const [endHour, endMin] = endHhmm.split(':').map(Number);
 
@@ -100,17 +102,51 @@ export class AvailabilityService {
       const slotTime = current.toISOString();
       const slotEnd = new Date(current.getTime() + 15 * 60 * 1000);
 
-      // Check if slot overlaps with any appointment
-      const isBooked = appointments.some((apt) => {
+      // Check if slot overlaps with any appointment (slot is booked)
+      const overlappingAppointment = appointments.find((apt) => {
         const aptStart = new Date(apt.startsAt);
         const aptEnd = new Date(apt.endsAt);
         return current < aptEnd && slotEnd > aptStart;
       });
 
-      slots.push({
-        time: slotTime,
-        available: !isBooked,
-      });
+      if (overlappingAppointment) {
+        // Slot is directly booked
+        slots.push({
+          time: slotTime,
+          available: false,
+          reason: 'booked',
+        });
+      } else if (durationMin) {
+        // Check if there's enough consecutive time for the service duration
+        const serviceEnd = new Date(current.getTime() + durationMin * 60 * 1000);
+
+        // Find if any appointment starts before our service would end
+        const blockingAppointment = appointments.find((apt) => {
+          const aptStart = new Date(apt.startsAt);
+          return aptStart < serviceEnd && aptStart > current;
+        });
+
+        if (blockingAppointment) {
+          // Not enough time to complete service before next appointment
+          slots.push({
+            time: slotTime,
+            available: false,
+            reason: 'insufficient_time',
+          });
+        } else {
+          // Enough time available
+          slots.push({
+            time: slotTime,
+            available: true,
+          });
+        }
+      } else {
+        // No duration specified, just mark as available
+        slots.push({
+          time: slotTime,
+          available: true,
+        });
+      }
 
       current = new Date(current.getTime() + 15 * 60 * 1000);
     }

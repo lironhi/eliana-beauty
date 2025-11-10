@@ -61,12 +61,12 @@ export default function Profile() {
     setLoading(true);
 
     try {
-      const response = await api.patch('/auth/profile', profileForm);
-      updateUser(response.data);
+      const updatedUser = await api.updateProfile(profileForm);
+      updateUser(updatedUser);
       toast.success(t('profile.profileUpdated'));
       setIsEditing(false);
     } catch (error: any) {
-      toast.error(error.response?.data?.message || t('profile.profileUpdateError'));
+      toast.error(error.message || t('profile.profileUpdateError'));
     } finally {
       setLoading(false);
     }
@@ -80,7 +80,7 @@ export default function Profile() {
       return;
     }
 
-    if (passwordForm.newPassword.length < 8 || passwordForm.newPassword.length > 24) {
+    if (passwordForm.newPassword.length < 6 || passwordForm.newPassword.length > 24) {
       toast.error(t('auth.passwordStrength.minLength') + ' & ' + t('auth.passwordStrength.maxLength'));
       return;
     }
@@ -88,7 +88,7 @@ export default function Profile() {
     setLoading(true);
 
     try {
-      await api.patch('/auth/password', {
+      await api.updatePassword({
         currentPassword: passwordForm.currentPassword,
         newPassword: passwordForm.newPassword,
       });
@@ -99,10 +99,10 @@ export default function Profile() {
         confirmNewPassword: '',
       });
     } catch (error: any) {
-      if (error.response?.status === 401) {
+      if (error.message?.includes('incorrect')) {
         toast.error(t('profile.invalidCurrentPassword'));
       } else {
-        toast.error(error.response?.data?.message || t('profile.passwordUpdateError'));
+        toast.error(error.message || t('profile.passwordUpdateError'));
       }
     } finally {
       setLoading(false);
@@ -299,7 +299,7 @@ export default function Profile() {
                     value={passwordForm.newPassword}
                     onChange={handlePasswordChange}
                     required
-                    minLength={8}
+                    minLength={6}
                     maxLength={24}
                     className="w-full px-4 py-3 pr-12 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-pink-100 focus:border-pink-400 transition-all outline-none"
                     placeholder="••••••••"
@@ -337,7 +337,7 @@ export default function Profile() {
                     value={passwordForm.confirmNewPassword}
                     onChange={handlePasswordChange}
                     required
-                    minLength={8}
+                    minLength={6}
                     maxLength={24}
                     className="w-full px-4 py-3 pr-12 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-pink-100 focus:border-pink-400 transition-all outline-none"
                     placeholder="••••••••"

@@ -6,7 +6,7 @@ import { useI18n } from '@/i18n';
 import LoadingSpinner from '@/components/LoadingSpinner';
 
 export default function ServiceDetail() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuthStore();
@@ -18,7 +18,7 @@ export default function ServiceDetail() {
     if (id) {
       loadServiceDetail();
     }
-  }, [id]);
+  }, [id, locale]); // Ajout de locale comme dépendance
 
   const loadServiceDetail = async () => {
     try {
@@ -138,7 +138,10 @@ export default function ServiceDetail() {
             </h1>
 
             <div className="flex items-baseline gap-3 md:gap-4 mb-6 md:mb-8">
-              <div className="text-3xl md:text-5xl font-bold text-gradient">₪{service.priceIls}</div>
+              <div className="text-3xl md:text-5xl font-bold text-gradient">
+                {service.priceFrom && <span className="text-xl md:text-2xl font-normal mr-2">{t('common.from')}</span>}
+                ₪{service.priceIls}
+              </div>
               <div className="text-sm md:text-base text-gray-500">{t('common.perSession')}</div>
             </div>
 
@@ -256,7 +259,10 @@ export default function ServiceDetail() {
                   </h3>
                   <div className="flex items-center justify-between pt-3 md:pt-4 border-t border-gray-100">
                     <span className="text-sm md:text-base text-gray-600">{relatedService.durationMin} min</span>
-                    <span className="text-lg md:text-xl font-bold text-gradient">₪{relatedService.priceIls}</span>
+                    <span className="text-lg md:text-xl font-bold text-gradient">
+                      {relatedService.priceFrom && <span className="text-sm font-normal mr-1">{t('common.from')}</span>}
+                      ₪{relatedService.priceIls}
+                    </span>
                   </div>
                 </div>
               </Link>

@@ -34,6 +34,18 @@ export class AdminController {
     return this.adminService.updateAppointmentStatus(id, status);
   }
 
+  @Patch('appointments/:id/price')
+  @Roles('ADMIN')
+  updateAppointmentPrice(@Param('id') id: string, @Body('priceIls') priceIls: number) {
+    return this.adminService.updateAppointmentPrice(id, priceIls);
+  }
+
+  @Patch('appointments/:id/reschedule')
+  @Roles('ADMIN', 'STAFF')
+  rescheduleAppointment(@Param('id') id: string, @Body('startsAt') startsAt: string) {
+    return this.adminService.rescheduleAppointment(id, startsAt);
+  }
+
   @Delete('appointments/:id')
   @Roles('ADMIN')
   deleteAppointment(@Param('id') id: string) {

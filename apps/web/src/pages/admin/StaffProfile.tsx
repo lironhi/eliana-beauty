@@ -165,30 +165,20 @@ export default function StaffProfile() {
     setTimeOffLoading(true);
 
     try {
-      const url = editingTimeOffId
-        ? `http://localhost:3001/staff/time-off/${editingTimeOffId}`
-        : `http://localhost:3001/staff/${id}/time-off`;
+      // Convert dates to ISO format
+      const startsAtISO = new Date(timeOffStartsAt).toISOString();
+      const endsAtISO = new Date(timeOffEndsAt).toISOString();
 
-      const response = await fetch(url, {
-        method: editingTimeOffId ? 'PUT' : 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          type: timeOffType,
-          startsAt: timeOffStartsAt,
-          endsAt: timeOffEndsAt,
-          reason: timeOffReason || null,
-        }),
-      });
+      const data = {
+        type: timeOffType,
+        startsAt: startsAtISO,
+        endsAt: endsAtISO,
+        reason: timeOffReason || undefined,
+      };
 
-      if (!response.ok) {
-        throw new Error(editingTimeOffId ? 'Failed to update time off' : 'Failed to create time off');
-      }
-
-      const result = await response.json();
+      const result = editingTimeOffId
+        ? await api.updateTimeOff(editingTimeOffId, data)
+        : await api.createTimeOff(id!, data);
 
       if (!editingTimeOffId && result.affectedAppointments > 0) {
         toast.success(

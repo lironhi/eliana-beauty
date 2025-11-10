@@ -8,8 +8,21 @@ class ApiClient {
   }
 
   private async request<T>(endpoint: string, options?: RequestInit): Promise<T> {
+    // Get locale from localStorage
+    const localeStorage = localStorage.getItem('eliana-locale');
+    let locale = 'en';
+    try {
+      if (localeStorage) {
+        const parsed = JSON.parse(localeStorage);
+        locale = parsed?.state?.locale || 'en';
+      }
+    } catch (e) {
+      // Ignore parsing errors
+    }
+
     const headers: HeadersInit = {
       'Content-Type': 'application/json',
+      'Accept-Language': locale,
       ...(this.accessToken && { Authorization: `Bearer ${this.accessToken}` }),
       ...options?.headers,
     };
@@ -97,6 +110,20 @@ class ApiClient {
     });
   }
 
+  async updateProfile(data: { name?: string; email?: string; phone?: string }) {
+    return this.request<any>('/auth/profile', {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updatePassword(data: { currentPassword: string; newPassword: string }) {
+    return this.request<{ message: string }>('/auth/password', {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  }
+
   // Services
   async getServices() {
     return this.request<any[]>('/services/public');
@@ -117,12 +144,13 @@ class ApiClient {
     return this.request<any>(`/availability?staffId=${staffId}&date=${date}`);
   }
 
-  async getAvailableSlots(params: { date: string; serviceId: string; staffId?: string }) {
+  async getAvailableSlots(params: { date: string; serviceId: string; staffId?: string; durationMin?: number }) {
     const query = new URLSearchParams();
     query.append('date', params.date);
     query.append('serviceId', params.serviceId);
     if (params.staffId) query.append('staffId', params.staffId);
-    return this.request<string[]>(`/availability?${query.toString()}`);
+    if (params.durationMin) query.append('durationMin', params.durationMin.toString());
+    return this.request<{ available: boolean; slots: { time: string; available: boolean; reason?: 'booked' | 'insufficient_time' }[] }>(`/availability?${query.toString()}`);
   }
 
   // Appointments
@@ -172,6 +200,20 @@ class ApiClient {
     return this.request<any>(`/admin/appointments/${id}/status`, {
       method: 'PATCH',
       body: JSON.stringify({ status }),
+    });
+  }
+
+  async updateAppointmentPrice(id: string, priceIls: number) {
+    return this.request<any>(`/admin/appointments/${id}/price`, {
+      method: 'PATCH',
+      body: JSON.stringify({ priceIls }),
+    });
+  }
+
+  async rescheduleAppointment(id: string, startsAt: string) {
+    return this.request<any>(`/admin/appointments/${id}/reschedule`, {
+      method: 'PATCH',
+      body: JSON.stringify({ startsAt }),
     });
   }
 
@@ -342,6 +384,41 @@ class ApiClient {
     return this.request<any>(`/staff/${id}/working-hours`, {
       method: 'PUT',
       body: JSON.stringify({ workingHours }),
+    });
+  }
+
+  // Time Off methods
+  async getStaffTimeOffs(staffId: string) {
+    return this.request<any[]>(`/staff/${staffId}/time-off`);
+  }
+
+  async createTimeOff(staffId: string, data: {
+    type: string;
+    startsAt: string;
+    endsAt: string;
+    reason?: string;
+  }) {
+    return this.request<any>(`/staff/${staffId}/time-off`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateTimeOff(timeOffId: string, data: {
+    type?: string;
+    startsAt?: string;
+    endsAt?: string;
+    reason?: string;
+  }) {
+    return this.request<any>(`/staff/time-off/${timeOffId}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteTimeOff(timeOffId: string) {
+    return this.request<any>(`/staff/time-off/${timeOffId}`, {
+      method: 'DELETE',
     });
   }
 }

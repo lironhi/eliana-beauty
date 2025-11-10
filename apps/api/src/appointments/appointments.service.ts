@@ -26,6 +26,20 @@ export class AppointmentsService {
     const startsAt = new Date(dto.startsAt);
     const endsAt = new Date(startsAt.getTime() + service.durationMin * 60 * 1000);
 
+    // Check if appointment is within 1 month from today
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Start of today
+    const oneMonthFromToday = new Date(today);
+    oneMonthFromToday.setMonth(oneMonthFromToday.getMonth() + 1);
+
+    if (startsAt < today) {
+      throw new BadRequestException('Cannot book appointments in the past');
+    }
+
+    if (startsAt > oneMonthFromToday) {
+      throw new BadRequestException('Cannot book appointments more than 1 month in advance');
+    }
+
     // Check if staff is provided and valid
     let staffId = dto.staffId;
     if (staffId) {
@@ -62,6 +76,7 @@ export class AppointmentsService {
         startsAt,
         endsAt,
         status: 'PENDING',
+        priceIls: service.priceIls, // Store the current price from the service
         notes: dto.notes,
         source: 'web',
       },

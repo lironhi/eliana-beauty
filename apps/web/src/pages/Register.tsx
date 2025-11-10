@@ -206,7 +206,7 @@ export default function Register() {
                     value={formData.password}
                     onChange={handleChange}
                     required
-                    minLength={8}
+                    minLength={6}
                     maxLength={24}
                     className="w-full px-4 py-3 pl-12 pr-12 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-pink-100 focus:border-pink-400 transition-all outline-none bg-white/50 backdrop-blur-sm"
                     placeholder="••••••••"
@@ -250,7 +250,7 @@ export default function Register() {
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     required
-                    minLength={8}
+                    minLength={6}
                     maxLength={24}
                     className="w-full px-4 py-3 pl-12 pr-12 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-pink-100 focus:border-pink-400 transition-all outline-none bg-white/50 backdrop-blur-sm"
                     placeholder="••••••••"

@@ -1,9 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { AvailabilityService } from '../availability/availability.service';
 
 @Injectable()
 export class AdminService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private availabilityService: AvailabilityService,
+  ) {}
 
   async getDashboardStats() {
     const now = new Date();
@@ -45,7 +49,7 @@ export class AdminService {
     });
 
     const monthRevenue = completedAppointments.reduce(
-      (sum, apt) => sum + apt.service.priceIls,
+      (sum, apt) => sum + (apt.priceIls ?? apt.service.priceIls),
       0,
     );
 
@@ -102,6 +106,46 @@ export class AdminService {
       }),
     );
 
+    // Appointments trend for last 30 days (for chart)
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 29);
+    thirtyDaysAgo.setHours(0, 0, 0, 0);
+
+    const appointmentsByDay = await this.prisma.appointment.groupBy({
+      by: ['startsAt'],
+      where: {
+        startsAt: { gte: thirtyDaysAgo },
+      },
+      _count: {
+        id: true,
+      },
+    });
+
+    // Create a map of appointments per day
+    const appointmentsMap = new Map<string, number>();
+    appointmentsByDay.forEach((item) => {
+      const dateKey = new Date(item.startsAt).toISOString().split('T')[0];
+      appointmentsMap.set(dateKey, (appointmentsMap.get(dateKey) || 0) + item._count.id);
+    });
+
+    // Generate array with all 30 days (including days with 0 appointments)
+    const appointmentsTrend = [];
+    for (let i = 29; i >= 0; i--) {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      date.setHours(0, 0, 0, 0);
+      const dateKey = date.toISOString().split('T')[0];
+
+      appointmentsTrend.push({
+        date: date.toISOString(),
+        label: date.toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric'
+        }),
+        value: appointmentsMap.get(dateKey) || 0,
+      });
+    }
+
     return {
       stats: {
         todayAppointments,
@@ -113,6 +157,7 @@ export class AdminService {
       },
       recentAppointments,
       popularServices: servicesWithDetails,
+      appointmentsTrend,
     };
   }
 
@@ -184,6 +229,69 @@ export class AdminService {
     return this.prisma.appointment.update({
       where: { id },
       data: { status: status as any },
+    });
+  }
+
+  async updateAppointmentPrice(id: string, priceIls: number) {
+    return this.prisma.appointment.update({
+      where: { id },
+      data: { priceIls },
+      include: {
+        client: true,
+        service: true,
+        staff: true,
+      },
+    });
+  }
+
+  async rescheduleAppointment(id: string, startsAt: string) {
+    // Get the existing appointment with service details
+    const appointment = await this.prisma.appointment.findUnique({
+      where: { id },
+      include: { service: true },
+    });
+
+    if (!appointment) {
+      throw new BadRequestException('Appointment not found');
+    }
+
+    if (!appointment.staffId) {
+      throw new BadRequestException('Appointment has no assigned staff member');
+    }
+
+    // Parse the new start time
+    const newStartsAt = new Date(startsAt);
+    if (isNaN(newStartsAt.getTime())) {
+      throw new BadRequestException('Invalid date format');
+    }
+
+    // Calculate end time based on service duration
+    const newEndsAt = new Date(newStartsAt.getTime() + appointment.service.durationMin * 60 * 1000);
+
+    // Check if the new time slot overlaps with any other appointments (excluding this one)
+    const hasOverlap = await this.availabilityService.checkOverlap(
+      appointment.staffId,
+      newStartsAt,
+      newEndsAt,
+      id,
+    );
+
+    if (hasOverlap) {
+      throw new BadRequestException('The selected time slot is not available');
+    }
+
+    // Update the appointment
+    return this.prisma.appointment.update({
+      where: { id },
+      data: {
+        startsAt: newStartsAt,
+        endsAt: newEndsAt,
+      },
+      include: {
+        client: true,
+        service: true,
+        staff: true,
+      },
     });
   }
 

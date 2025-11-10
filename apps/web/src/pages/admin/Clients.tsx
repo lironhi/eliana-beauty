@@ -7,11 +7,14 @@ import { Pagination } from '@/components/Pagination';
 import EditClientModal from '@/components/admin/EditClientModal';
 import DeleteConfirmationModal from '@/components/admin/DeleteConfirmationModal';
 
+type ViewMode = 'cards' | 'table';
+
 export default function Clients() {
   const [clients, setClients] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [viewMode, setViewMode] = useState<ViewMode>('cards');
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
@@ -98,19 +101,54 @@ export default function Clients() {
             />
           </div>
           <div className="flex gap-2 w-full">
+            {/* View Mode Toggle */}
+            <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
+              <button
+                onClick={() => setViewMode('cards')}
+                className={`px-3 py-2 rounded-md transition-all font-medium text-sm ${
+                  viewMode === 'cards'
+                    ? 'bg-white text-primary-700 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+                title="Card View"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                </svg>
+              </button>
+              <button
+                onClick={() => setViewMode('table')}
+                className={`px-3 py-2 rounded-md transition-all font-medium text-sm ${
+                  viewMode === 'table'
+                    ? 'bg-white text-primary-700 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+                title="Table View"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+              </button>
+            </div>
             <button
               onClick={handleExportCSV}
-              className="flex-1 px-3 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors font-medium text-sm"
+              className="flex items-center gap-2 px-3 md:px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all shadow-md hover:shadow-lg font-medium text-sm"
               title="Export to CSV"
             >
-              📊 <span className="hidden sm:inline">CSV</span>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <span className="hidden sm:inline">CSV</span>
             </button>
             <button
               onClick={handleExportPDF}
-              className="flex-1 px-3 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors font-medium text-sm"
+              className="flex items-center gap-2 px-3 md:px-4 py-2 bg-gradient-to-r from-red-500 to-rose-600 text-white rounded-lg hover:from-red-600 hover:to-rose-700 transition-all shadow-md hover:shadow-lg font-medium text-sm"
               title="Export to PDF"
             >
-              📄 <span className="hidden sm:inline">PDF</span>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+              </svg>
+              <span className="hidden sm:inline">PDF</span>
             </button>
           </div>
         </div>
@@ -128,124 +166,241 @@ export default function Clients() {
         </div>
       </div>
 
-      {/* Clients Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
-        {filteredClients.map((client) => (
-          <div
-            key={client.id}
-            className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6 hover:shadow-md transition-shadow"
-          >
-            {/* Client Header */}
-            <div className="flex items-start justify-between mb-3 md:mb-4">
-              <div className="flex items-center gap-2 md:gap-3">
-                <div className="w-10 h-10 md:w-12 md:h-12 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0">
-                  <span className="text-primary-600 font-bold text-base md:text-lg">
-                    {client.name.charAt(0).toUpperCase()}
-                  </span>
-                </div>
-                <div className="min-w-0">
-                  <h3 className="font-bold text-gray-900 text-sm md:text-base truncate">{client.name}</h3>
-                  <span
-                    className={`inline-block px-2 py-0.5 text-xs font-medium rounded-full ${
-                      client.active
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-red-100 text-red-800'
-                    }`}
-                  >
-                    {client.active ? 'Active' : 'Inactive'}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Client Info */}
-            <div className="space-y-1.5 md:space-y-2 mb-3 md:mb-4">
-              <div className="flex items-center gap-2 text-xs md:text-sm">
-                <span className="text-gray-400 flex-shrink-0">📧</span>
-                <span className="text-gray-700 truncate">{client.email}</span>
-              </div>
-              {client.phone && (
-                <div className="flex items-center gap-2 text-xs md:text-sm">
-                  <span className="text-gray-400 flex-shrink-0">📱</span>
-                  <span className="text-gray-700">{client.phone}</span>
-                </div>
-              )}
-              <div className="flex items-center gap-2 text-xs md:text-sm">
-                <span className="text-gray-400 flex-shrink-0">🌐</span>
-                <span className="text-gray-700">{client.locale.toUpperCase()}</span>
-              </div>
-              <div className="flex items-center gap-2 text-xs md:text-sm">
-                <span className="text-gray-400 flex-shrink-0">📅</span>
-                <span className="text-gray-700">
-                  {new Date(client.createdAt).toLocaleDateString()}
-                </span>
-              </div>
-            </div>
-
-            {/* Appointments Summary */}
-            <div className="border-t border-gray-200 pt-3 md:pt-4 mb-3">
-              <p className="text-xs md:text-sm font-medium text-gray-700 mb-2">
-                Appointments ({client.appointments.length})
-              </p>
-              {client.appointments.length > 0 ? (
-                <div className="space-y-1">
-                  {client.appointments.slice(0, 3).map((apt: any) => (
-                    <div
-                      key={apt.id}
-                      className="flex items-center justify-between text-xs text-gray-600"
+      {/* Clients View - Cards or Table */}
+      {viewMode === 'cards' ? (
+        /* Cards Grid */
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
+          {filteredClients.map((client) => (
+            <div
+              key={client.id}
+              className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6 hover:shadow-md transition-shadow"
+            >
+              {/* Client Header */}
+              <div className="flex items-start justify-between mb-3 md:mb-4">
+                <div className="flex items-center gap-2 md:gap-3">
+                  <div className="w-10 h-10 md:w-12 md:h-12 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <span className="text-primary-600 font-bold text-base md:text-lg">
+                      {client.name.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  <div className="min-w-0">
+                    <h3 className="font-bold text-gray-900 text-sm md:text-base truncate">{client.name}</h3>
+                    <span
+                      className={`inline-block px-2 py-0.5 text-xs font-medium rounded-full ${
+                        client.active
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-red-100 text-red-800'
+                      }`}
                     >
-                      <span className="truncate mr-2">{new Date(apt.startsAt).toLocaleDateString()}</span>
+                      {client.active ? 'Active' : 'Inactive'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Client Info */}
+              <div className="space-y-1.5 md:space-y-2 mb-3 md:mb-4">
+                <div className="flex items-center gap-2 text-xs md:text-sm">
+                  <span className="text-gray-400 flex-shrink-0">📧</span>
+                  <span className="text-gray-700 truncate">{client.email}</span>
+                </div>
+                {client.phone && (
+                  <div className="flex items-center gap-2 text-xs md:text-sm">
+                    <span className="text-gray-400 flex-shrink-0">📱</span>
+                    <span className="text-gray-700">{client.phone}</span>
+                  </div>
+                )}
+                <div className="flex items-center gap-2 text-xs md:text-sm">
+                  <span className="text-gray-400 flex-shrink-0">🌐</span>
+                  <span className="text-gray-700">{client.locale.toUpperCase()}</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs md:text-sm">
+                  <span className="text-gray-400 flex-shrink-0">📅</span>
+                  <span className="text-gray-700">
+                    {new Date(client.createdAt).toLocaleDateString()}
+                  </span>
+                </div>
+              </div>
+
+              {/* Appointments Summary */}
+              <div className="border-t border-gray-200 pt-3 md:pt-4 mb-3">
+                <p className="text-xs md:text-sm font-medium text-gray-700 mb-2">
+                  Appointments ({client.appointments.length})
+                </p>
+                {client.appointments.length > 0 ? (
+                  <div className="space-y-1">
+                    {client.appointments.slice(0, 3).map((apt: any) => (
+                      <div
+                        key={apt.id}
+                        className="flex items-center justify-between text-xs text-gray-600"
+                      >
+                        <span className="truncate mr-2">{new Date(apt.startsAt).toLocaleDateString()}</span>
+                        <span
+                          className={`px-2 py-0.5 rounded-full text-[10px] md:text-xs flex-shrink-0 ${
+                            apt.status === 'COMPLETED'
+                              ? 'bg-blue-100 text-blue-700'
+                              : apt.status === 'CONFIRMED'
+                              ? 'bg-green-100 text-green-700'
+                              : apt.status === 'CANCELLED'
+                              ? 'bg-red-100 text-red-700'
+                              : 'bg-yellow-100 text-yellow-700'
+                          }`}
+                        >
+                          {apt.status}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-xs text-gray-500">No appointments yet</p>
+                )}
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    setSelectedClient(client);
+                    setShowEditModal(true);
+                  }}
+                  className="flex-1 px-3 py-2 bg-primary-50 text-primary-700 rounded-lg hover:bg-primary-100 transition-colors text-xs md:text-sm font-medium flex items-center justify-center gap-2"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                  Edit
+                </button>
+                <button
+                  onClick={() => {
+                    setClientToDelete(client);
+                    setShowDeleteModal(true);
+                  }}
+                  className="px-3 py-2 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition-colors text-xs md:text-sm font-medium border border-red-200"
+                  title="Delete client"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        /* Table View */
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50 border-b border-gray-200">
+                <tr>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                    Client
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                    Contact
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                    Locale
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                    Appointments
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                    Joined
+                  </th>
+                  <th className="px-4 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {filteredClients.map((client) => (
+                  <tr key={client.id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-4 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0">
+                          <span className="text-primary-600 font-bold text-sm">
+                            {client.name.charAt(0).toUpperCase()}
+                          </span>
+                        </div>
+                        <div>
+                          <div className="font-semibold text-gray-900 text-sm">{client.name}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-4 py-4">
+                      <div className="text-sm text-gray-700">{client.email}</div>
+                      {client.phone && (
+                        <div className="text-sm text-gray-500">{client.phone}</div>
+                      )}
+                    </td>
+                    <td className="px-4 py-4">
                       <span
-                        className={`px-2 py-0.5 rounded-full text-[10px] md:text-xs flex-shrink-0 ${
-                          apt.status === 'COMPLETED'
-                            ? 'bg-blue-100 text-blue-700'
-                            : apt.status === 'CONFIRMED'
-                            ? 'bg-green-100 text-green-700'
-                            : apt.status === 'CANCELLED'
-                            ? 'bg-red-100 text-red-700'
-                            : 'bg-yellow-100 text-yellow-700'
+                        className={`inline-flex px-2.5 py-1 text-xs font-semibold rounded-full ${
+                          client.active
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-red-100 text-red-800'
                         }`}
                       >
-                        {apt.status}
+                        {client.active ? 'Active' : 'Inactive'}
                       </span>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-xs text-gray-500">No appointments yet</p>
-              )}
-            </div>
-
-            {/* Edit Button */}
-            <div className="flex gap-2">
-              <button
-                onClick={() => {
-                  setSelectedClient(client);
-                  setShowEditModal(true);
-                }}
-                className="flex-1 px-3 py-2 bg-primary-50 text-primary-700 rounded-lg hover:bg-primary-100 transition-colors text-xs md:text-sm font-medium flex items-center justify-center gap-2"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                </svg>
-                Edit
-              </button>
-              <button
-                onClick={() => {
-                  setClientToDelete(client);
-                  setShowDeleteModal(true);
-                }}
-                className="px-3 py-2 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition-colors text-xs md:text-sm font-medium border border-red-200"
-                title="Delete client"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                </svg>
-              </button>
-            </div>
+                    </td>
+                    <td className="px-4 py-4">
+                      <span className="text-sm font-medium text-gray-700">
+                        {client.locale.toUpperCase()}
+                      </span>
+                    </td>
+                    <td className="px-4 py-4">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-semibold text-gray-900">
+                          {client.appointments.length}
+                        </span>
+                        <span className="text-xs text-gray-500">total</span>
+                      </div>
+                    </td>
+                    <td className="px-4 py-4">
+                      <span className="text-sm text-gray-700">
+                        {new Date(client.createdAt).toLocaleDateString()}
+                      </span>
+                    </td>
+                    <td className="px-4 py-4">
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => {
+                            setSelectedClient(client);
+                            setShowEditModal(true);
+                          }}
+                          className="p-2 text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
+                          title="Edit client"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => {
+                            setClientToDelete(client);
+                            setShowDeleteModal(true);
+                          }}
+                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          title="Delete client"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-        ))}
-      </div>
+        </div>
+      )}
 
       {filteredClients.length === 0 && (
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 md:p-12 text-center text-gray-500 text-sm md:text-base">

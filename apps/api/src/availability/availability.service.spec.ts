@@ -50,6 +50,7 @@ describe('AvailabilityService', () => {
         startsAt: new Date('2024-01-15T10:30:00Z'),
         endsAt: new Date('2024-01-15T11:30:00Z'),
         status: 'CONFIRMED',
+        priceIls: null,
         notes: null,
         source: 'web',
         createdAt: new Date(),

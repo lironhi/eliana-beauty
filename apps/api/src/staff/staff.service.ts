@@ -20,6 +20,9 @@ export class StaffService {
         id: true,
         name: true,
         bio: true,
+        workingHours: {
+          orderBy: { weekday: 'asc' },
+        },
       },
     });
 

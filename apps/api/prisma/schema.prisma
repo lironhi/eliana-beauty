@@ -70,14 +70,17 @@ model RefreshToken {
 }
 
 model Category {
-  id        String   @id @default(cuid())
-  name      String
-  slug      String   @unique
-  active    Boolean  @default(true)
-  order     Int?
-  imageUrl  String?  @map("image_url")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String   @id @default(cuid())
+  name        String
+  nameHe      String?  @map("name_he")
+  description String?
+  descriptionHe String? @map("description_he")
+  slug        String   @unique
+  active      Boolean  @default(true)
+  order       Int?
+  imageUrl    String?  @map("image_url")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   services Service[]
 
@@ -88,9 +91,12 @@ model Service {
   id          String   @id @default(cuid())
   categoryId  String   @map("category_id")
   name        String
+  nameHe      String?  @map("name_he")
   description String?
+  descriptionHe String? @map("description_he")
   durationMin Int      @map("duration_min")
   priceIls    Float    @map("price_ils")
+  priceFrom   Boolean  @default(false) @map("price_from")
   active      Boolean  @default(true)
   imageUrl    String?  @map("image_url")
   createdAt   DateTime @default(now())
@@ -182,6 +188,7 @@ model Appointment {
   startsAt  DateTime          @map("starts_at")
   endsAt    DateTime          @map("ends_at")
   status    AppointmentStatus @default(PENDING)
+  priceIls  Float?            @map("price_ils")
   notes     String?
   source    String?           // e.g., "web", "mobile", "admin"
   createdAt DateTime          @default(now())

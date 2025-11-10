@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, UseGuards, Query } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, UseGuards, Query, Headers } from '@nestjs/common';
 import { ServicesService } from './services.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -9,8 +9,9 @@ export class ServicesController {
   constructor(private servicesService: ServicesService) {}
 
   @Get('public')
-  getPublicServices() {
-    return this.servicesService.getPublicServices();
+  getPublicServices(@Headers('accept-language') acceptLanguage?: string) {
+    const locale = acceptLanguage?.startsWith('he') ? 'he' : 'en';
+    return this.servicesService.getPublicServices(locale);
   }
 
   @Get('admin/all')
@@ -26,8 +27,9 @@ export class ServicesController {
   }
 
   @Get(':id')
-  getServiceById(@Param('id') id: string) {
-    return this.servicesService.getServiceById(id);
+  getServiceById(@Param('id') id: string, @Headers('accept-language') acceptLanguage?: string) {
+    const locale = acceptLanguage?.startsWith('he') ? 'he' : 'en';
+    return this.servicesService.getServiceById(id, locale);
   }
 
   @Post()
