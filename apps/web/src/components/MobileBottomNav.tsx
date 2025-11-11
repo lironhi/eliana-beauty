@@ -2,6 +2,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
 import { useAuthStore } from '@/store/authStore';
 import { useI18n } from '@/i18n';
+import { useUnreadMessages } from '@/hooks/useUnreadMessages';
 
 export default function MobileBottomNav() {
   const location = useLocation();
@@ -10,6 +11,7 @@ export default function MobileBottomNav() {
   const { t } = useI18n();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const { unreadCount } = useUnreadMessages();
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -124,6 +126,24 @@ export default function MobileBottomNav() {
                   <span className="font-medium">{t('nav.myBookings')}</span>
                 </Link>
 
+                <Link
+                  to="/messages"
+                  onClick={() => setIsMenuOpen(false)}
+                  className={`flex items-center gap-3 px-4 py-3 hover:bg-pink-50 transition-colors relative ${
+                    isActive('/messages') ? 'bg-pink-50 text-pink-600' : 'text-gray-700'
+                  }`}
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                  </svg>
+                  <span className="font-medium">{t('nav.messages')}</span>
+                  {unreadCount > 0 && (
+                    <span className="absolute top-2 left-8 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                      {unreadCount > 9 ? '9+' : unreadCount}
+                    </span>
+                  )}
+                </Link>
+
                 <div className="border-t border-gray-100 my-1"></div>
 
                 <button
@@ -233,8 +253,8 @@ export default function MobileBottomNav() {
           {/* Account Button */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className={`flex flex-col items-center justify-center py-3 px-2 rounded-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 ${
-              isMenuOpen || isActive('/profile') || isActive('/bookings')
+            className={`flex flex-col items-center justify-center py-3 px-2 rounded-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 relative ${
+              isMenuOpen || isActive('/profile') || isActive('/bookings') || isActive('/messages')
                 ? 'text-pink-600 bg-gradient-to-br from-pink-50 to-purple-50 shadow-lg'
                 : 'text-gray-600 hover:text-pink-500 hover:bg-pink-50/50'
             }`}
@@ -247,7 +267,12 @@ export default function MobileBottomNav() {
             <span className={`text-[10px] font-semibold mt-1 transition-all duration-300 ${isMenuOpen ? 'scale-105' : ''}`}>
               {t('nav.account')}
             </span>
-            {(isMenuOpen || isActive('/profile') || isActive('/bookings')) && (
+            {unreadCount > 0 && (
+              <span className="absolute top-1 right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
+                {unreadCount > 9 ? '9+' : unreadCount}
+              </span>
+            )}
+            {(isMenuOpen || isActive('/profile') || isActive('/bookings') || isActive('/messages')) && (
               <div className="absolute -bottom-1 left-1/2 -translate-x-1/2">
                 <div className="flex gap-1">
                   <div className="w-1 h-1 rounded-full bg-pink-600 animate-pulse"></div>

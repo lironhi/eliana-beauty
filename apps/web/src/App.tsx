@@ -6,6 +6,7 @@ import ServiceDetail from './pages/ServiceDetail';
 import Booking from './pages/Booking';
 import MyBookings from './pages/MyBookings';
 import Profile from './pages/Profile';
+import Messages from './pages/Messages';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -48,6 +49,14 @@ function App() {
           element={
             <ProtectedRoute>
               <Profile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="messages"
+          element={
+            <ProtectedRoute>
+              <Messages />
             </ProtectedRoute>
           }
         />

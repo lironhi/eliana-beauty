@@ -421,6 +421,62 @@ class ApiClient {
       method: 'DELETE',
     });
   }
+
+  // Messages
+  async sendDirectMessage(data: {
+    content: string;
+    subject?: string;
+    recipientId: string;
+    appointmentId?: string;
+  }) {
+    return this.request<any>('/messages/direct', {
+      method: 'POST',
+      body: JSON.stringify({ ...data, type: 'DIRECT' }),
+    });
+  }
+
+  async sendBroadcastMessage(data: {
+    content: string;
+    subject?: string;
+    recipientIds?: string[];
+  }) {
+    return this.request<any>('/messages/broadcast', {
+      method: 'POST',
+      body: JSON.stringify({ ...data, type: 'BROADCAST' }),
+    });
+  }
+
+  async getInbox() {
+    return this.request<{ direct: any[]; broadcasts: any[] }>('/messages/inbox');
+  }
+
+  async getConversation(otherUserId: string) {
+    return this.request<any[]>(`/messages/conversation/${otherUserId}`);
+  }
+
+  async markMessageAsRead(messageId: string) {
+    return this.request<any>('/messages/read', {
+      method: 'PATCH',
+      body: JSON.stringify({ messageId }),
+    });
+  }
+
+  async getUnreadCount() {
+    return this.request<any>('/messages/unread-count');
+  }
+
+  async registerFcmToken(token: string) {
+    return this.request<any>('/messages/fcm-token', {
+      method: 'POST',
+      body: JSON.stringify({ token }),
+    });
+  }
+
+  async deleteMessage(messageId: string) {
+    return this.request<any>(`/messages/${messageId}`, {
+      method: 'DELETE',
+    });
+  }
 }
 
 export const api = new ApiClient();

@@ -50,8 +50,12 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  appointments  Appointment[]
-  refreshTokens RefreshToken[]
+  appointments     Appointment[]
+  refreshTokens    RefreshToken[]
+  sentMessages     Message[]        @relation("SentMessages")
+  receivedMessages Message[]        @relation("ReceivedMessages")
+  messageReceipts  MessageRecipient[]
+  fcmTokens        FcmToken[]
 
   @@map("users")
 }
@@ -194,11 +198,88 @@ model Appointment {
   createdAt DateTime          @default(now())
   updatedAt DateTime          @updatedAt
 
-  client  User     @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  service Service  @relation(fields: [serviceId], references: [id], onDelete: Restrict)
-  staff   Staff?   @relation(fields: [staffId], references: [id], onDelete: SetNull)
+  client   User      @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  service  Service   @relation(fields: [serviceId], references: [id], onDelete: Restrict)
+  staff    Staff?    @relation(fields: [staffId], references: [id], onDelete: SetNull)
+  messages Message[]
 
   @@index([staffId, startsAt])
   @@index([clientId])
   @@map("appointments")
+}
+
+enum MessageType {
+  DIRECT
+  BROADCAST
+  REMINDER
+}
+
+enum NotificationStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
+model Message {
+  id            String       @id @default(cuid())
+  content       String
+  subject       String?
+  type          MessageType  @default(DIRECT)
+
+  // Sender
+  senderId      String       @map("sender_id")
+  sender        User         @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+
+  // For direct messages
+  recipientId   String?      @map("recipient_id")
+  recipient     User?        @relation("ReceivedMessages", fields: [recipientId], references: [id], onDelete: Cascade)
+
+  // For broadcasts
+  recipients    MessageRecipient[]
+
+  // Metadata
+  readAt        DateTime?    @map("read_at")
+  sentAt        DateTime     @default(now()) @map("sent_at")
+  createdAt     DateTime     @default(now()) @map("created_at")
+  updatedAt     DateTime     @updatedAt @map("updated_at")
+
+  // Soft delete
+  deleted       Boolean      @default(false)
+
+  // Related appointment (optional)
+  appointmentId String?      @map("appointment_id")
+  appointment   Appointment? @relation(fields: [appointmentId], references: [id], onDelete: SetNull)
+
+  @@index([senderId])
+  @@index([recipientId])
+  @@index([type])
+  @@index([sentAt])
+  @@map("messages")
+}
+
+model MessageRecipient {
+  id        String    @id @default(cuid())
+  messageId String    @map("message_id")
+  message   Message   @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  userId    String    @map("user_id")
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  readAt    DateTime? @map("read_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  @@unique([messageId, userId])
+  @@index([userId])
+  @@index([messageId])
+  @@map("message_recipients")
+}
+
+model FcmToken {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@map("fcm_tokens")
 }

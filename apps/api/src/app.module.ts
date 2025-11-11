@@ -6,6 +6,7 @@ import { StaffModule } from './staff/staff.module';
 import { AvailabilityModule } from './availability/availability.module';
 import { AppointmentsModule } from './appointments/appointments.module';
 import { AdminModule } from './admin/admin.module';
+import { MessagesModule } from './messages/messages.module';
 import { HealthController } from './health.controller';
 
 @Module({
@@ -17,6 +18,7 @@ import { HealthController } from './health.controller';
     AvailabilityModule,
     AppointmentsModule,
     AdminModule,
+    MessagesModule,
   ],
   controllers: [HealthController],
 })
