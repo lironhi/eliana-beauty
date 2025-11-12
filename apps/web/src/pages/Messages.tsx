@@ -21,6 +21,11 @@ export default function Messages() {
   const [loadingClients, setLoadingClients] = useState(false);
   const { refreshUnreadCount } = useUnreadMessages();
 
+  // Collapse states for read messages
+  const [showReadReminders, setShowReadReminders] = useState(false);
+  const [showReadDirectMessages, setShowReadDirectMessages] = useState(false);
+  const [showReadBroadcasts, setShowReadBroadcasts] = useState(false);
+
   const isAdmin = user?.role === 'ADMIN' || user?.role === 'STAFF';
 
   useEffect(() => {
@@ -169,99 +174,298 @@ export default function Messages() {
     }
   };
 
+  // Separate reminders from direct messages
+  const reminders = inbox.direct.filter((msg: any) => msg.type === 'REMINDER');
+  const directMessages = inbox.direct.filter((msg: any) => msg.type !== 'REMINDER');
+
+  // Separate read and unread messages
+  const unreadReminders = reminders.filter((msg: any) => msg.recipientId === user?.id && !msg.readAt);
+  const readReminders = reminders.filter((msg: any) => msg.readAt);
+
+  const unreadDirectMessages = directMessages.filter((msg: any) => msg.recipientId === user?.id && !msg.readAt);
+  const readDirectMessages = directMessages.filter((msg: any) => msg.readAt);
+
+  const unreadBroadcasts = inbox.broadcasts.filter((msg: any) => !msg.readAt);
+  const readBroadcasts = inbox.broadcasts.filter((msg: any) => msg.readAt);
+
+  // Render message card function
+  const renderMessageCard = (msg: any, type: 'reminder' | 'direct' | 'broadcast') => {
+    const isUnread = type === 'broadcast' ? !msg.readAt : (msg.recipientId === user?.id && !msg.readAt);
+
+    const colorScheme = {
+      reminder: {
+        gradient: 'from-amber-500 to-orange-500',
+        border: isUnread ? 'border-amber-400 ring-4 ring-amber-100' : 'border-amber-200',
+        text: 'text-amber-900',
+        badgeGradient: 'from-amber-500 to-orange-500'
+      },
+      direct: {
+        gradient: 'from-pink-500 to-purple-500',
+        border: isUnread ? 'border-pink-400 ring-4 ring-pink-100' : 'border-pink-200',
+        text: 'text-gray-900',
+        badgeGradient: 'from-pink-500 to-purple-500'
+      },
+      broadcast: {
+        gradient: 'from-blue-500 to-indigo-500',
+        border: isUnread ? 'border-blue-400 ring-4 ring-blue-100' : 'border-blue-200',
+        text: 'text-blue-900',
+        badgeGradient: 'from-blue-500 to-indigo-500'
+      }
+    }[type];
+
+    return (
+      <div
+        key={msg.id}
+        onClick={() => handleMessageClick(msg.id, !!msg.readAt)}
+        className={`bg-white rounded-2xl shadow-lg border-2 p-6 cursor-pointer transition-all duration-300 hover:shadow-xl hover:scale-[1.02] ${colorScheme.border}`}
+      >
+        <div className="flex items-start justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${colorScheme.gradient} flex items-center justify-center shadow-md`}>
+              {type === 'reminder' ? (
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                </svg>
+              ) : type === 'direct' ? (
+                <div className="text-white font-bold text-lg">
+                  {msg.sender?.name?.charAt(0).toUpperCase() || '?'}
+                </div>
+              ) : (
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+                </svg>
+              )}
+            </div>
+            <div>
+              <div className={`font-bold ${colorScheme.text}`}>
+                {type === 'reminder' ? 'Automatic Reminder' : type === 'direct' ? msg.sender?.name : t('messages.teamAnnouncement')}
+              </div>
+              <div className="text-xs text-gray-500 flex items-center gap-1 mt-1">
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                {format(new Date(msg.sentAt), 'dd/MM/yyyy HH:mm')}
+              </div>
+            </div>
+          </div>
+          {isUnread && (
+            <span className={`px-3 py-1.5 bg-gradient-to-r ${colorScheme.badgeGradient} text-white text-xs font-bold rounded-full shadow-lg animate-pulse`}>
+              NEW
+            </span>
+          )}
+        </div>
+        {msg.subject && (
+          <div className={`font-bold text-lg ${colorScheme.text} mb-3 pb-3 border-b-2 ${type === 'reminder' ? 'border-amber-100' : type === 'direct' ? 'border-pink-100' : 'border-blue-100'}`}>
+            {msg.subject}
+          </div>
+        )}
+        <div className="text-gray-700 leading-relaxed whitespace-pre-line">{msg.content}</div>
+      </div>
+    );
+  };
+
   // Vue pour CLIENT (lecture seule)
   if (!isAdmin) {
     return (
-      <div className="h-[calc(100vh-4rem)] flex flex-col p-6">
-        <h2 className="text-2xl font-semibold mb-6">{t('messages.title')}</h2>
-
-        {/* Messages directs */}
-        {inbox.direct.length > 0 && (
-          <div className="mb-6">
-            <h3 className="text-lg font-medium mb-3">{t('messages.teamMessages')}</h3>
-            <div className="space-y-3">
-              {inbox.direct.map((msg: any) => {
-                const isUnread = msg.recipientId === user?.id && !msg.readAt;
-                return (
-                  <div
-                    key={msg.id}
-                    onClick={() => handleMessageClick(msg.id, !!msg.readAt)}
-                    className={`p-4 rounded-lg shadow border cursor-pointer transition-colors ${
-                      isUnread
-                        ? 'bg-blue-50 border-blue-300 hover:bg-blue-100'
-                        : 'bg-white border-gray-200 hover:bg-gray-50'
-                    }`}
-                  >
-                    <div className="flex items-start justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <div className="font-medium">{msg.sender?.name}</div>
-                        {isUnread && (
-                          <span className="bg-blue-600 text-white text-xs px-2 py-0.5 rounded-full">
-                            New
-                          </span>
-                        )}
-                      </div>
-                      <div className="text-xs text-gray-400">
-                        {format(new Date(msg.sentAt), 'dd/MM/yyyy HH:mm')}
-                      </div>
-                    </div>
-                    {msg.subject && (
-                      <div className="font-medium text-sm text-gray-700 mb-1">{msg.subject}</div>
-                    )}
-                    <div className="text-gray-600">{msg.content}</div>
-                  </div>
-                );
-              })}
+      <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50 p-4 md:p-8">
+        <div className="max-w-5xl mx-auto">
+          {/* Header */}
+          <div className="mb-8 bg-white rounded-3xl shadow-xl p-6 md:p-8 border-2 border-pink-100">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-pink-500 to-purple-500 flex items-center justify-center shadow-lg">
+                <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <div>
+                <h2 className="text-3xl font-bold bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
+                  {t('messages.title')}
+                </h2>
+                <p className="text-gray-600 text-sm mt-1">Stay updated with your messages and reminders</p>
+              </div>
             </div>
           </div>
-        )}
 
-        {/* Broadcasts */}
-        {inbox.broadcasts.length > 0 && (
-          <div>
-            <h3 className="text-lg font-medium mb-3">{t('messages.broadcasts')}</h3>
-            <div className="space-y-3">
-              {inbox.broadcasts.map((msg: any) => {
-                const isUnread = !msg.readAt;
-                return (
-                  <div
-                    key={msg.id}
-                    onClick={() => handleMessageClick(msg.id, !!msg.readAt)}
-                    className={`p-4 rounded-lg shadow border cursor-pointer transition-colors ${
-                      isUnread
-                        ? 'bg-blue-100 border-blue-400 hover:bg-blue-150'
-                        : 'bg-blue-50 border-blue-200 hover:bg-blue-100'
-                    }`}
-                  >
-                    <div className="flex items-start justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <div className="font-medium text-blue-900">{t('messages.teamAnnouncement')}</div>
-                        {isUnread && (
-                          <span className="bg-blue-600 text-white text-xs px-2 py-0.5 rounded-full">
-                            New
-                          </span>
-                        )}
-                      </div>
-                      <div className="text-xs text-blue-600">
-                        {format(new Date(msg.sentAt), 'dd/MM/yyyy HH:mm')}
-                      </div>
-                    </div>
-                    {msg.subject && (
-                      <div className="font-medium text-sm text-blue-800 mb-1">{msg.subject}</div>
-                    )}
-                    <div className="text-blue-900">{msg.content}</div>
+          {/* Appointment Reminders */}
+          {reminders.length > 0 && (
+            <div className="mb-8">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center shadow-lg">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold text-gray-900">Appointment Reminders</h3>
+                <span className="px-3 py-1 bg-amber-100 text-amber-800 text-sm font-bold rounded-full">
+                  {reminders.length}
+                </span>
+              </div>
+
+              {/* Unread Reminders */}
+              {unreadReminders.length > 0 && (
+                <div className="mb-4">
+                  <div className="flex items-center gap-2 mb-3 px-2">
+                    <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></div>
+                    <span className="text-sm font-bold text-amber-900">Unread ({unreadReminders.length})</span>
                   </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
+                  <div className="space-y-4">
+                    {unreadReminders.map((msg) => renderMessageCard(msg, 'reminder'))}
+                  </div>
+                </div>
+              )}
 
-        {inbox.direct.length === 0 && inbox.broadcasts.length === 0 && (
-          <div className="text-center text-gray-500 py-12">
-            {t('messages.noMessagesYet')}
-          </div>
-        )}
+              {/* Read Reminders - Collapsible */}
+              {readReminders.length > 0 && (
+                <div>
+                  <button
+                    onClick={() => setShowReadReminders(!showReadReminders)}
+                    className="flex items-center gap-2 w-full px-2 py-2 mb-3 hover:bg-amber-50 rounded-lg transition-colors"
+                  >
+                    <svg
+                      className={`w-5 h-5 text-amber-700 transition-transform ${showReadReminders ? 'rotate-90' : ''}`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                    <span className="text-sm font-semibold text-gray-600">Read ({readReminders.length})</span>
+                  </button>
+                  {showReadReminders && (
+                    <div className="space-y-4">
+                      {readReminders.map((msg) => renderMessageCard(msg, 'reminder'))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Messages directs */}
+          {directMessages.length > 0 && (
+            <div className="mb-8">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-pink-500 to-purple-500 flex items-center justify-center shadow-lg">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold text-gray-900">{t('messages.teamMessages')}</h3>
+                <span className="px-3 py-1 bg-pink-100 text-pink-800 text-sm font-bold rounded-full">
+                  {directMessages.length}
+                </span>
+              </div>
+
+              {/* Unread Direct Messages */}
+              {unreadDirectMessages.length > 0 && (
+                <div className="mb-4">
+                  <div className="flex items-center gap-2 mb-3 px-2">
+                    <div className="w-2 h-2 rounded-full bg-pink-500 animate-pulse"></div>
+                    <span className="text-sm font-bold text-pink-900">Unread ({unreadDirectMessages.length})</span>
+                  </div>
+                  <div className="space-y-4">
+                    {unreadDirectMessages.map((msg) => renderMessageCard(msg, 'direct'))}
+                  </div>
+                </div>
+              )}
+
+              {/* Read Direct Messages - Collapsible */}
+              {readDirectMessages.length > 0 && (
+                <div>
+                  <button
+                    onClick={() => setShowReadDirectMessages(!showReadDirectMessages)}
+                    className="flex items-center gap-2 w-full px-2 py-2 mb-3 hover:bg-pink-50 rounded-lg transition-colors"
+                  >
+                    <svg
+                      className={`w-5 h-5 text-pink-700 transition-transform ${showReadDirectMessages ? 'rotate-90' : ''}`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                    <span className="text-sm font-semibold text-gray-600">Read ({readDirectMessages.length})</span>
+                  </button>
+                  {showReadDirectMessages && (
+                    <div className="space-y-4">
+                      {readDirectMessages.map((msg) => renderMessageCard(msg, 'direct'))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Broadcasts */}
+          {inbox.broadcasts.length > 0 && (
+            <div className="mb-8">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center shadow-lg">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold text-gray-900">{t('messages.broadcasts')}</h3>
+                <span className="px-3 py-1 bg-blue-100 text-blue-800 text-sm font-bold rounded-full">
+                  {inbox.broadcasts.length}
+                </span>
+              </div>
+
+              {/* Unread Broadcasts */}
+              {unreadBroadcasts.length > 0 && (
+                <div className="mb-4">
+                  <div className="flex items-center gap-2 mb-3 px-2">
+                    <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
+                    <span className="text-sm font-bold text-blue-900">Unread ({unreadBroadcasts.length})</span>
+                  </div>
+                  <div className="space-y-4">
+                    {unreadBroadcasts.map((msg) => renderMessageCard(msg, 'broadcast'))}
+                  </div>
+                </div>
+              )}
+
+              {/* Read Broadcasts - Collapsible */}
+              {readBroadcasts.length > 0 && (
+                <div>
+                  <button
+                    onClick={() => setShowReadBroadcasts(!showReadBroadcasts)}
+                    className="flex items-center gap-2 w-full px-2 py-2 mb-3 hover:bg-blue-50 rounded-lg transition-colors"
+                  >
+                    <svg
+                      className={`w-5 h-5 text-blue-700 transition-transform ${showReadBroadcasts ? 'rotate-90' : ''}`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                    <span className="text-sm font-semibold text-gray-600">Read ({readBroadcasts.length})</span>
+                  </button>
+                  {showReadBroadcasts && (
+                    <div className="space-y-4">
+                      {readBroadcasts.map((msg) => renderMessageCard(msg, 'broadcast'))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Empty State */}
+          {reminders.length === 0 && directMessages.length === 0 && inbox.broadcasts.length === 0 && (
+            <div className="bg-white rounded-3xl shadow-xl p-12 text-center border-2 border-gray-200">
+              <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">No Messages Yet</h3>
+              <p className="text-gray-600">
+                You don't have any messages at the moment. Messages from our team will appear here.
+              </p>
+            </div>
+          )}
+        </div>
       </div>
     );
   }

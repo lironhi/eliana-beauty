@@ -6,6 +6,7 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { SendMessageDto } from './dto/send-message.dto';
 import { MarkReadDto } from './dto/mark-read.dto';
 import { RegisterFcmDto } from './dto/register-fcm.dto';
+import { UpdateMessageDto } from './dto/update-message.dto';
 
 interface AuthRequest {
   user: {
@@ -55,6 +56,16 @@ export class MessagesController {
   @Post('fcm-token')
   async registerFcmToken(@Req() req: AuthRequest, @Body() dto: RegisterFcmDto) {
     return this.messagesService.saveFcmToken(req.user.id, dto.token);
+  }
+
+  @Patch(':messageId')
+  @Roles('ADMIN', 'STAFF')
+  async updateMessage(
+    @Req() req: AuthRequest,
+    @Param('messageId') messageId: string,
+    @Body() dto: UpdateMessageDto,
+  ) {
+    return this.messagesService.updateMessage(messageId, req.user.id, dto);
   }
 
   @Delete(':messageId')

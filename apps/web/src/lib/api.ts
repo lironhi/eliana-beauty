@@ -477,6 +477,32 @@ class ApiClient {
       method: 'DELETE',
     });
   }
+
+  async updateMessage(messageId: string, data: { subject?: string; content: string }) {
+    return this.request<any>(`/messages/${messageId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  }
+
+  // Database Management
+  async backupDatabase(tables?: string[]) {
+    return this.request<{ success: boolean; message: string; filename?: string }>('/admin/database/backup', {
+      method: 'POST',
+      body: JSON.stringify({ tables }),
+    });
+  }
+
+  async restoreDatabase(tables?: string[]) {
+    return this.request<{ success: boolean; message: string; restoredTables?: string[] }>('/admin/database/restore', {
+      method: 'POST',
+      body: JSON.stringify({ tables }),
+    });
+  }
+
+  async getLastBackupDate() {
+    return this.request<{ date: string | null }>('/admin/database/last-backup');
+  }
 }
 
 export const api = new ApiClient();

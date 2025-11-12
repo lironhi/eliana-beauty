@@ -1,14 +1,20 @@
-import { Controller, Get, Patch, Delete, Param, Body, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Patch, Delete, Param, Body, Query, UseGuards, Post } from '@nestjs/common';
 import { AdminService } from './admin.service';
+import { DatabaseService } from './database.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { BackupDatabaseDto } from './dto/backup-database.dto';
+import { RestoreDatabaseDto } from './dto/restore-database.dto';
 
 @Controller('admin')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles('ADMIN', 'STAFF')
 export class AdminController {
-  constructor(private adminService: AdminService) {}
+  constructor(
+    private adminService: AdminService,
+    private databaseService: DatabaseService,
+  ) {}
 
 
   @Get('dashboard')
@@ -81,5 +87,24 @@ export class AdminController {
   @Roles('ADMIN')
   deleteClient(@Param('id') id: string) {
     return this.adminService.deleteClient(id);
+  }
+
+  // Database Management
+  @Post('database/backup')
+  @Roles('ADMIN')
+  backupDatabase(@Body() dto: BackupDatabaseDto) {
+    return this.databaseService.backupDatabase(dto.tables);
+  }
+
+  @Post('database/restore')
+  @Roles('ADMIN')
+  restoreDatabase(@Body() dto: RestoreDatabaseDto) {
+    return this.databaseService.restoreDatabase(dto.tables);
+  }
+
+  @Get('database/last-backup')
+  @Roles('ADMIN')
+  getLastBackupDate() {
+    return this.databaseService.getLastBackupDate();
   }
 }

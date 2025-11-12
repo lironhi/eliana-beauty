@@ -300,6 +300,32 @@ export class MessagesService implements OnModuleInit {
     }
   }
 
+  async updateMessage(
+    messageId: string,
+    userId: string,
+    data: { subject?: string; content: string },
+  ) {
+    const message = await this.prisma.message.findUnique({
+      where: { id: messageId },
+    });
+
+    if (!message) {
+      throw new BadRequestException('Message not found');
+    }
+
+    if (message.senderId !== userId) {
+      throw new BadRequestException('Can only update your own messages');
+    }
+
+    return this.prisma.message.update({
+      where: { id: messageId },
+      data: {
+        subject: data.subject,
+        content: data.content,
+      },
+    });
+  }
+
   async deleteMessage(messageId: string, userId: string) {
     const message = await this.prisma.message.findUnique({
       where: { id: messageId },

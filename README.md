@@ -6,6 +6,79 @@ A comprehensive, mobile-first booking and CRM system for beauty salons built wit
 
 Eliana Beauty is a complete business management solution designed for beauty salons and independent beauty professionals. The system combines client-facing booking capabilities with powerful CRM tools for managing appointments, staff schedules, services, and analytics.
 
+## Screenshots
+
+### Client-Facing Interface
+
+#### Landing Page
+<div align="center">
+  <img src="screenshots/main.png" alt="Landing Page - Desktop" width="800"/>
+  <p><em>Modern, elegant landing page with hero section and key statistics</em></p>
+</div>
+
+<div align="center">
+  <img src="screenshots/main_mob.png" alt="Landing Page - Mobile" width="300"/>
+  <p><em>Fully responsive mobile experience with bottom navigation</em></p>
+</div>
+
+#### Service Catalog
+<div align="center">
+  <img src="screenshots/services.png" alt="Services - Desktop" width="800"/>
+  <p><em>Beautiful service cards with images, pricing, and category badges</em></p>
+</div>
+
+<div align="center">
+  <img src="screenshots/services_mob.png" alt="Services - Mobile" width="300"/>
+  <p><em>Mobile-optimized service browsing with touch-friendly interface</em></p>
+</div>
+
+#### Smart Booking System
+<div align="center">
+  <img src="screenshots/booking.png" alt="Booking Flow - Desktop" width="800"/>
+  <p><em>Intelligent booking with color-coded availability and staff selection</em></p>
+</div>
+
+<div align="center">
+  <img src="screenshots/bokking_mob.png" alt="Booking Flow - Mobile" width="300"/>
+  <p><em>Streamlined mobile booking experience</em></p>
+</div>
+
+#### User Profile & Statistics
+<div align="center">
+  <img src="screenshots/profil.png" alt="Profile Page - Desktop" width="800"/>
+  <p><em>Beautiful profile with gradient design, avatar with initials, and real-time statistics</em></p>
+</div>
+
+<div align="center">
+  <img src="screenshots/profil_mob.png" alt="Profile Page - Mobile" width="300"/>
+  <p><em>Mobile profile with bookings and messages counters</em></p>
+</div>
+
+#### Messages & Reminders
+<div align="center">
+  <img src="screenshots/msg.png" alt="Messages - Desktop" width="800"/>
+  <p><em>Organized messages with collapsible read/unread sections, automatic reminders, and team announcements</em></p>
+</div>
+
+<div align="center">
+  <img src="screenshots/msg_mob.png" alt="Messages - Mobile" width="300"/>
+  <p><em>Mobile-friendly messaging with category filtering</em></p>
+</div>
+
+### Admin CRM Interface
+
+#### Analytics Dashboard
+<div align="center">
+  <img src="screenshots/dashboard.png" alt="Admin Dashboard" width="800"/>
+  <p><em>Comprehensive dashboard with today's appointments, weekly/monthly stats, revenue tracking, and popular services</em></p>
+</div>
+
+#### Appointment Management
+<div align="center">
+  <img src="screenshots/appointment.png" alt="Appointments Management" width="800"/>
+  <p><em>Powerful appointment management with calendar view, status tracking, filters, and CSV/PDF export</em></p>
+</div>
+
 ## Key Features
 
 ### Client Features
@@ -734,6 +807,15 @@ pnpm build
 - Tailwind CSS purging in production
 - Vite's optimized production builds
 
+## Implemented Features
+
+Recent additions to the platform:
+- [x] **Automated appointment reminders** - 24h and 2h before appointments via messaging system
+- [x] **Bilingual reminders** - Automatic language detection (English/Hebrew)
+- [x] **Message management** - Collapsible read/unread sections with automatic reminders, direct messages, and broadcasts
+- [x] **Real-time statistics** - Bookings and messages counters in user profiles
+- [x] **Database backup/restore** - Admin tools for system maintenance with table selection
+
 ## Future Enhancements
 
 Planned features for future releases:
@@ -745,7 +827,7 @@ Planned features for future releases:
 - [ ] Multi-location support
 - [ ] Advanced reporting and analytics
 - [ ] Calendar integrations (Google Calendar, iCal)
-- [ ] Automated appointment reminders
+- [ ] Push notifications via FCM
 - [ ] Waitlist management
 
 ## Contributing

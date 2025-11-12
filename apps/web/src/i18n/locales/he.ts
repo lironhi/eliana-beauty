@@ -155,6 +155,12 @@ export default {
   myBookings: {
     title: 'התורים שלי',
     noBookings: 'אין תורים',
+    filters: {
+      all: 'הכל',
+      upcoming: 'קרובים',
+      past: 'עברו',
+      cancelled: 'בוטלו',
+    },
     status: {
       PENDING: 'ממתין',
       CONFIRMED: 'מאושר',
@@ -165,6 +171,7 @@ export default {
     },
     cancelBooking: 'בטלי תור',
     cancelConfirm: 'את בטוחה שברצונך לבטל את התור?',
+    cancelSuccess: 'התור בוטל בהצלחה',
   },
   auth: {
     login: 'התחברות',

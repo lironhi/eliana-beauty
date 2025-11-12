@@ -18,6 +18,8 @@ import Clients from './pages/admin/Clients';
 import AdminServices from './pages/admin/Services';
 import Staff from './pages/admin/Staff';
 import StaffProfile from './pages/admin/StaffProfile';
+import MessagesManagement from './pages/admin/MessagesManagement';
+import SystemStatus from './pages/admin/SystemStatus';
 
 function App() {
   return (
@@ -77,6 +79,8 @@ function App() {
         <Route path="services" element={<AdminServices />} />
         <Route path="staff" element={<Staff />} />
         <Route path="staff/:id" element={<StaffProfile />} />
+        <Route path="messages-management" element={<MessagesManagement />} />
+        <Route path="system-status" element={<SystemStatus />} />
       </Route>
     </Routes>
   );

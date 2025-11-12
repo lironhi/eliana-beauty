@@ -155,6 +155,12 @@ export default {
   myBookings: {
     title: 'My Bookings',
     noBookings: 'No bookings yet',
+    filters: {
+      all: 'All',
+      upcoming: 'Upcoming',
+      past: 'Past',
+      cancelled: 'Cancelled',
+    },
     status: {
       PENDING: 'Pending',
       CONFIRMED: 'Confirmed',
@@ -165,6 +171,7 @@ export default {
     },
     cancelBooking: 'Cancel Booking',
     cancelConfirm: 'Are you sure you want to cancel this booking?',
+    cancelSuccess: 'Booking cancelled successfully',
   },
   auth: {
     login: 'Login',
