@@ -5,6 +5,15 @@ A comprehensive, mobile-first booking and CRM system for beauty salons built wit
 ## Overview
 
 Eliana Beauty is a complete business management solution designed for beauty salons and independent beauty professionals. The system combines client-facing booking capabilities with powerful CRM tools for managing appointments, staff schedules, services, and analytics.
+## Screenshots
+<p align="center">
+  <img src="Screenshot_1.png" width="300">
+  <img src="Screenshot_6.png" width="300">
+  <img src="Screenshot_3.png" width="300">
+  <img src="Screenshot_4.png" width="300">
+  <img src="Screenshot_5.png" width="300">
+  <img src="Screenshot_2.png" width="300">
+</p>
 
 ## Screenshots
 
