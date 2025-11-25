@@ -507,6 +507,22 @@ class ApiClient {
   async getLastBackupDate() {
     return this.request<{ date: string | null }>('/admin/database/last-backup');
   }
+
+  // Upload/Image Library endpoints
+  async getImageLibrary(type?: 'service' | 'category') {
+    const params = type ? `?type=${type}` : '';
+    return this.request<any[]>(`/upload/library${params}`);
+  }
+
+  async deleteUploadedImage(id: string) {
+    return this.request<{ success: boolean }>(`/upload/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async getImageStats() {
+    return this.request<{ totalImages: number; serviceImages: number; categoryImages: number; totalSize: number }>('/upload/stats');
+  }
 }
 
 export const api = new ApiClient();

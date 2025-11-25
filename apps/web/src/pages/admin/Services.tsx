@@ -632,149 +632,219 @@ export default function Services() {
 
       {/* Service Modal */}
       {showServiceModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fadeIn">
-          <div className="card-premium max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-scaleIn shadow-2xl">
-            <div className="p-4 md:p-6 border-b border-gray-200 bg-gradient-to-r from-pink-50 to-purple-50">
-              <h2 className="text-lg md:text-xl font-bold text-gray-900">
-                {editingService ? 'Edit Service' : 'Add New Service'}
-              </h2>
-            </div>
-            <div className="p-6 space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 p-4 animate-fadeIn">
+          <div className="bg-white rounded-3xl max-w-3xl w-full max-h-[90vh] overflow-hidden shadow-2xl animate-scaleIn">
+            {/* Header with gradient */}
+            <div className="relative p-6 md:p-8 bg-gradient-to-br from-pink-500 via-purple-500 to-indigo-600 text-white">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32"></div>
+              <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full -ml-24 -mb-24"></div>
+              <div className="relative flex items-center justify-between">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Name (English) *
-                  </label>
-                  <input
-                    type="text"
-                    value={serviceForm.name}
-                    onChange={(e) => setServiceForm({ ...serviceForm, name: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    placeholder="e.g., Classic Manicure"
-                  />
+                  <h2 className="text-2xl md:text-3xl font-bold mb-2">
+                    {editingService ? '✏️ Edit Service' : '✨ Create New Service'}
+                  </h2>
+                  <p className="text-pink-100 text-sm">
+                    {editingService ? 'Update service details below' : 'Fill in the details to add a new service'}
+                  </p>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    שם (עברית)
-                  </label>
-                  <input
-                    type="text"
-                    value={serviceForm.nameHe}
-                    onChange={(e) => setServiceForm({ ...serviceForm, nameHe: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    placeholder="לדוגמה: מניקור קלאסי"
-                    dir="rtl"
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Description (English)
-                  </label>
-                  <textarea
-                    value={serviceForm.description}
-                    onChange={(e) => setServiceForm({ ...serviceForm, description: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    rows={3}
-                    placeholder="Brief description of the service"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    תיאור (עברית)
-                  </label>
-                  <textarea
-                    value={serviceForm.descriptionHe}
-                    onChange={(e) => setServiceForm({ ...serviceForm, descriptionHe: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    rows={3}
-                    placeholder="תיאור קצר של השירות"
-                    dir="rtl"
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Category *</label>
-                <select
-                  value={serviceForm.categoryId}
-                  onChange={(e) => setServiceForm({ ...serviceForm, categoryId: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                <button
+                  onClick={() => setShowServiceModal(false)}
+                  className="text-white/80 hover:text-white hover:bg-white/20 rounded-full p-2 transition-all duration-300 hover:rotate-90"
                 >
-                  {categories.map((cat) => (
-                    <option key={cat.id} value={cat.id}>
-                      {cat.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Duration (minutes) *</label>
-                  <input
-                    type="number"
-                    value={serviceForm.durationMin}
-                    onChange={(e) => setServiceForm({ ...serviceForm, durationMin: parseInt(e.target.value) })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    min="15"
-                    step="15"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Price (₪) *</label>
-                  <input
-                    type="number"
-                    value={serviceForm.priceIls}
-                    onChange={(e) => setServiceForm({ ...serviceForm, priceIls: parseFloat(e.target.value) })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    min="0"
-                    step="10"
-                  />
-                </div>
-              </div>
-              <ImageSelector
-                value={serviceForm.imageUrl}
-                onChange={(url) => setServiceForm({ ...serviceForm, imageUrl: url })}
-                type="service"
-                label="Image du service"
-              />
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="serviceActive"
-                  checked={serviceForm.active}
-                  onChange={(e) => setServiceForm({ ...serviceForm, active: e.target.checked })}
-                  className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
-                />
-                <label htmlFor="serviceActive" className="ml-2 text-sm text-gray-700">
-                  Active (visible to clients)
-                </label>
-              </div>
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="servicePriceFrom"
-                  checked={serviceForm.priceFrom}
-                  onChange={(e) => setServiceForm({ ...serviceForm, priceFrom: e.target.checked })}
-                  className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
-                />
-                <label htmlFor="servicePriceFrom" className="ml-2 text-sm text-gray-700">
-                  Display "from" before price (for variable pricing)
-                </label>
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
               </div>
             </div>
-            <div className="p-4 md:p-6 border-t border-gray-200 flex flex-col sm:flex-row justify-end gap-2 md:gap-3 bg-gray-50">
+
+            {/* Form Content */}
+            <div className="p-6 md:p-8 space-y-6 overflow-y-auto max-h-[calc(90vh-200px)]">
+              {/* Names Section */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 text-pink-600 mb-3">
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                  </svg>
+                  <h3 className="font-semibold text-gray-800">Service Name</h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Name (English) *
+                    </label>
+                    <input
+                      type="text"
+                      value={serviceForm.name}
+                      onChange={(e) => setServiceForm({ ...serviceForm, name: e.target.value })}
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all"
+                      placeholder="e.g., Classic Manicure"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      שם (עברית)
+                    </label>
+                    <input
+                      type="text"
+                      value={serviceForm.nameHe}
+                      onChange={(e) => setServiceForm({ ...serviceForm, nameHe: e.target.value })}
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all"
+                      placeholder="לדוגמה: מניקור קלאסי"
+                      dir="rtl"
+                    />
+                  </div>
+                </div>
+              </div>
+              {/* Description Section */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 text-purple-600 mb-3">
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  <h3 className="font-semibold text-gray-800">Description</h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Description (English)
+                    </label>
+                    <textarea
+                      value={serviceForm.description}
+                      onChange={(e) => setServiceForm({ ...serviceForm, description: e.target.value })}
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all resize-none"
+                      rows={3}
+                      placeholder="Brief description of the service"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      תיאור (עברית)
+                    </label>
+                    <textarea
+                      value={serviceForm.descriptionHe}
+                      onChange={(e) => setServiceForm({ ...serviceForm, descriptionHe: e.target.value })}
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all resize-none"
+                      rows={3}
+                      placeholder="תיאור קצר של השירות"
+                      dir="rtl"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Details Section */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 pb-2 border-b-2 border-indigo-100">
+                  <span className="text-2xl">💎</span>
+                  <h3 className="text-lg font-semibold text-indigo-700">Service Details</h3>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Category *</label>
+                  <select
+                    value={serviceForm.categoryId}
+                    onChange={(e) => setServiceForm({ ...serviceForm, categoryId: e.target.value })}
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all bg-white"
+                  >
+                    {categories.map((cat) => (
+                      <option key={cat.id} value={cat.id}>
+                        {cat.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Duration (minutes) *</label>
+                    <input
+                      type="number"
+                      value={serviceForm.durationMin}
+                      onChange={(e) => setServiceForm({ ...serviceForm, durationMin: parseInt(e.target.value) })}
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
+                      min="15"
+                      step="15"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Price (₪) *</label>
+                    <input
+                      type="number"
+                      value={serviceForm.priceIls}
+                      onChange={(e) => setServiceForm({ ...serviceForm, priceIls: parseFloat(e.target.value) })}
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
+                      min="0"
+                      step="10"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Image Section */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 pb-2 border-b-2 border-pink-100">
+                  <span className="text-2xl">🖼️</span>
+                  <h3 className="text-lg font-semibold text-pink-700">Service Image</h3>
+                </div>
+                <ImageSelector
+                  value={serviceForm.imageUrl}
+                  onChange={(url) => setServiceForm({ ...serviceForm, imageUrl: url })}
+                  type="service"
+                  label="Image du service"
+                />
+              </div>
+
+              {/* Options Section */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 pb-2 border-b-2 border-purple-100">
+                  <span className="text-2xl">⚙️</span>
+                  <h3 className="text-lg font-semibold text-purple-700">Options</h3>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex items-center p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border-2 border-green-200 hover:border-green-300 transition-all">
+                    <input
+                      type="checkbox"
+                      id="serviceActive"
+                      checked={serviceForm.active}
+                      onChange={(e) => setServiceForm({ ...serviceForm, active: e.target.checked })}
+                      className="w-5 h-5 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                    />
+                    <label htmlFor="serviceActive" className="ml-3 text-sm font-medium text-gray-800">
+                      ✅ Active (visible to clients)
+                    </label>
+                  </div>
+
+                  <div className="flex items-center p-3 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl border-2 border-blue-200 hover:border-blue-300 transition-all">
+                    <input
+                      type="checkbox"
+                      id="servicePriceFrom"
+                      checked={serviceForm.priceFrom}
+                      onChange={(e) => setServiceForm({ ...serviceForm, priceFrom: e.target.checked })}
+                      className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                    />
+                    <label htmlFor="servicePriceFrom" className="ml-3 text-sm font-medium text-gray-800">
+                      💰 Display "from" before price (for variable pricing)
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="p-6 border-t border-gray-200 flex flex-col sm:flex-row justify-end gap-3 bg-gradient-to-r from-gray-50 to-slate-50">
               <button
                 onClick={() => setShowServiceModal(false)}
-                className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors text-sm md:text-base"
+                className="px-6 py-3 text-gray-700 bg-white border-2 border-gray-300 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all text-sm md:text-base font-medium shadow-sm"
               >
-                Cancel
+                ❌ Cancel
               </button>
               <button
                 onClick={handleSaveService}
-                className="px-4 py-2 btn-primary transition-all hover:shadow-lg text-sm md:text-base"
+                className="px-6 py-3 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-600 text-white rounded-xl hover:shadow-xl transition-all text-sm md:text-base font-medium transform hover:scale-105"
               >
-                {editingService ? 'Update' : 'Create'}
+                {editingService ? '💾 Update Service' : '✨ Create Service'}
               </button>
             </div>
           </div>
