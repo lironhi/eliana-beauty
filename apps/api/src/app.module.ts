@@ -8,6 +8,7 @@ import { AvailabilityModule } from './availability/availability.module';
 import { AppointmentsModule } from './appointments/appointments.module';
 import { AdminModule } from './admin/admin.module';
 import { MessagesModule } from './messages/messages.module';
+import { UploadModule } from './upload/upload.module';
 import { HealthController } from './health.controller';
 
 @Module({
@@ -21,6 +22,7 @@ import { HealthController } from './health.controller';
     AppointmentsModule,
     AdminModule,
     MessagesModule,
+    UploadModule,
   ],
   controllers: [HealthController],
 })

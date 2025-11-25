@@ -7,6 +7,10 @@ class ApiClient {
     this.accessToken = token;
   }
 
+  getAccessToken(): string | null {
+    return this.accessToken;
+  }
+
   private async request<T>(endpoint: string, options?: RequestInit): Promise<T> {
     // Get locale from localStorage
     const localeStorage = localStorage.getItem('eliana-locale');

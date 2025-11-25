@@ -283,3 +283,18 @@ model FcmToken {
   @@index([userId])
   @@map("fcm_tokens")
 }
+
+model UploadedImage {
+  id           String   @id @default(cuid())
+  filename     String
+  originalName String   @map("original_name")
+  mimeType     String   @map("mime_type")
+  size         Int
+  path         String
+  type         String   // 'service' or 'category'
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@index([type])
+  @@map("uploaded_images")
+}
