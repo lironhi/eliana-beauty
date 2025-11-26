@@ -295,6 +295,19 @@ export class AdminService {
     });
   }
 
+  async updateAppointmentPaymentMethod(id: string, paymentMethod: string) {
+    return this.prisma.appointment.update({
+      where: { id },
+      data: { paymentMethod: paymentMethod as any },
+      include: {
+        client: true,
+        service: true,
+        staff: true,
+      },
+    });
+  }
+
+
   async deleteAppointment(id: string) {
     await this.prisma.appointment.delete({ where: { id } });
     return { message: 'Appointment deleted successfully' };

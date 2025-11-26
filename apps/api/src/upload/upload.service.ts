@@ -9,6 +9,10 @@ export class UploadService {
 
   private readonly uploadsDir = path.join(process.cwd(), 'uploads');
 
+  private getTypeFolder(type: 'service' | 'category'): string {
+    return type === 'category' ? 'categories' : 'services';
+  }
+
   async saveUploadedImage(
     file: Express.Multer.File,
     type: 'service' | 'category',
@@ -27,8 +31,9 @@ export class UploadService {
     const timestamp = Date.now();
     const extension = path.extname(file.originalname);
     const filename = `${type}-${timestamp}${extension}`;
-    const relativePath = `/${type}s/${filename}`;
-    const fullPath = path.join(this.uploadsDir, type + 's', filename);
+    const typeFolder = this.getTypeFolder(type);
+    const relativePath = `/${typeFolder}/${filename}`;
+    const fullPath = path.join(this.uploadsDir, typeFolder, filename);
 
     // Save file
     await fs.writeFile(fullPath, file.buffer);
@@ -82,7 +87,8 @@ export class UploadService {
     }
 
     // Delete file from disk
-    const fullPath = path.join(this.uploadsDir, image.type + 's', image.filename);
+    const typeFolder = this.getTypeFolder(image.type as 'service' | 'category');
+    const fullPath = path.join(this.uploadsDir, typeFolder, image.filename);
     try {
       await fs.unlink(fullPath);
     } catch (error) {

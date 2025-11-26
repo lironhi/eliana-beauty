@@ -52,6 +52,13 @@ export class AdminController {
     return this.adminService.rescheduleAppointment(id, startsAt);
   }
 
+  @Patch('appointments/:id/payment-method')
+  @Roles('ADMIN', 'STAFF')
+  updateAppointmentPaymentMethod(@Param('id') id: string, @Body('paymentMethod') paymentMethod: string) {
+    return this.adminService.updateAppointmentPaymentMethod(id, paymentMethod);
+  }
+
+
   @Delete('appointments/:id')
   @Roles('ADMIN')
   deleteAppointment(@Param('id') id: string) {

@@ -15,6 +15,7 @@ import { UploadService } from './upload.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { memoryStorage } from 'multer';
 
 @Controller('upload')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -25,6 +26,7 @@ export class UploadController {
   @Roles('ADMIN', 'STAFF')
   @UseInterceptors(
     FileInterceptor('file', {
+      storage: memoryStorage(),
       limits: {
         fileSize: 5 * 1024 * 1024, // 5MB limit
       },

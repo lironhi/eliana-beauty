@@ -38,6 +38,17 @@ enum TimeOffType {
   OTHER
 }
 
+enum PaymentMethod {
+  CASH
+  CREDIT_CARD
+  DEBIT_CARD
+  BIT
+  PAYBOX
+  BANK_TRANSFER
+  OTHER
+  NOT_PAID
+}
+
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
@@ -185,18 +196,19 @@ model TimeOff {
 }
 
 model Appointment {
-  id        String            @id @default(cuid())
-  clientId  String            @map("client_id")
-  serviceId String            @map("service_id")
-  staffId   String?           @map("staff_id")
-  startsAt  DateTime          @map("starts_at")
-  endsAt    DateTime          @map("ends_at")
-  status    AppointmentStatus @default(PENDING)
-  priceIls  Float?            @map("price_ils")
-  notes     String?
-  source    String?           // e.g., "web", "mobile", "admin"
-  createdAt DateTime          @default(now())
-  updatedAt DateTime          @updatedAt
+  id            String            @id @default(cuid())
+  clientId      String            @map("client_id")
+  serviceId     String            @map("service_id")
+  staffId       String?           @map("staff_id")
+  startsAt      DateTime          @map("starts_at")
+  endsAt        DateTime          @map("ends_at")
+  status        AppointmentStatus @default(PENDING)
+  priceIls      Float?            @map("price_ils")
+  paymentMethod PaymentMethod?    @default(NOT_PAID) @map("payment_method")
+  notes         String?
+  source        String?           // e.g., "web", "mobile", "admin"
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
 
   client   User      @relation(fields: [clientId], references: [id], onDelete: Cascade)
   service  Service   @relation(fields: [serviceId], references: [id], onDelete: Restrict)

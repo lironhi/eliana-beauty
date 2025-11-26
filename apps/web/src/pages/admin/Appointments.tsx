@@ -189,6 +189,21 @@ export default function Appointments() {
     }
   };
 
+  const handlePaymentMethodChange = async (id: string, paymentMethod: string) => {
+    try {
+      await api.request(`/admin/appointments/${id}/payment-method`, {
+        method: 'PATCH',
+        body: JSON.stringify({ paymentMethod }),
+      });
+      toast.success('Payment method updated');
+      loadAppointments();
+      loadAllAppointments();
+    } catch (error: any) {
+      console.error('Failed to update payment method:', error);
+      toast.error(error.message || 'Failed to update payment method');
+    }
+  };
+
   const openRescheduleModal = (appointment: any) => {
     setAppointmentToReschedule(appointment);
     // Format the current date and time for the datetime-local input
@@ -899,6 +914,22 @@ export default function Appointments() {
                                 <span className="text-purple-700 font-bold">₪</span>
                               </div>
                             </div>
+                            <div className="mt-2">
+                              <select
+                                value={apt.paymentMethod || 'NOT_PAID'}
+                                onChange={(e) => handlePaymentMethodChange(apt.id, e.target.value)}
+                                className="w-full text-xs px-2 py-1.5 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                              >
+                                <option value="NOT_PAID">💸 Not Paid</option>
+                                <option value="CASH">💵 Cash</option>
+                                <option value="CREDIT_CARD">💳 Credit Card</option>
+                                <option value="DEBIT_CARD">🏦 Debit Card</option>
+                                <option value="BIT">📱 Bit</option>
+                                <option value="PAYBOX">📦 Paybox</option>
+                                <option value="BANK_TRANSFER">🏛️ Bank Transfer</option>
+                                <option value="OTHER">❓ Other</option>
+                              </select>
+                            </div>
                           </div>
 
                           {/* Staff */}
@@ -1082,6 +1113,22 @@ export default function Appointments() {
                           />
                           <span>₪</span>
                         </div>
+                      </div>
+                      <div className="mt-1.5">
+                        <select
+                          value={apt.paymentMethod || 'NOT_PAID'}
+                          onChange={(e) => handlePaymentMethodChange(apt.id, e.target.value)}
+                          className="text-xs px-1.5 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        >
+                          <option value="NOT_PAID">💸 Not Paid</option>
+                          <option value="CASH">💵 Cash</option>
+                          <option value="CREDIT_CARD">💳 Credit Card</option>
+                          <option value="DEBIT_CARD">🏦 Debit Card</option>
+                          <option value="BIT">📱 Bit</option>
+                          <option value="PAYBOX">📦 Paybox</option>
+                          <option value="BANK_TRANSFER">🏛️ Bank Transfer</option>
+                          <option value="OTHER">❓ Other</option>
+                        </select>
                       </div>
                     </td>
                     <td className="hidden lg:table-cell px-6 py-4">

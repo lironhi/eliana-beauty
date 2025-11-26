@@ -51,6 +51,7 @@ describe('AvailabilityService', () => {
         endsAt: new Date('2024-01-15T11:30:00Z'),
         status: 'CONFIRMED',
         priceIls: null,
+        paymentMethod: null,
         notes: null,
         source: 'web',
         createdAt: new Date(),
