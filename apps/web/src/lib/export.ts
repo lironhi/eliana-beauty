@@ -47,7 +47,7 @@ export function exportToCSV(data: ExportData, filename: string) {
 export function exportToPDF(data: ExportData, filename: string) {
   const { headers, rows, title } = data;
 
-  // Create HTML content for PDF
+  // Create HTML content for PDF with beautiful design
   const htmlContent = `
     <!DOCTYPE html>
     <html>
@@ -55,66 +55,345 @@ export function exportToPDF(data: ExportData, filename: string) {
       <meta charset="utf-8">
       <title>${title || filename}</title>
       <style>
+        @page {
+          margin: 15mm;
+          size: A4 landscape;
+        }
+
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+
         body {
-          font-family: Arial, sans-serif;
-          padding: 20px;
-          color: #333;
-        }
-        h1 {
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
           color: #1f2937;
-          border-bottom: 2px solid #ec4899;
-          padding-bottom: 10px;
+          background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
+          padding: 20px;
+        }
+
+        .container {
+          background: white;
+          border-radius: 16px;
+          box-shadow: 0 10px 40px rgba(236, 72, 153, 0.1);
+          overflow: hidden;
+        }
+
+        .header {
+          background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+          padding: 25px 30px;
+          color: white;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .header::before {
+          content: '';
+          position: absolute;
+          top: -50%;
+          right: -10%;
+          width: 300px;
+          height: 300px;
+          background: rgba(255, 255, 255, 0.1);
+          border-radius: 50%;
+        }
+
+        .header::after {
+          content: '';
+          position: absolute;
+          bottom: -30%;
+          left: -5%;
+          width: 200px;
+          height: 200px;
+          background: rgba(255, 255, 255, 0.08);
+          border-radius: 50%;
+        }
+
+        .header-content {
+          position: relative;
+          z-index: 1;
+        }
+
+        .logo-container {
+          display: flex;
+          align-items: center;
+          gap: 15px;
+          margin-bottom: 10px;
+        }
+
+        .logo {
+          height: 45px;
+          width: auto;
+        }
+
+        .brand-name {
+          font-size: 28px;
+          font-weight: 800;
+          letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+          font-size: 14px;
+          opacity: 0.95;
+          font-weight: 300;
+          margin-bottom: 12px;
+        }
+
+        .report-title {
+          font-size: 20px;
+          font-weight: 700;
+          padding-top: 12px;
+          border-top: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .content {
+          padding: 25px 30px;
+        }
+
+        .meta-info {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
           margin-bottom: 20px;
+          padding: 20px;
+          background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
+          border-radius: 12px;
+          border-left: 4px solid #ec4899;
         }
-        table {
-          width: 100%;
-          border-collapse: collapse;
-          margin-top: 20px;
+
+        .meta-item {
+          display: flex;
+          flex-direction: column;
         }
-        th {
-          background-color: #f3f4f6;
+
+        .meta-label {
+          font-size: 11px;
+          color: #9ca3af;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          font-weight: 600;
+          margin-bottom: 4px;
+        }
+
+        .meta-value {
+          font-size: 14px;
           color: #1f2937;
           font-weight: 600;
+        }
+
+        table {
+          width: 100%;
+          border-collapse: separate;
+          border-spacing: 0;
+          margin-top: 10px;
+          border-radius: 12px;
+          overflow: hidden;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        thead {
+          background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+        }
+
+        th {
+          color: white;
+          font-weight: 600;
           text-align: left;
-          padding: 12px;
-          border: 1px solid #d1d5db;
+          padding: 10px 8px;
+          font-size: 9px;
+          text-transform: uppercase;
+          letter-spacing: 0.3px;
         }
+
+        th:first-child {
+          border-top-left-radius: 12px;
+        }
+
+        th:last-child {
+          border-top-right-radius: 12px;
+        }
+
+        tbody tr {
+          border-bottom: 1px solid #f3f4f6;
+          transition: all 0.3s ease;
+        }
+
+        tbody tr:last-child {
+          border-bottom: none;
+        }
+
+        tbody tr:nth-child(odd) {
+          background-color: #ffffff;
+        }
+
+        tbody tr:nth-child(even) {
+          background-color: #fafafa;
+        }
+
         td {
-          padding: 10px 12px;
-          border: 1px solid #d1d5db;
+          padding: 8px;
+          font-size: 10px;
+          color: #374151;
+          max-width: 150px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
-        tr:nth-child(even) {
-          background-color: #f9fafb;
+
+        td:first-child {
+          font-weight: 600;
+          color: #ec4899;
         }
+
         .footer {
-          margin-top: 30px;
-          padding-top: 10px;
-          border-top: 1px solid #d1d5db;
-          text-align: center;
+          margin-top: 40px;
+          padding: 30px;
+          background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+          border-top: 3px solid #ec4899;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .footer-left {
+          flex: 1;
+        }
+
+        .footer-brand {
+          font-size: 18px;
+          font-weight: 700;
+          color: #1f2937;
+          margin-bottom: 4px;
+        }
+
+        .footer-tagline {
+          font-size: 12px;
+          color: #6b7280;
+          font-style: italic;
+        }
+
+        .footer-right {
+          text-align: right;
           color: #6b7280;
           font-size: 12px;
+        }
+
+        .generated-date {
+          font-weight: 600;
+          color: #374151;
+        }
+
+        .summary {
+          display: flex;
+          gap: 20px;
+          margin-bottom: 30px;
+        }
+
+        .summary-card {
+          flex: 1;
+          padding: 20px;
+          background: white;
+          border-radius: 12px;
+          border: 2px solid #fce7f3;
+          text-align: center;
+        }
+
+        .summary-value {
+          font-size: 28px;
+          font-weight: 800;
+          color: #ec4899;
+          margin-bottom: 8px;
+        }
+
+        .summary-label {
+          font-size: 12px;
+          color: #6b7280;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          font-weight: 600;
+        }
+
+        @media print {
+          body {
+            background: white;
+            padding: 0;
+          }
+
+          .container {
+            box-shadow: none;
+          }
+
+          @page {
+            margin: 15mm;
+          }
         }
       </style>
     </head>
     <body>
-      <h1>${title || filename}</h1>
-      <table>
-        <thead>
-          <tr>
-            ${headers.map(h => `<th>${h}</th>`).join('')}
-          </tr>
-        </thead>
-        <tbody>
-          ${rows.map(row => `
-            <tr>
-              ${row.map(cell => `<td>${cell}</td>`).join('')}
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-      <div class="footer">
-        <p>Generated on ${new Date().toLocaleString()}</p>
-        <p>Eliana Beauty - Booking System</p>
+      <div class="container">
+        <div class="header">
+          <div class="header-content">
+            <div class="logo-container">
+              <img src="/logo.png" alt="Eliana Beauty" class="logo" />
+              <div class="brand-name">Eliana Beauty</div>
+            </div>
+            <div class="subtitle">Professional Beauty & Spa Services</div>
+            <div class="report-title">${title || filename}</div>
+          </div>
+        </div>
+
+        <div class="content">
+          <div class="meta-info">
+            <div class="meta-item">
+              <span class="meta-label">Generated On</span>
+              <span class="meta-value">${new Date().toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              })}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Time</span>
+              <span class="meta-value">${new Date().toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+              })}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Total Records</span>
+              <span class="meta-value">${rows.length}</span>
+            </div>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                ${headers.map(h => `<th>${h}</th>`).join('')}
+              </tr>
+            </thead>
+            <tbody>
+              ${rows.map(row => `
+                <tr>
+                  ${row.map((cell, idx) => `<td>${cell || (idx === 10 ? '-' : 'N/A')}</td>`).join('')}
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="footer">
+          <div class="footer-left">
+            <div class="footer-brand">Eliana Beauty</div>
+            <div class="footer-tagline">Where Beauty Meets Excellence</div>
+          </div>
+          <div class="footer-right">
+            <div>Document generated automatically</div>
+            <div class="generated-date">${new Date().toLocaleString()}</div>
+          </div>
+        </div>
       </div>
     </body>
     </html>
@@ -151,20 +430,45 @@ export function formatAppointmentsForExport(appointments: any[]) {
     'Time',
     'Duration',
     'Price',
+    'Payment',
     'Status',
     'Notes'
   ];
 
+  const getPaymentMethodLabel = (method: string | null) => {
+    if (!method) return 'Not Set';
+    const labels: Record<string, string> = {
+      'CASH': '💵 Cash',
+      'CREDIT_CARD': '💳 Credit Card',
+      'DEBIT_CARD': '💳 Debit Card',
+      'BIT': '📱 Bit',
+      'PAYBOX': '💰 PayBox',
+      'BANK_TRANSFER': '🏦 Bank Transfer',
+      'OTHER': '💼 Other',
+      'NOT_PAID': '⏳ Not Paid'
+    };
+    return labels[method] || method;
+  };
+
   const rows = appointments.map(apt => [
     apt.id.substring(0, 8),
-    apt.user?.name || 'N/A',
-    apt.user?.email || 'N/A',
+    apt.client?.name || 'N/A',
+    apt.client?.email || 'N/A',
     apt.service?.name || 'N/A',
     apt.staff?.name || 'Any',
-    new Date(apt.startsAt).toLocaleDateString(),
-    new Date(apt.startsAt).toLocaleTimeString(),
+    new Date(apt.startsAt).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    }),
+    new Date(apt.startsAt).toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    }),
     `${apt.service?.durationMin || 0} min`,
-    `₪${apt.service?.priceIls || 0}`,
+    `₪${apt.priceIls || apt.service?.priceIls || 0}`,
+    getPaymentMethodLabel(apt.paymentMethod),
     apt.status,
     apt.notes || ''
   ]);

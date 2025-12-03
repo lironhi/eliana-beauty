@@ -166,6 +166,7 @@ export class AdminService {
       status?: string;
       staffId?: string;
       date?: string;
+      paymentMethod?: string;
     },
     page: number = 1,
     limit: number = 10,
@@ -178,6 +179,10 @@ export class AdminService {
 
     if (filters?.staffId) {
       where.staffId = filters.staffId;
+    }
+
+    if (filters?.paymentMethod) {
+      where.paymentMethod = filters.paymentMethod;
     }
 
     if (filters?.date) {
@@ -407,5 +412,100 @@ export class AdminService {
       message: 'Client deleted successfully',
       affectedAppointments: updatedAppointments.count,
     };
+  }
+
+  // Payment Method Configuration
+  async getAllPaymentMethods() {
+    return this.prisma.paymentMethodConfig.findMany({
+      orderBy: { order: 'asc' },
+    });
+  }
+
+  async createPaymentMethod(data: {
+    value: string;
+    label: string;
+    emoji: string;
+    enabled?: boolean;
+  }) {
+    // Check if value already exists
+    const existing = await this.prisma.paymentMethodConfig.findUnique({
+      where: { value: data.value },
+    });
+
+    if (existing) {
+      throw new BadRequestException('A payment method with this value already exists');
+    }
+
+    // Get max order
+    const maxOrder = await this.prisma.paymentMethodConfig.findFirst({
+      orderBy: { order: 'desc' },
+      select: { order: true },
+    });
+
+    return this.prisma.paymentMethodConfig.create({
+      data: {
+        ...data,
+        order: (maxOrder?.order || 0) + 1,
+      },
+    });
+  }
+
+  async updatePaymentMethod(
+    id: string,
+    data: {
+      label?: string;
+      emoji?: string;
+      enabled?: boolean;
+      value?: string;
+    },
+  ) {
+    // Check if payment method exists
+    const existing = await this.prisma.paymentMethodConfig.findUnique({
+      where: { id },
+    });
+
+    if (!existing) {
+      throw new BadRequestException('Payment method not found');
+    }
+
+    // If updating value and it's a default method, prevent it
+    if (data.value && existing.isDefault && data.value !== existing.value) {
+      throw new BadRequestException('Cannot change value of default payment methods');
+    }
+
+    // If updating value, check for duplicates
+    if (data.value && data.value !== existing.value) {
+      const duplicate = await this.prisma.paymentMethodConfig.findUnique({
+        where: { value: data.value },
+      });
+
+      if (duplicate) {
+        throw new BadRequestException('A payment method with this value already exists');
+      }
+    }
+
+    return this.prisma.paymentMethodConfig.update({
+      where: { id },
+      data,
+    });
+  }
+
+  async deletePaymentMethod(id: string) {
+    // Check if payment method exists and is not default
+    const existing = await this.prisma.paymentMethodConfig.findUnique({
+      where: { id },
+    });
+
+    if (!existing) {
+      throw new BadRequestException('Payment method not found');
+    }
+
+    if (existing.isDefault) {
+      throw new BadRequestException('Cannot delete default payment methods');
+    }
+
+    return this.prisma.paymentMethodConfig.delete({
+      where: { id },
+    });
   }
 }

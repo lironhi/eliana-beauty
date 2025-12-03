@@ -27,12 +27,13 @@ export class AdminController {
     @Query('status') status?: string,
     @Query('staffId') staffId?: string,
     @Query('date') date?: string,
+    @Query('paymentMethod') paymentMethod?: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
     const pageNum = page ? parseInt(page, 10) : 1;
     const limitNum = limit ? parseInt(limit, 10) : 10;
-    return this.adminService.getAllAppointments({ status, staffId, date }, pageNum, limitNum);
+    return this.adminService.getAllAppointments({ status, staffId, date, paymentMethod }, pageNum, limitNum);
   }
 
   @Patch('appointments/:id/status')
@@ -113,5 +114,44 @@ export class AdminController {
   @Roles('ADMIN')
   getLastBackupDate() {
     return this.databaseService.getLastBackupDate();
+  }
+
+  // Payment Method Configuration
+  @Get('payment-methods')
+  getAllPaymentMethods() {
+    return this.adminService.getAllPaymentMethods();
+  }
+
+  @Post('payment-methods')
+  @Roles('ADMIN')
+  createPaymentMethod(
+    @Body() data: {
+      value: string;
+      label: string;
+      emoji: string;
+      enabled?: boolean;
+    },
+  ) {
+    return this.adminService.createPaymentMethod(data);
+  }
+
+  @Patch('payment-methods/:id')
+  @Roles('ADMIN')
+  updatePaymentMethod(
+    @Param('id') id: string,
+    @Body() data: {
+      label?: string;
+      emoji?: string;
+      enabled?: boolean;
+      value?: string;
+    },
+  ) {
+    return this.adminService.updatePaymentMethod(id, data);
+  }
+
+  @Delete('payment-methods/:id')
+  @Roles('ADMIN')
+  deletePaymentMethod(@Param('id') id: string) {
+    return this.adminService.deletePaymentMethod(id);
   }
 }

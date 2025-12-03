@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import Home from './pages/Home';
@@ -20,69 +21,110 @@ import Staff from './pages/admin/Staff';
 import StaffProfile from './pages/admin/StaffProfile';
 import MessagesManagement from './pages/admin/MessagesManagement';
 import SystemStatus from './pages/admin/SystemStatus';
+import More from './pages/admin/More';
+import LoadingScreen from './components/LoadingScreen';
 
 function App() {
-  return (
-    <Routes>
-      <Route path="/" element={<Layout />}>
-        <Route index element={<Home />} />
-        <Route path="services" element={<Services />} />
-        <Route path="services/:id" element={<ServiceDetail />} />
-        <Route path="login" element={<Login />} />
-        <Route path="register" element={<Register />} />
-        <Route
-          path="booking"
-          element={
-            <ProtectedRoute>
-              <Booking />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="bookings"
-          element={
-            <ProtectedRoute>
-              <MyBookings />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="profile"
-          element={
-            <ProtectedRoute>
-              <Profile />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="messages"
-          element={
-            <ProtectedRoute>
-              <Messages />
-            </ProtectedRoute>
-          }
-        />
-      </Route>
+  const [isLoading, setIsLoading] = useState(true);
+  const [showContent, setShowContent] = useState(false);
 
-      {/* Admin Routes */}
-      <Route
-        path="/admin"
-        element={
-          <AdminRoute>
-            <AdminLayout />
-          </AdminRoute>
-        }
+  useEffect(() => {
+    // Preload critical resources
+    const preloadResources = async () => {
+      try {
+        // Preload logo
+        const logoImg = new Image();
+        logoImg.src = '/logo.png';
+        await new Promise((resolve) => {
+          logoImg.onload = resolve;
+          logoImg.onerror = resolve; // Continue even if logo fails to load
+        });
+      } catch (error) {
+        console.error('Error preloading resources:', error);
+      }
+    };
+
+    preloadResources();
+  }, []);
+
+  const handleLoadingComplete = () => {
+    setIsLoading(false);
+    // Small delay before showing content for smooth transition
+    setTimeout(() => setShowContent(true), 100);
+  };
+
+  return (
+    <>
+      {isLoading && <LoadingScreen onLoadingComplete={handleLoadingComplete} />}
+
+      <div
+        className={`transition-opacity duration-500 ${
+          showContent ? 'opacity-100' : 'opacity-0'
+        }`}
       >
-        <Route index element={<Dashboard />} />
-        <Route path="appointments" element={<Appointments />} />
-        <Route path="clients" element={<Clients />} />
-        <Route path="services" element={<AdminServices />} />
-        <Route path="staff" element={<Staff />} />
-        <Route path="staff/:id" element={<StaffProfile />} />
-        <Route path="messages-management" element={<MessagesManagement />} />
-        <Route path="system-status" element={<SystemStatus />} />
-      </Route>
-    </Routes>
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Home />} />
+            <Route path="services" element={<Services />} />
+            <Route path="services/:id" element={<ServiceDetail />} />
+            <Route path="login" element={<Login />} />
+            <Route path="register" element={<Register />} />
+            <Route
+              path="booking"
+              element={
+                <ProtectedRoute>
+                  <Booking />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="bookings"
+              element={
+                <ProtectedRoute>
+                  <MyBookings />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="messages"
+              element={
+                <ProtectedRoute>
+                  <Messages />
+                </ProtectedRoute>
+              }
+            />
+          </Route>
+
+          {/* Admin Routes */}
+          <Route
+            path="/admin"
+            element={
+              <AdminRoute>
+                <AdminLayout />
+              </AdminRoute>
+            }
+          >
+            <Route index element={<Dashboard />} />
+            <Route path="appointments" element={<Appointments />} />
+            <Route path="clients" element={<Clients />} />
+            <Route path="services" element={<AdminServices />} />
+            <Route path="staff" element={<Staff />} />
+            <Route path="staff/:id" element={<StaffProfile />} />
+            <Route path="messages-management" element={<MessagesManagement />} />
+            <Route path="system-status" element={<SystemStatus />} />
+            <Route path="more" element={<More />} />
+          </Route>
+        </Routes>
+      </div>
+    </>
   );
 }
 

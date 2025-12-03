@@ -189,11 +189,12 @@ class ApiClient {
     return this.request<any>('/admin/dashboard');
   }
 
-  async getAllAppointments(filters?: { status?: string; staffId?: string; date?: string; page?: number; limit?: number }) {
+  async getAllAppointments(filters?: { status?: string; staffId?: string; date?: string; paymentMethod?: string; page?: number; limit?: number }) {
     const params = new URLSearchParams();
     if (filters?.status) params.append('status', filters.status);
     if (filters?.staffId) params.append('staffId', filters.staffId);
     if (filters?.date) params.append('date', filters.date);
+    if (filters?.paymentMethod) params.append('paymentMethod', filters.paymentMethod);
     if (filters?.page) params.append('page', filters.page.toString());
     if (filters?.limit) params.append('limit', filters.limit.toString());
     const query = params.toString() ? `?${params.toString()}` : '';
@@ -522,6 +523,41 @@ class ApiClient {
 
   async getImageStats() {
     return this.request<{ totalImages: number; serviceImages: number; categoryImages: number; totalSize: number }>('/upload/stats');
+  }
+
+  // Payment Method Configuration endpoints
+  async getAllPaymentMethods() {
+    return this.request<any[]>('/admin/payment-methods');
+  }
+
+  async createPaymentMethod(data: {
+    value: string;
+    label: string;
+    emoji: string;
+    enabled?: boolean;
+  }) {
+    return this.request<any>('/admin/payment-methods', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updatePaymentMethod(id: string, data: {
+    label?: string;
+    emoji?: string;
+    enabled?: boolean;
+    value?: string;
+  }) {
+    return this.request<any>(`/admin/payment-methods/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deletePaymentMethod(id: string) {
+    return this.request<{ message: string }>(`/admin/payment-methods/${id}`, {
+      method: 'DELETE',
+    });
   }
 }
 

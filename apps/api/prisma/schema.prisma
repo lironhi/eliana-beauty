@@ -310,3 +310,17 @@ model UploadedImage {
   @@index([type])
   @@map("uploaded_images")
 }
+
+model PaymentMethodConfig {
+  id        String   @id @default(cuid())
+  value     String   @unique // e.g., "APPLE_PAY", "GOOGLE_PAY"
+  label     String   // Display name
+  emoji     String   // Emoji icon
+  enabled   Boolean  @default(true)
+  isDefault Boolean  @default(false) @map("is_default") // Cannot be deleted if true
+  order     Int?     // Display order
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("payment_method_configs")
+}

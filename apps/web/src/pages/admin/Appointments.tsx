@@ -30,6 +30,7 @@ export default function Appointments() {
     staffId: '',
     priceMin: '',
     priceMax: '',
+    paymentMethod: '',
   });
   const [services, setServices] = useState<any[]>([]);
   const [staff, setStaff] = useState<any[]>([]);
@@ -146,6 +147,7 @@ export default function Appointments() {
       staffId: '',
       priceMin: '',
       priceMax: '',
+      paymentMethod: '',
     });
     setSelectedDate(undefined);
   };
@@ -511,7 +513,7 @@ export default function Appointments() {
         </div>
 
         {/* Basic Filters - Professional Design */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           <div className="space-y-2">
             <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide flex items-center gap-1.5">
               <div className="w-5 h-5 bg-purple-100 rounded flex items-center justify-center">
@@ -539,6 +541,37 @@ export default function Appointments() {
               <option value="NO_SHOW">⊘ No Show</option>
               <option value="RESCHEDULE">🔄 Reschedule</option>
               <option value="RESCHEDULE_PENDING">⏳🔄 Reschedule Pending</option>
+            </select>
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide flex items-center gap-1.5">
+              <div className="w-5 h-5 bg-emerald-100 rounded flex items-center justify-center">
+                <svg className="w-3 h-3 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                </svg>
+              </div>
+              Payment Method
+            </label>
+            <select
+              value={filters.paymentMethod}
+              onChange={(e) => setFilters({ ...filters, paymentMethod: e.target.value })}
+              className="w-full px-4 py-2.5 bg-white border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm font-medium text-gray-700 transition-all hover:border-gray-300 cursor-pointer appearance-none bg-no-repeat bg-right pr-10"
+              style={{
+                backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
+                backgroundPosition: 'right 0.5rem center',
+                backgroundSize: '1.5em 1.5em'
+              }}
+            >
+              <option value="">All Payment Methods</option>
+              <option value="CASH">💵 Cash</option>
+              <option value="CREDIT_CARD">💳 Credit Card</option>
+              <option value="DEBIT_CARD">🏦 Debit Card</option>
+              <option value="BIT">📱 Bit</option>
+              <option value="PAYBOX">📦 PayBox</option>
+              <option value="BANK_TRANSFER">🏛️ Bank Transfer</option>
+              <option value="OTHER">❓ Other</option>
+              <option value="NOT_PAID">💸 Not Paid</option>
             </select>
           </div>
 

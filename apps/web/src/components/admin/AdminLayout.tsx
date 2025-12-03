@@ -9,6 +9,7 @@ export default function AdminLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isManageMenuOpen, setIsManageMenuOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -45,6 +46,12 @@ export default function AdminLayout() {
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
       </svg>
     ),
+    Manage: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+    ),
     'Messages Management': (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
@@ -55,6 +62,11 @@ export default function AdminLayout() {
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
       </svg>
     ),
+    More: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+      </svg>
+    ),
   };
 
   const navigation = [
@@ -63,8 +75,12 @@ export default function AdminLayout() {
     { name: 'Clients', path: '/admin/clients' },
     { name: 'Services', path: '/admin/services' },
     { name: 'Staff', path: '/admin/staff' },
+  ];
+
+  const manageSubmenu = [
     { name: 'Messages Management', path: '/admin/messages-management' },
     { name: 'System Status', path: '/admin/system-status' },
+    { name: 'More', path: '/admin/more' },
   ];
 
   const isActive = (path: string) => {
@@ -154,6 +170,57 @@ export default function AdminLayout() {
                 )}
               </Link>
             ))}
+
+            {/* Manage Menu with Submenu */}
+            <div>
+              <button
+                onClick={() => setIsManageMenuOpen(!isManageMenuOpen)}
+                className={`w-full group flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-200 ${
+                  manageSubmenu.some(item => isActive(item.path))
+                    ? 'bg-gradient-to-r from-primary-500 to-pink-500 text-white shadow-lg shadow-primary-500/30 scale-[1.02]'
+                    : 'text-gray-700 hover:bg-gradient-to-r hover:from-primary-50 hover:to-pink-50 hover:text-primary-600'
+                }`}
+              >
+                <div className={`${manageSubmenu.some(item => isActive(item.path)) ? 'text-white' : 'text-gray-400 group-hover:text-primary-500'} transition-colors`}>
+                  {navigationIcons['Manage']}
+                </div>
+                <span className="font-medium flex-1 text-left">Manage</span>
+                <svg
+                  className={`w-4 h-4 transition-transform duration-200 ${isManageMenuOpen ? 'rotate-180' : ''}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              {/* Submenu */}
+              <div className={`overflow-hidden transition-all duration-300 ${isManageMenuOpen ? 'max-h-96 mt-1' : 'max-h-0'}`}>
+                <div className="ml-8 space-y-1 border-l-2 border-gray-200 pl-3">
+                  {manageSubmenu.map((item) => (
+                    <Link
+                      key={item.path}
+                      to={item.path}
+                      onClick={closeSidebar}
+                      className={`group flex items-center gap-2 px-3 py-2.5 rounded-lg transition-all duration-200 text-sm ${
+                        isActive(item.path)
+                          ? 'bg-gradient-to-r from-primary-500 to-pink-500 text-white shadow-md'
+                          : 'text-gray-600 hover:bg-gradient-to-r hover:from-primary-50 hover:to-pink-50 hover:text-primary-600'
+                      }`}
+                    >
+                      <div className={`${isActive(item.path) ? 'text-white' : 'text-gray-400 group-hover:text-primary-500'} transition-colors`}>
+                        {navigationIcons[item.name as keyof typeof navigationIcons]}
+                      </div>
+                      <span className="font-medium">{item.name}</span>
+                      {isActive(item.path) && (
+                        <div className="ml-auto w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
+                      )}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
           </nav>
 
           {/* Bottom Actions */}
@@ -198,7 +265,9 @@ export default function AdminLayout() {
                 </svg>
               </button>
               <h1 className="text-lg sm:text-xl lg:text-2xl font-bold bg-gradient-to-r from-primary-600 to-pink-600 bg-clip-text text-transparent">
-                {navigation.find((item) => isActive(item.path))?.name || 'Dashboard'}
+                {navigation.find((item) => isActive(item.path))?.name ||
+                 manageSubmenu.find((item) => isActive(item.path))?.name ||
+                 'Dashboard'}
               </h1>
             </div>
             <div className="hidden md:flex items-center gap-2 text-sm text-gray-600 bg-gray-50 px-4 py-2 rounded-xl">
