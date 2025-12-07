@@ -16,14 +16,21 @@ export default function SystemStatus() {
 
   const availableTables = [
     'User',
-    'Service',
+    'RefreshToken',
     'Category',
+    'Service',
+    'ServiceImage',
     'Staff',
+    'StaffService',
+    'WorkingHours',
+    'TimeOff',
+    'HourBlock',
     'Appointment',
     'Message',
     'MessageRecipient',
     'FcmToken',
-    'RefreshToken',
+    'UploadedImage',
+    'PaymentMethodConfig',
   ];
 
   useEffect(() => {

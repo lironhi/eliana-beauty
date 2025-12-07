@@ -427,6 +427,41 @@ class ApiClient {
     });
   }
 
+  // Hour Blocks
+  async createHourBlock(staffId: string, data: {
+    date: string;
+    startHhmm: string;
+    endHhmm: string;
+    reason?: string;
+  }) {
+    return this.request<any>(`/staff/${staffId}/hour-blocks`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async getHourBlocks(staffId: string) {
+    return this.request<any[]>(`/staff/${staffId}/hour-blocks`);
+  }
+
+  async updateHourBlock(blockId: string, data: {
+    date?: string;
+    startHhmm?: string;
+    endHhmm?: string;
+    reason?: string;
+  }) {
+    return this.request<any>(`/staff/hour-blocks/${blockId}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteHourBlock(blockId: string) {
+    return this.request<any>(`/staff/hour-blocks/${blockId}`, {
+      method: 'DELETE',
+    });
+  }
+
   // Messages
   async sendDirectMessage(data: {
     content: string;

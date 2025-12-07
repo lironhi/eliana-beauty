@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import { api } from '@/lib/api';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import TimeOffList from '@/components/admin/TimeOffList';
+import HourBlockList from '@/components/admin/HourBlockList';
 import DeleteConfirmationModal from '@/components/admin/DeleteConfirmationModal';
 
 interface Service {
@@ -39,8 +40,9 @@ export default function StaffProfile() {
   const [staff, setStaff] = useState<StaffMember | null>(null);
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'info' | 'services' | 'hours' | 'timeoff'>('info');
+  const [activeTab, setActiveTab] = useState<'info' | 'services' | 'hours' | 'timeoff' | 'hourblocks'>('info');
   const [timeOffRefreshTrigger, setTimeOffRefreshTrigger] = useState(0);
+  const [hourBlockRefreshTrigger, setHourBlockRefreshTrigger] = useState(0);
 
   // Edit states
   const [editingInfo, setEditingInfo] = useState(false);
@@ -62,6 +64,15 @@ export default function StaffProfile() {
   const [timeOffEndsAt, setTimeOffEndsAt] = useState('');
   const [timeOffReason, setTimeOffReason] = useState('');
   const [timeOffLoading, setTimeOffLoading] = useState(false);
+
+  // Hour block modal state
+  const [showHourBlockForm, setShowHourBlockForm] = useState(false);
+  const [editingHourBlockId, setEditingHourBlockId] = useState<string | null>(null);
+  const [hourBlockDate, setHourBlockDate] = useState('');
+  const [hourBlockStartHhmm, setHourBlockStartHhmm] = useState('09:00');
+  const [hourBlockEndHhmm, setHourBlockEndHhmm] = useState('12:00');
+  const [hourBlockReason, setHourBlockReason] = useState('');
+  const [hourBlockLoading, setHourBlockLoading] = useState(false);
 
   // Delete confirmation modal state
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -216,6 +227,58 @@ export default function StaffProfile() {
     setShowTimeOffForm(false);
   };
 
+  const handleHourBlockSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setHourBlockLoading(true);
+
+    try {
+      const data = {
+        date: hourBlockDate,
+        startHhmm: hourBlockStartHhmm,
+        endHhmm: hourBlockEndHhmm,
+        reason: hourBlockReason || undefined,
+      };
+
+      const result = editingHourBlockId
+        ? await api.updateHourBlock(editingHourBlockId, data)
+        : await api.createHourBlock(id!, data);
+
+      if (!editingHourBlockId && result.affectedAppointments > 0) {
+        toast.success(
+          `Hour block created. ${result.affectedAppointments} appointment(s) marked for rescheduling.`
+        );
+      } else {
+        toast.success(editingHourBlockId ? 'Hour block updated successfully' : 'Hour block created successfully');
+      }
+
+      resetHourBlockForm();
+      setHourBlockRefreshTrigger((prev) => prev + 1);
+    } catch (error: any) {
+      console.error('Error saving hour block:', error);
+      toast.error(error.message || 'Failed to save hour block');
+    } finally {
+      setHourBlockLoading(false);
+    }
+  };
+
+  const handleEditHourBlock = (hourBlock: any) => {
+    setEditingHourBlockId(hourBlock.id);
+    setHourBlockDate(hourBlock.date.split('T')[0]);
+    setHourBlockStartHhmm(hourBlock.startHhmm);
+    setHourBlockEndHhmm(hourBlock.endHhmm);
+    setHourBlockReason(hourBlock.reason || '');
+    setShowHourBlockForm(true);
+  };
+
+  const resetHourBlockForm = () => {
+    setEditingHourBlockId(null);
+    setHourBlockDate('');
+    setHourBlockStartHhmm('09:00');
+    setHourBlockEndHhmm('12:00');
+    setHourBlockReason('');
+    setShowHourBlockForm(false);
+  };
+
   const handleDeleteStaff = async () => {
     if (!staff) return;
     try {
@@ -316,6 +379,7 @@ export default function StaffProfile() {
               { id: 'services', label: 'Services', icon: '💅' },
               { id: 'hours', label: 'Working Hours', icon: '🕐' },
               { id: 'timeoff', label: 'Time Off', icon: '📅' },
+              { id: 'hourblocks', label: 'Hour Blocks', icon: '⏰' },
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -738,6 +802,115 @@ export default function StaffProfile() {
                   refreshTrigger={timeOffRefreshTrigger}
                   onEdit={handleEditTimeOff}
                   onDelete={() => setTimeOffRefreshTrigger((prev) => prev + 1)}
+                />
+              )}
+            </div>
+          )}
+
+          {/* Hour Blocks Tab */}
+          {activeTab === 'hourblocks' && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900">Blocked Hours</h2>
+                  <p className="text-sm text-gray-500 mt-1">Block specific hours on a particular day</p>
+                </div>
+                {!showHourBlockForm && (
+                  <button
+                    onClick={() => setShowHourBlockForm(true)}
+                    className="px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-lg hover:from-pink-600 hover:to-purple-700 transition-all text-sm font-medium shadow-lg"
+                  >
+                    + Block Hours
+                  </button>
+                )}
+              </div>
+
+              {showHourBlockForm ? (
+                <form onSubmit={handleHourBlockSubmit} className="space-y-6 bg-white border-2 border-purple-200 rounded-lg p-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Date <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="date"
+                      value={hourBlockDate}
+                      onChange={(e) => setHourBlockDate(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                      required
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Start Time <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="time"
+                        value={hourBlockStartHhmm}
+                        onChange={(e) => setHourBlockStartHhmm(e.target.value)}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        End Time <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="time"
+                        value={hourBlockEndHhmm}
+                        onChange={(e) => setHourBlockEndHhmm(e.target.value)}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Reason (Optional)
+                    </label>
+                    <textarea
+                      value={hourBlockReason}
+                      onChange={(e) => setHourBlockReason(e.target.value)}
+                      rows={3}
+                      placeholder="E.g., Lunch break, Personal appointment, Meeting..."
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 resize-none"
+                    />
+                  </div>
+
+                  <div className="flex gap-3">
+                    <button
+                      type="button"
+                      onClick={resetHourBlockForm}
+                      className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                      disabled={hourBlockLoading}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="flex-1 px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-lg hover:from-pink-600 hover:to-purple-700 transition-all font-medium shadow-lg disabled:opacity-50"
+                      disabled={hourBlockLoading}
+                    >
+                      {hourBlockLoading
+                        ? editingHourBlockId
+                          ? 'Updating...'
+                          : 'Creating...'
+                        : editingHourBlockId
+                        ? 'Update Hour Block'
+                        : 'Block Hours'}
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                <HourBlockList
+                  staffId={id!}
+                  refreshTrigger={hourBlockRefreshTrigger}
+                  onEdit={handleEditHourBlock}
+                  onDelete={() => setHourBlockRefreshTrigger((prev) => prev + 1)}
                 />
               )}
             </div>

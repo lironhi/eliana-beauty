@@ -131,4 +131,55 @@ export class StaffController {
   deleteTimeOff(@Param('timeOffId') timeOffId: string) {
     return this.staffService.deleteTimeOff(timeOffId);
   }
+
+  // Hour Blocks
+  @Post(':id/hour-blocks')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  createHourBlock(
+    @Param('id') staffId: string,
+    @Body() data: {
+      date: string;
+      startHhmm: string;
+      endHhmm: string;
+      reason?: string;
+    },
+  ) {
+    return this.staffService.createHourBlock(staffId, {
+      ...data,
+      date: new Date(data.date),
+    });
+  }
+
+  @Get(':id/hour-blocks')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  getHourBlocks(@Param('id') staffId: string) {
+    return this.staffService.getHourBlocks(staffId);
+  }
+
+  @Put('hour-blocks/:blockId')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  updateHourBlock(
+    @Param('blockId') blockId: string,
+    @Body() data: {
+      date?: string;
+      startHhmm?: string;
+      endHhmm?: string;
+      reason?: string;
+    },
+  ) {
+    return this.staffService.updateHourBlock(blockId, {
+      ...data,
+      date: data.date ? new Date(data.date) : undefined,
+    });
+  }
+
+  @Delete('hour-blocks/:blockId')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  deleteHourBlock(@Param('blockId') blockId: string) {
+    return this.staffService.deleteHourBlock(blockId);
+  }
 }

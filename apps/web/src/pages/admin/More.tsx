@@ -3,6 +3,7 @@ import { api } from '@/lib/api';
 import { toast } from 'react-hot-toast';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import DeleteConfirmationModal from '@/components/DeleteConfirmationModal';
+import IconPickerModal from '@/components/IconPickerModal';
 
 interface PaymentMethodConfig {
   id: string;
@@ -22,6 +23,8 @@ export default function More() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [methodToDelete, setMethodToDelete] = useState<PaymentMethodConfig | null>(null);
+  const [iconPickerOpen, setIconPickerOpen] = useState(false);
+  const [editingIconMethod, setEditingIconMethod] = useState<PaymentMethodConfig | null>(null);
 
   // Load payment methods from database
   useEffect(() => {
@@ -161,6 +164,35 @@ export default function More() {
     setNewMethod({ value: '', label: '', emoji: '💳' });
   };
 
+  const handleOpenIconPicker = (method: PaymentMethodConfig) => {
+    setEditingIconMethod(method);
+    setIconPickerOpen(true);
+  };
+
+  const handleSelectIcon = async (iconPath: string) => {
+    if (!editingIconMethod) return;
+
+    // If it's a new method being created, just update the state
+    if (editingIconMethod.id === 'new') {
+      setNewMethod({ ...newMethod, emoji: iconPath });
+      return;
+    }
+
+    // Otherwise, update existing method in database
+    try {
+      await api.updatePaymentMethod(editingIconMethod.id, { emoji: iconPath });
+      setPaymentMethods(prev =>
+        prev.map(m =>
+          m.id === editingIconMethod.id ? { ...m, emoji: iconPath } : m
+        )
+      );
+      toast.success('Icon updated successfully');
+    } catch (error) {
+      console.error('Error updating icon:', error);
+      toast.error('Failed to update icon');
+    }
+  };
+
   const sections = [
     {
       id: 'payment-methods',
@@ -291,18 +323,38 @@ export default function More() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                  {/* Emoji Input */}
+                  {/* Icon/Emoji Input */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Emoji Icon</label>
-                    <div className="w-full h-16 bg-white rounded-xl flex items-center justify-center text-3xl border-2 border-emerald-200 hover:border-emerald-400 transition-colors">
-                      <input
-                        type="text"
-                        value={newMethod.emoji}
-                        onChange={(e) => setNewMethod({ ...newMethod, emoji: e.target.value })}
-                        className="w-full h-full text-center bg-transparent outline-none"
-                        maxLength={2}
-                        placeholder="💳"
-                      />
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Icon</label>
+                    <div className="flex flex-col gap-2">
+                      <div className="w-full h-16 bg-white rounded-xl flex items-center justify-center text-3xl border-2 border-emerald-200">
+                        {newMethod.emoji.startsWith('/') || newMethod.emoji.includes('.png') ? (
+                          <img
+                            src={newMethod.emoji}
+                            alt="Selected icon"
+                            className="w-12 h-12 object-contain"
+                          />
+                        ) : (
+                          <input
+                            type="text"
+                            value={newMethod.emoji}
+                            onChange={(e) => setNewMethod({ ...newMethod, emoji: e.target.value })}
+                            className="w-full h-full text-center bg-transparent outline-none"
+                            maxLength={2}
+                            placeholder="💳"
+                          />
+                        )}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditingIconMethod({ id: 'new', ...newMethod, enabled: true } as any);
+                          setIconPickerOpen(true);
+                        }}
+                        className="px-3 py-2 bg-emerald-100 text-emerald-700 rounded-lg text-xs font-medium hover:bg-emerald-200 transition-colors"
+                      >
+                        Browse Icons
+                      </button>
                     </div>
                   </div>
 
@@ -379,21 +431,43 @@ export default function More() {
                       <div className="flex items-start justify-between mb-4">
                         {/* Emoji & Info */}
                         <div className="flex items-center gap-4 flex-1">
-                          {/* Emoji Input */}
-                          <div className={`relative w-16 h-16 rounded-2xl flex items-center justify-center text-3xl flex-shrink-0 shadow-lg ${
-                            method.enabled
-                              ? 'bg-gradient-to-br from-emerald-100 to-cyan-100 group-hover:scale-110'
-                              : 'bg-gray-200'
-                          } transition-all duration-300`}>
-                            <input
-                              type="text"
-                              value={method.emoji}
-                              onChange={(e) => handleUpdateEmoji(method.id, e.target.value)}
-                              className="w-full h-full text-center bg-transparent outline-none cursor-pointer"
-                              maxLength={2}
+                          {/* Emoji/Icon Display */}
+                          <div className="relative">
+                            <button
+                              onClick={() => handleOpenIconPicker(method)}
                               disabled={!method.enabled}
-                              title="Click to change emoji"
-                            />
+                              className={`relative w-16 h-16 rounded-2xl flex items-center justify-center text-3xl flex-shrink-0 shadow-lg ${
+                                method.enabled
+                                  ? 'bg-gradient-to-br from-emerald-100 to-cyan-100 hover:scale-110 cursor-pointer'
+                                  : 'bg-gray-200 cursor-not-allowed'
+                              } transition-all duration-300 group/icon`}
+                              title="Click to change icon"
+                            >
+                              {/* Display PNG icon or emoji */}
+                              {method.emoji.startsWith('/') || method.emoji.includes('.png') ? (
+                                <img
+                                  src={method.emoji}
+                                  alt={method.label}
+                                  className="w-12 h-12 object-contain"
+                                  onError={(e) => {
+                                    // Fallback to emoji if image fails
+                                    e.currentTarget.style.display = 'none';
+                                    e.currentTarget.parentElement!.textContent = '💳';
+                                  }}
+                                />
+                              ) : (
+                                <span>{method.emoji}</span>
+                              )}
+
+                              {/* Hover overlay */}
+                              {method.enabled && (
+                                <div className="absolute inset-0 bg-black/40 rounded-2xl opacity-0 group-hover/icon:opacity-100 transition-opacity flex items-center justify-center">
+                                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                  </svg>
+                                </div>
+                              )}
+                            </button>
                           </div>
 
                           {/* Label & Value */}
@@ -619,6 +693,17 @@ export default function More() {
         onConfirm={confirmDelete}
         itemName={methodToDelete?.label || ''}
         itemType="Payment Method"
+      />
+
+      {/* Icon Picker Modal */}
+      <IconPickerModal
+        isOpen={iconPickerOpen}
+        onClose={() => {
+          setIconPickerOpen(false);
+          setEditingIconMethod(null);
+        }}
+        onSelectIcon={handleSelectIcon}
+        currentIcon={editingIconMethod?.emoji || ''}
       />
     </div>
   );

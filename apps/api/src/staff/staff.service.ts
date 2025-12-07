@@ -303,4 +303,126 @@ export class StaffService {
     await this.prisma.timeOff.delete({ where: { id } });
     return { message: 'Time off deleted successfully' };
   }
+
+  // Hour Blocks
+  async createHourBlock(
+    staffId: string,
+    data: {
+      date: Date;
+      startHhmm: string;
+      endHhmm: string;
+      reason?: string;
+    },
+  ) {
+    // Normalize the date to midnight
+    const normalizedDate = new Date(data.date);
+    normalizedDate.setHours(0, 0, 0, 0);
+
+    // Find conflicting appointments on this specific day and time range
+    const dayStart = new Date(normalizedDate);
+    const dayEnd = new Date(normalizedDate);
+    dayEnd.setHours(23, 59, 59, 999);
+
+    // Convert HH:MM to minutes for comparison
+    const [startHour, startMin] = data.startHhmm.split(':').map(Number);
+    const [endHour, endMin] = data.endHhmm.split(':').map(Number);
+    const blockStartMinutes = startHour * 60 + startMin;
+    const blockEndMinutes = endHour * 60 + endMin;
+
+    const appointments = await this.prisma.appointment.findMany({
+      where: {
+        staffId,
+        startsAt: {
+          gte: dayStart,
+          lte: dayEnd,
+        },
+        status: {
+          notIn: ['CANCELLED', 'COMPLETED', 'RESCHEDULE_PENDING'],
+        },
+      },
+    });
+
+    // Filter appointments that overlap with the blocked time
+    const conflictingAppointments = appointments.filter((apt) => {
+      const aptStart = new Date(apt.startsAt);
+      const aptEnd = new Date(apt.endsAt);
+      const aptStartMinutes = aptStart.getHours() * 60 + aptStart.getMinutes();
+      const aptEndMinutes = aptEnd.getHours() * 60 + aptEnd.getMinutes();
+
+      return (
+        (aptStartMinutes >= blockStartMinutes && aptStartMinutes < blockEndMinutes) ||
+        (aptEndMinutes > blockStartMinutes && aptEndMinutes <= blockEndMinutes) ||
+        (aptStartMinutes <= blockStartMinutes && aptEndMinutes >= blockEndMinutes)
+      );
+    });
+
+    // Create the hour block
+    const hourBlock = await this.prisma.hourBlock.create({
+      data: {
+        staffId,
+        date: normalizedDate,
+        startHhmm: data.startHhmm,
+        endHhmm: data.endHhmm,
+        reason: data.reason,
+      },
+    });
+
+    // Update conflicting appointments to RESCHEDULE_PENDING
+    if (conflictingAppointments.length > 0) {
+      await this.prisma.appointment.updateMany({
+        where: {
+          id: {
+            in: conflictingAppointments.map((apt) => apt.id),
+          },
+        },
+        data: {
+          status: 'RESCHEDULE_PENDING',
+        },
+      });
+    }
+
+    return {
+      hourBlock,
+      affectedAppointments: conflictingAppointments.length,
+    };
+  }
+
+  async getHourBlocks(staffId: string) {
+    return this.prisma.hourBlock.findMany({
+      where: { staffId },
+      orderBy: { date: 'desc' },
+    });
+  }
+
+  async updateHourBlock(
+    id: string,
+    data: {
+      date?: Date;
+      startHhmm?: string;
+      endHhmm?: string;
+      reason?: string;
+    },
+  ) {
+    const updateData: any = {};
+
+    if (data.date) {
+      const normalizedDate = new Date(data.date);
+      normalizedDate.setHours(0, 0, 0, 0);
+      updateData.date = normalizedDate;
+    }
+
+    if (data.startHhmm) updateData.startHhmm = data.startHhmm;
+    if (data.endHhmm) updateData.endHhmm = data.endHhmm;
+    if (data.reason !== undefined) updateData.reason = data.reason;
+
+    return this.prisma.hourBlock.update({
+      where: { id },
+      data: updateData,
+    });
+  }
+
+  async deleteHourBlock(id: string) {
+    await this.prisma.hourBlock.delete({ where: { id } });
+    return { message: 'Hour block deleted successfully' };
+  }
 }

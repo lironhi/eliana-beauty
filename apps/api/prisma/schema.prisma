@@ -150,6 +150,7 @@ model Staff {
   staffServices StaffService[]
   workingHours  WorkingHours[]
   timeOffs      TimeOff[]
+  hourBlocks    HourBlock[]
   appointments  Appointment[]
 
   @@map("staff")
@@ -193,6 +194,21 @@ model TimeOff {
   staff Staff @relation(fields: [staffId], references: [id], onDelete: Cascade)
 
   @@map("time_offs")
+}
+
+model HourBlock {
+  id         String   @id @default(cuid())
+  staffId    String   @map("staff_id")
+  date       DateTime // Just the date (time set to 00:00:00)
+  startHhmm  String   @map("start_hhmm") // e.g., "09:00"
+  endHhmm    String   @map("end_hhmm") // e.g., "12:00"
+  reason     String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  staff Staff @relation(fields: [staffId], references: [id], onDelete: Cascade)
+
+  @@map("hour_blocks")
 }
 
 model Appointment {

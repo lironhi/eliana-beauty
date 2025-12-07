@@ -34,6 +34,7 @@ export default function Appointments() {
   });
   const [services, setServices] = useState<any[]>([]);
   const [staff, setStaff] = useState<any[]>([]);
+  const [paymentMethods, setPaymentMethods] = useState<any[]>([]);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [sortField, setSortField] = useState<string>('startsAt');
@@ -56,16 +57,20 @@ export default function Appointments() {
 
   const loadServicesAndStaff = async () => {
     try {
-      const [servicesData, staffData] = await Promise.all([
+      const [servicesData, staffData, paymentMethodsData] = await Promise.all([
         api.getAllServices(1, 100),
         api.getAllStaff(1, 100),
+        api.getAllPaymentMethods(),
       ]);
       setServices(Array.isArray(servicesData.data) ? servicesData.data : []);
       setStaff(Array.isArray(staffData.data) ? staffData.data : []);
+      // Only show enabled payment methods
+      setPaymentMethods(Array.isArray(paymentMethodsData) ? paymentMethodsData.filter((pm: any) => pm.enabled) : []);
     } catch (error) {
-      console.error('Failed to load services/staff:', error);
+      console.error('Failed to load services/staff/payment methods:', error);
       setServices([]);
       setStaff([]);
+      setPaymentMethods([]);
     }
   };
 
@@ -564,14 +569,11 @@ export default function Appointments() {
               }}
             >
               <option value="">All Payment Methods</option>
-              <option value="CASH">💵 Cash</option>
-              <option value="CREDIT_CARD">💳 Credit Card</option>
-              <option value="DEBIT_CARD">🏦 Debit Card</option>
-              <option value="BIT">📱 Bit</option>
-              <option value="PAYBOX">📦 PayBox</option>
-              <option value="BANK_TRANSFER">🏛️ Bank Transfer</option>
-              <option value="OTHER">❓ Other</option>
-              <option value="NOT_PAID">💸 Not Paid</option>
+              {paymentMethods.map((method) => (
+                <option key={method.id} value={method.value}>
+                  {method.label}
+                </option>
+              ))}
             </select>
           </div>
 
@@ -953,14 +955,11 @@ export default function Appointments() {
                                 onChange={(e) => handlePaymentMethodChange(apt.id, e.target.value)}
                                 className="w-full text-xs px-2 py-1.5 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none"
                               >
-                                <option value="NOT_PAID">💸 Not Paid</option>
-                                <option value="CASH">💵 Cash</option>
-                                <option value="CREDIT_CARD">💳 Credit Card</option>
-                                <option value="DEBIT_CARD">🏦 Debit Card</option>
-                                <option value="BIT">📱 Bit</option>
-                                <option value="PAYBOX">📦 Paybox</option>
-                                <option value="BANK_TRANSFER">🏛️ Bank Transfer</option>
-                                <option value="OTHER">❓ Other</option>
+                                {paymentMethods.map((method) => (
+                                  <option key={method.id} value={method.value}>
+                                    {method.label}
+                                  </option>
+                                ))}
                               </select>
                             </div>
                           </div>
@@ -1045,200 +1044,313 @@ export default function Appointments() {
 
       {/* Professional Table View */}
       {viewMode === 'table' && (
-        <div className="bg-white border border-gray-200/50 rounded-2xl shadow-sm overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-          <h2 className="text-lg font-bold text-gray-900">
-            All Appointments <span className="text-gray-500 font-normal">({appointments.length})</span>
-          </h2>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th
-                  onClick={() => handleSort('client')}
-                  className="group px-6 py-3.5 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors select-none"
-                >
-                  <div className="flex items-center gap-2">
-                    Client
-                    <SortIcon field="client" />
-                  </div>
-                </th>
-                <th
-                  onClick={() => handleSort('service')}
-                  className="group px-6 py-3.5 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors select-none"
-                >
-                  <div className="flex items-center gap-2">
-                    Service
-                    <SortIcon field="service" />
-                  </div>
-                </th>
-                <th
-                  onClick={() => handleSort('staff')}
-                  className="group hidden lg:table-cell px-6 py-3.5 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors select-none"
-                >
-                  <div className="flex items-center gap-2">
-                    Staff
-                    <SortIcon field="staff" />
-                  </div>
-                </th>
-                <th
-                  onClick={() => handleSort('startsAt')}
-                  className="group px-6 py-3.5 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors select-none"
-                >
-                  <div className="flex items-center gap-2">
-                    Date & Time
-                    <SortIcon field="startsAt" />
-                  </div>
-                </th>
-                <th
-                  onClick={() => handleSort('status')}
-                  className="group hidden sm:table-cell px-6 py-3.5 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors select-none"
-                >
-                  <div className="flex items-center gap-2">
-                    Status
-                    <SortIcon field="status" />
-                  </div>
-                </th>
-                <th className="px-6 py-3.5 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-100">
-              {sortedAppointments.map((apt) => {
-                const statusConfig = {
-                  PENDING: { bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-200', dot: 'bg-amber-500' },
-                  CONFIRMED: { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-200', dot: 'bg-blue-500' },
-                  COMPLETED: { bg: 'bg-green-50', text: 'text-green-700', border: 'border-green-200', dot: 'bg-green-500' },
-                  CANCELLED: { bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-200', dot: 'bg-red-500' },
-                  NO_SHOW: { bg: 'bg-gray-50', text: 'text-gray-700', border: 'border-gray-200', dot: 'bg-gray-500' },
-                  RESCHEDULE: { bg: 'bg-orange-50', text: 'text-orange-700', border: 'border-orange-200', dot: 'bg-orange-500' },
-                  RESCHEDULE_PENDING: { bg: 'bg-purple-50', text: 'text-purple-700', border: 'border-purple-200', dot: 'bg-purple-500' }
-                }[apt.status];
+        <div className="bg-white border border-gray-200/50 rounded-2xl shadow-lg overflow-hidden">
+          {/* Enhanced Table Header */}
+          <div className="px-6 py-5 border-b border-gray-200 bg-gradient-to-r from-purple-50 via-pink-50 to-purple-50">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl flex items-center justify-center shadow-md">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                  </svg>
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900">
+                    All Appointments
+                  </h2>
+                  <p className="text-sm text-gray-600 mt-0.5">
+                    {appointments.length} {appointments.length === 1 ? 'appointment' : 'appointments'} found
+                  </p>
+                </div>
+              </div>
+              <div className="hidden md:flex items-center gap-2 bg-white rounded-lg px-3 py-2 border border-gray-200 shadow-sm">
+                <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
+                <span className="text-sm font-semibold text-gray-700">
+                  Page {pagination.page} of {pagination.totalPages}
+                </span>
+              </div>
+            </div>
+          </div>
 
-                return (
-                  <tr key={apt.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">
-                          {apt.client.name.charAt(0).toUpperCase()}
-                        </div>
-                        <div className="min-w-0">
-                          <p className="font-semibold text-gray-900 text-sm truncate">{apt.client.name}</p>
-                          <p className="text-xs text-gray-500 truncate">{apt.client.email}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <p className="font-medium text-gray-900 text-sm">{apt.service.name}</p>
-                      <div className="flex items-center gap-2 mt-0.5 text-xs text-gray-500">
-                        <span>{apt.service.durationMin}min</span>
-                        <span>•</span>
-                        <div className="flex items-center gap-1">
-                          <input
-                            type="number"
-                            value={apt.priceIls ?? apt.service.priceIls}
-                            onChange={(e) => handlePriceChange(apt.id, parseFloat(e.target.value))}
-                            className="w-16 px-1.5 py-0.5 text-xs font-medium border border-gray-300 rounded focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                            min="0"
-                            step="10"
-                          />
-                          <span>₪</span>
-                        </div>
-                      </div>
-                      <div className="mt-1.5">
-                        <select
-                          value={apt.paymentMethod || 'NOT_PAID'}
-                          onChange={(e) => handlePaymentMethodChange(apt.id, e.target.value)}
-                          className="text-xs px-1.5 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                        >
-                          <option value="NOT_PAID">💸 Not Paid</option>
-                          <option value="CASH">💵 Cash</option>
-                          <option value="CREDIT_CARD">💳 Credit Card</option>
-                          <option value="DEBIT_CARD">🏦 Debit Card</option>
-                          <option value="BIT">📱 Bit</option>
-                          <option value="PAYBOX">📦 Paybox</option>
-                          <option value="BANK_TRANSFER">🏛️ Bank Transfer</option>
-                          <option value="OTHER">❓ Other</option>
-                        </select>
-                      </div>
-                    </td>
-                    <td className="hidden lg:table-cell px-6 py-4">
-                      {apt.staff ? (
-                        <div className="flex items-center gap-2">
-                          <div className="w-7 h-7 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold text-xs">
-                            {apt.staff.name.charAt(0).toUpperCase()}
+          {/* Enhanced Table */}
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gradient-to-r from-gray-50 to-gray-100 border-b-2 border-gray-200">
+                <tr>
+                  <th
+                    onClick={() => handleSort('client')}
+                    className="group px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-all select-none"
+                  >
+                    <div className="flex items-center gap-2">
+                      <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                      Client
+                      <SortIcon field="client" />
+                    </div>
+                  </th>
+                  <th
+                    onClick={() => handleSort('service')}
+                    className="group px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-all select-none"
+                  >
+                    <div className="flex items-center gap-2">
+                      <svg className="w-4 h-4 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                      Service & Payment
+                      <SortIcon field="service" />
+                    </div>
+                  </th>
+                  <th
+                    onClick={() => handleSort('staff')}
+                    className="group hidden lg:table-cell px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-all select-none"
+                  >
+                    <div className="flex items-center gap-2">
+                      <svg className="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                      </svg>
+                      Staff
+                      <SortIcon field="staff" />
+                    </div>
+                  </th>
+                  <th
+                    onClick={() => handleSort('startsAt')}
+                    className="group px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-all select-none"
+                  >
+                    <div className="flex items-center gap-2">
+                      <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      Date & Time
+                      <SortIcon field="startsAt" />
+                    </div>
+                  </th>
+                  <th
+                    onClick={() => handleSort('status')}
+                    className="group hidden sm:table-cell px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-all select-none"
+                  >
+                    <div className="flex items-center gap-2">
+                      <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      Status
+                      <SortIcon field="status" />
+                    </div>
+                  </th>
+                  <th className="px-6 py-4 text-right text-xs font-bold text-gray-700 uppercase tracking-wider">
+                    <div className="flex items-center justify-end gap-2">
+                      <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                      </svg>
+                      Actions
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-100">
+                {sortedAppointments.map((apt, index) => {
+                  const statusConfig = {
+                    PENDING: { bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-300', dot: 'bg-amber-500', ring: 'ring-amber-200' },
+                    CONFIRMED: { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-300', dot: 'bg-blue-500', ring: 'ring-blue-200' },
+                    COMPLETED: { bg: 'bg-green-50', text: 'text-green-700', border: 'border-green-300', dot: 'bg-green-500', ring: 'ring-green-200' },
+                    CANCELLED: { bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-300', dot: 'bg-red-500', ring: 'ring-red-200' },
+                    NO_SHOW: { bg: 'bg-gray-50', text: 'text-gray-700', border: 'border-gray-300', dot: 'bg-gray-500', ring: 'ring-gray-200' },
+                    RESCHEDULE: { bg: 'bg-orange-50', text: 'text-orange-700', border: 'border-orange-300', dot: 'bg-orange-500', ring: 'ring-orange-200' },
+                    RESCHEDULE_PENDING: { bg: 'bg-purple-50', text: 'text-purple-700', border: 'border-purple-300', dot: 'bg-purple-500', ring: 'ring-purple-200' }
+                  }[apt.status];
+
+                  return (
+                    <tr
+                      key={apt.id}
+                      className="hover:bg-gradient-to-r hover:from-purple-50/30 hover:via-transparent hover:to-pink-50/30 transition-all duration-200 group"
+                    >
+                      {/* Client Column */}
+                      <td className="px-6 py-5">
+                        <div className="flex items-center gap-3">
+                          <div className="relative">
+                            <div className="w-11 h-11 bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl flex items-center justify-center text-white font-bold text-sm shadow-md group-hover:shadow-lg transition-shadow">
+                              {apt.client.name.charAt(0).toUpperCase()}
+                            </div>
+                            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
                           </div>
-                          <span className="text-gray-900 text-sm font-medium">{apt.staff.name}</span>
+                          <div className="min-w-0 flex-1">
+                            <p className="font-bold text-gray-900 text-sm truncate group-hover:text-purple-700 transition-colors">
+                              {apt.client.name}
+                            </p>
+                            <p className="text-xs text-gray-500 truncate flex items-center gap-1.5 mt-0.5">
+                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                              </svg>
+                              {apt.client.email}
+                            </p>
+                          </div>
                         </div>
-                      ) : (
-                        <span className="text-gray-400 text-sm">Not assigned</span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4">
-                      <p className="text-gray-900 text-sm font-medium">
-                        {new Date(apt.startsAt).toLocaleDateString('en-US', {
-                          month: 'short',
-                          day: 'numeric',
-                          year: 'numeric'
-                        })}
-                      </p>
-                      <p className="text-xs text-gray-500 mt-0.5">
-                        {new Date(apt.startsAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
-                        {' '}-{' '}
-                        {new Date(apt.endsAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
-                      </p>
-                    </td>
-                    <td className="hidden sm:table-cell px-6 py-4">
-                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-lg border ${statusConfig.border} ${statusConfig.text} ${statusConfig.bg}`}>
-                        <span className={`w-1.5 h-1.5 rounded-full ${statusConfig.dot}`}></span>
-                        {apt.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center justify-end gap-2">
-                        <select
-                          value={apt.status}
-                          onChange={(e) => handleStatusChange(apt.id, e.target.value)}
-                          className="text-xs border border-gray-300 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all bg-white font-medium text-gray-700"
-                        >
-                          <option value="PENDING">Pending</option>
-                          <option value="CONFIRMED">Confirmed</option>
-                          <option value="COMPLETED">Completed</option>
-                          <option value="CANCELLED">Cancelled</option>
-                          <option value="NO_SHOW">No Show</option>
-                          <option value="RESCHEDULE">Reschedule</option>
-                          <option value="RESCHEDULE_PENDING">Reschedule Pending</option>
-                        </select>
-                        <button
-                          onClick={() => openRescheduleModal(apt)}
-                          className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                          title="Reschedule appointment"
-                        >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                          </svg>
-                        </button>
-                        <button
-                          onClick={() => {
-                            setAppointmentToDelete(apt);
-                            setShowDeleteModal(true);
-                          }}
-                          className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                          title="Delete appointment"
-                        >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                          </svg>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                      </td>
+
+                      {/* Service & Payment Column */}
+                      <td className="px-6 py-5">
+                        <div className="space-y-2.5">
+                          {/* Service Name */}
+                          <div className="flex items-start gap-2">
+                            <div className="w-6 h-6 bg-gradient-to-br from-pink-500 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm">
+                              <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                              </svg>
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-bold text-gray-900 text-sm truncate">{apt.service.name}</p>
+                              <p className="text-xs text-gray-500 flex items-center gap-1.5 mt-0.5">
+                                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                                </svg>
+                                {apt.service.durationMin} minutes
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* Price & Payment Method */}
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <div className="flex items-center gap-1.5 bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-lg px-2.5 py-1.5 shadow-sm">
+                              <svg className="w-3.5 h-3.5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                              <input
+                                type="number"
+                                value={apt.priceIls ?? apt.service.priceIls}
+                                onChange={(e) => handlePriceChange(apt.id, parseFloat(e.target.value))}
+                                className="w-16 px-1.5 py-0.5 text-xs font-bold text-purple-700 bg-white border border-purple-300 rounded focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:outline-none"
+                                min="0"
+                                step="10"
+                              />
+                              <span className="text-xs font-bold text-purple-700">₪</span>
+                            </div>
+                            <select
+                              value={apt.paymentMethod || 'NOT_PAID'}
+                              onChange={(e) => handlePaymentMethodChange(apt.id, e.target.value)}
+                              className="text-xs px-2.5 py-1.5 bg-white border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none font-medium text-gray-700 hover:border-blue-400 transition-colors shadow-sm"
+                            >
+                              {paymentMethods.map((method) => (
+                                <option key={method.id} value={method.value}>
+                                  {method.label}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+                      </td>
+
+                      {/* Staff Column */}
+                      <td className="hidden lg:table-cell px-6 py-5">
+                        {apt.staff ? (
+                          <div className="flex items-center gap-2.5">
+                            <div className="w-9 h-9 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold text-xs shadow-md">
+                              {apt.staff.name.charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                              <p className="text-gray-900 text-sm font-bold">{apt.staff.name}</p>
+                              <p className="text-xs text-gray-500">Staff Member</p>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2">
+                            <div className="w-9 h-9 bg-gray-200 rounded-xl flex items-center justify-center">
+                              <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                              </svg>
+                            </div>
+                            <span className="text-gray-400 text-sm italic">Not assigned</span>
+                          </div>
+                        )}
+                      </td>
+
+                      {/* Date & Time Column */}
+                      <td className="px-6 py-5">
+                        <div className="space-y-1.5">
+                          <div className="flex items-center gap-2 text-sm font-bold text-gray-900">
+                            <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            {new Date(apt.startsAt).toLocaleDateString('en-US', {
+                              month: 'short',
+                              day: 'numeric',
+                              year: 'numeric'
+                            })}
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="bg-blue-50 border border-blue-200 rounded-lg px-2.5 py-1 flex items-center gap-1.5">
+                              <svg className="w-3 h-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                              <span className="text-xs font-bold text-blue-700">
+                                {new Date(apt.startsAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                              </span>
+                            </div>
+                            <span className="text-xs text-gray-400 font-medium">→</span>
+                            <div className="bg-purple-50 border border-purple-200 rounded-lg px-2.5 py-1">
+                              <span className="text-xs font-bold text-purple-700">
+                                {new Date(apt.endsAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+
+                      {/* Status Column */}
+                      <td className="hidden sm:table-cell px-6 py-5">
+                        <div className={`inline-flex items-center gap-2 px-3.5 py-2 text-xs font-bold rounded-xl border-2 ${statusConfig.border} ${statusConfig.text} ${statusConfig.bg} shadow-sm`}>
+                          <span className={`w-2 h-2 rounded-full ${statusConfig.dot} animate-pulse`}></span>
+                          <span className="capitalize">
+                            {apt.status === 'NO_SHOW' ? 'No Show' : apt.status === 'RESCHEDULE_PENDING' ? 'Reschedule Pending' : apt.status.charAt(0) + apt.status.slice(1).toLowerCase()}
+                          </span>
+                        </div>
+                      </td>
+
+                      {/* Actions Column */}
+                      <td className="px-6 py-5">
+                        <div className="flex items-center justify-end gap-2">
+                          <select
+                            value={apt.status}
+                            onChange={(e) => handleStatusChange(apt.id, e.target.value)}
+                            className="text-xs border-2 border-gray-300 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all bg-white font-semibold text-gray-700 hover:border-purple-400 shadow-sm"
+                          >
+                            <option value="PENDING">Pending</option>
+                            <option value="CONFIRMED">Confirmed</option>
+                            <option value="COMPLETED">Completed</option>
+                            <option value="CANCELLED">Cancelled</option>
+                            <option value="NO_SHOW">No Show</option>
+                            <option value="RESCHEDULE">Reschedule</option>
+                            <option value="RESCHEDULE_PENDING">Reschedule Pending</option>
+                          </select>
+                          <button
+                            onClick={() => openRescheduleModal(apt)}
+                            className="p-2.5 text-blue-600 hover:bg-blue-100 rounded-xl transition-all shadow-sm hover:shadow-md border border-transparent hover:border-blue-200"
+                            title="Reschedule appointment"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                          </button>
+                          <button
+                            onClick={() => {
+                              setAppointmentToDelete(apt);
+                              setShowDeleteModal(true);
+                            }}
+                            className="p-2.5 text-red-600 hover:bg-red-100 rounded-xl transition-all shadow-sm hover:shadow-md border border-transparent hover:border-red-200"
+                            title="Delete appointment"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           {appointments.length === 0 && (
             <div className="p-8 md:p-12 text-center">
               <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-pink-100 to-purple-100 flex items-center justify-center">
