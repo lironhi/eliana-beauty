@@ -16,13 +16,15 @@ export function exportToCSV(data: ExportData, filename: string) {
   // Create CSV content
   const csvContent = [
     headers.join(','),
-    ...rows.map(row =>
-      row.map(cell => {
-        // Escape quotes and wrap in quotes if contains comma
-        const escaped = String(cell).replace(/"/g, '""');
-        return escaped.includes(',') ? `"${escaped}"` : escaped;
-      }).join(',')
-    )
+    ...rows.map((row) =>
+      row
+        .map((cell) => {
+          // Escape quotes and wrap in quotes if contains comma
+          const escaped = String(cell).replace(/"/g, '""');
+          return escaped.includes(',') ? `"${escaped}"` : escaped;
+        })
+        .join(','),
+    ),
   ].join('\n');
 
   // Create blob and download
@@ -351,7 +353,7 @@ export function exportToPDF(data: ExportData, filename: string) {
                 weekday: 'long',
                 year: 'numeric',
                 month: 'long',
-                day: 'numeric'
+                day: 'numeric',
               })}</span>
             </div>
             <div class="meta-item">
@@ -359,7 +361,7 @@ export function exportToPDF(data: ExportData, filename: string) {
               <span class="meta-value">${new Date().toLocaleTimeString('en-US', {
                 hour: '2-digit',
                 minute: '2-digit',
-                hour12: true
+                hour12: true,
               })}</span>
             </div>
             <div class="meta-item">
@@ -371,15 +373,19 @@ export function exportToPDF(data: ExportData, filename: string) {
           <table>
             <thead>
               <tr>
-                ${headers.map(h => `<th>${h}</th>`).join('')}
+                ${headers.map((h) => `<th>${h}</th>`).join('')}
               </tr>
             </thead>
             <tbody>
-              ${rows.map(row => `
+              ${rows
+                .map(
+                  (row) => `
                 <tr>
                   ${row.map((cell, idx) => `<td>${cell || (idx === 10 ? '-' : 'N/A')}</td>`).join('')}
                 </tr>
-              `).join('')}
+              `,
+                )
+                .join('')}
             </tbody>
           </table>
         </div>
@@ -432,25 +438,25 @@ export function formatAppointmentsForExport(appointments: any[]) {
     'Price',
     'Payment',
     'Status',
-    'Notes'
+    'Notes',
   ];
 
   const getPaymentMethodLabel = (method: string | null) => {
     if (!method) return 'Not Set';
     const labels: Record<string, string> = {
-      'CASH': '💵 Cash',
-      'CREDIT_CARD': '💳 Credit Card',
-      'DEBIT_CARD': '💳 Debit Card',
-      'BIT': '📱 Bit',
-      'PAYBOX': '💰 PayBox',
-      'BANK_TRANSFER': '🏦 Bank Transfer',
-      'OTHER': '💼 Other',
-      'NOT_PAID': '⏳ Not Paid'
+      CASH: '💵 Cash',
+      CREDIT_CARD: '💳 Credit Card',
+      DEBIT_CARD: '💳 Debit Card',
+      BIT: '📱 Bit',
+      PAYBOX: '💰 PayBox',
+      BANK_TRANSFER: '🏦 Bank Transfer',
+      OTHER: '💼 Other',
+      NOT_PAID: '⏳ Not Paid',
     };
     return labels[method] || method;
   };
 
-  const rows = appointments.map(apt => [
+  const rows = appointments.map((apt) => [
     apt.id.substring(0, 8),
     apt.client?.name || 'N/A',
     apt.client?.email || 'N/A',
@@ -459,18 +465,18 @@ export function formatAppointmentsForExport(appointments: any[]) {
     new Date(apt.startsAt).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
     }),
     new Date(apt.startsAt).toLocaleTimeString('en-US', {
       hour: '2-digit',
       minute: '2-digit',
-      hour12: true
+      hour12: true,
     }),
     `${apt.service?.durationMin || 0} min`,
     `₪${apt.priceIls || apt.service?.priceIls || 0}`,
     getPaymentMethodLabel(apt.paymentMethod),
     apt.status,
-    apt.notes || ''
+    apt.notes || '',
   ]);
 
   return { headers, rows, title: 'Appointments Report' };
@@ -480,24 +486,16 @@ export function formatAppointmentsForExport(appointments: any[]) {
  * Format client data for export
  */
 export function formatClientsForExport(clients: any[]) {
-  const headers = [
-    'ID',
-    'Name',
-    'Email',
-    'Phone',
-    'Total Appointments',
-    'Active',
-    'Joined Date'
-  ];
+  const headers = ['ID', 'Name', 'Email', 'Phone', 'Total Appointments', 'Active', 'Joined Date'];
 
-  const rows = clients.map(client => [
+  const rows = clients.map((client) => [
     client.id.substring(0, 8),
     client.name || 'N/A',
     client.email || 'N/A',
     client.phone || 'N/A',
     String(client._count?.appointments || 0),
     client.active ? 'Yes' : 'No',
-    new Date(client.createdAt).toLocaleDateString()
+    new Date(client.createdAt).toLocaleDateString(),
   ]);
 
   return { headers, rows, title: 'Clients Report' };
@@ -514,17 +512,17 @@ export function formatServicesForExport(services: any[]) {
     'Duration (min)',
     'Price (₪)',
     'Active',
-    'Created Date'
+    'Created Date',
   ];
 
-  const rows = services.map(service => [
+  const rows = services.map((service) => [
     service.id.substring(0, 8),
     service.name || 'N/A',
     service.category?.name || 'N/A',
     String(service.durationMin || 0),
     String(service.priceIls || 0),
     service.active ? 'Yes' : 'No',
-    new Date(service.createdAt).toLocaleDateString()
+    new Date(service.createdAt).toLocaleDateString(),
   ]);
 
   return { headers, rows, title: 'Services Report' };
@@ -541,17 +539,17 @@ export function formatStaffForExport(staff: any[]) {
     'Services Count',
     'Total Appointments',
     'Active',
-    'Joined Date'
+    'Joined Date',
   ];
 
-  const rows = staff.map(member => [
+  const rows = staff.map((member) => [
     member.id.substring(0, 8),
     member.name || 'N/A',
     member.bio || 'N/A',
     String(member.staffServices?.length || 0),
     String(member._count?.appointments || 0),
     member.active ? 'Yes' : 'No',
-    new Date(member.createdAt).toLocaleDateString()
+    new Date(member.createdAt).toLocaleDateString(),
   ]);
 
   return { headers, rows, title: 'Staff Report' };

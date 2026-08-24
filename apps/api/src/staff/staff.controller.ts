@@ -16,10 +16,7 @@ export class StaffController {
   @Get('admin/all')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
-  getAllStaff(
-    @Query('page') page?: string,
-    @Query('limit') limit?: string,
-  ) {
+  getAllStaff(@Query('page') page?: string, @Query('limit') limit?: string) {
     const pageNum = page ? parseInt(page, 10) : 1;
     const limitNum = limit ? parseInt(limit, 10) : 10;
     return this.staffService.getAllStaff(pageNum, limitNum);
@@ -52,10 +49,7 @@ export class StaffController {
   @Put(':id/services')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
-  updateStaffServices(
-    @Param('id') id: string,
-    @Body() data: { serviceIds: string[] },
-  ) {
+  updateStaffServices(@Param('id') id: string, @Body() data: { serviceIds: string[] }) {
     return this.staffService.updateStaffServices(id, data.serviceIds);
   }
 
@@ -64,7 +58,8 @@ export class StaffController {
   @Roles('ADMIN')
   updateWorkingHours(
     @Param('id') id: string,
-    @Body() data: {
+    @Body()
+    data: {
       workingHours: Array<{
         weekday: number;
         startHhmm: string;
@@ -85,7 +80,8 @@ export class StaffController {
   @Roles('ADMIN')
   createTimeOff(
     @Param('id') staffId: string,
-    @Body() data: {
+    @Body()
+    data: {
       type: string;
       startsAt: string;
       endsAt: string;
@@ -111,7 +107,8 @@ export class StaffController {
   @Roles('ADMIN')
   updateTimeOff(
     @Param('timeOffId') timeOffId: string,
-    @Body() data: {
+    @Body()
+    data: {
       type?: string;
       startsAt?: string;
       endsAt?: string;
@@ -138,7 +135,8 @@ export class StaffController {
   @Roles('ADMIN')
   createHourBlock(
     @Param('id') staffId: string,
-    @Body() data: {
+    @Body()
+    data: {
       date: string;
       startHhmm: string;
       endHhmm: string;
@@ -163,7 +161,8 @@ export class StaffController {
   @Roles('ADMIN')
   updateHourBlock(
     @Param('blockId') blockId: string,
-    @Body() data: {
+    @Body()
+    data: {
       date?: string;
       startHhmm?: string;
       endHhmm?: string;

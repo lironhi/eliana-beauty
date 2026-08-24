@@ -13,7 +13,7 @@ export default function LineChart({
   data,
   title,
   color = '#ec4899',
-  showFilters = true
+  showFilters = true,
 }: LineChartProps) {
   const [activeFilter, setActiveFilter] = useState<TimeFilter>('7days');
   const [hoveredPoint, setHoveredPoint] = useState<number | null>(null);
@@ -29,16 +29,16 @@ export default function LineChart({
       case '7days': {
         const sevenDaysAgo = new Date(today);
         sevenDaysAgo.setDate(today.getDate() - 6);
-        return data.filter(item => item.date && item.date >= sevenDaysAgo);
+        return data.filter((item) => item.date && item.date >= sevenDaysAgo);
       }
       case '30days': {
         const thirtyDaysAgo = new Date(today);
         thirtyDaysAgo.setDate(today.getDate() - 29);
-        return data.filter(item => item.date && item.date >= thirtyDaysAgo);
+        return data.filter((item) => item.date && item.date >= thirtyDaysAgo);
       }
       case 'thisMonth': {
         const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-        return data.filter(item => item.date && item.date >= firstDayOfMonth);
+        return data.filter((item) => item.date && item.date >= firstDayOfMonth);
       }
       default:
         return data;
@@ -48,12 +48,20 @@ export default function LineChart({
   if (filteredData.length === 0) {
     return (
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        {title && (
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">{title}</h3>
-        )}
+        {title && <h3 className="text-lg font-semibold text-gray-900 mb-4">{title}</h3>}
         <div className="bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-dashed border-gray-300 rounded-xl p-12 text-center">
-          <svg className="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          <svg
+            className="w-16 h-16 mx-auto mb-4 text-gray-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+            />
           </svg>
           <p className="text-gray-500 font-medium">No data available</p>
           <p className="text-xs text-gray-400 mt-1">Try selecting a different time period</p>
@@ -62,10 +70,12 @@ export default function LineChart({
     );
   }
 
-  const maxValue = Math.max(...filteredData.map(d => d.value));
-  const minValue = Math.min(...filteredData.map(d => d.value), 0);
+  const maxValue = Math.max(...filteredData.map((d) => d.value));
+  const minValue = Math.min(...filteredData.map((d) => d.value), 0);
   const range = maxValue - minValue || 1;
-  const avgValue = Math.round(filteredData.reduce((sum, d) => sum + d.value, 0) / filteredData.length);
+  const avgValue = Math.round(
+    filteredData.reduce((sum, d) => sum + d.value, 0) / filteredData.length,
+  );
 
   const chartHeight = 200;
   const chartWidth = 100;
@@ -93,13 +103,21 @@ export default function LineChart({
       <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-gradient-to-br from-purple-100 to-pink-100 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-            <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+            <svg
+              className="w-5 h-5 text-purple-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+              />
             </svg>
           </div>
-          {title && (
-            <h3 className="text-lg font-bold text-gray-900">{title}</h3>
-          )}
+          {title && <h3 className="text-lg font-bold text-gray-900">{title}</h3>}
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
@@ -114,7 +132,12 @@ export default function LineChart({
             title="Toggle value labels"
           >
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
+              />
             </svg>
             <span className="hidden sm:inline">{showAllValues ? 'Hide' : 'Show'} Values</span>
           </button>
@@ -145,7 +168,11 @@ export default function LineChart({
         <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-3 border border-blue-200">
           <div className="flex items-center gap-2 mb-1">
             <svg className="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
+              <path
+                fillRule="evenodd"
+                d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z"
+                clipRule="evenodd"
+              />
             </svg>
             <span className="text-xs font-medium text-blue-600">Max</span>
           </div>
@@ -155,7 +182,11 @@ export default function LineChart({
         <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-3 border border-purple-200">
           <div className="flex items-center gap-2 mb-1">
             <svg className="w-4 h-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+              <path
+                fillRule="evenodd"
+                d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                clipRule="evenodd"
+              />
             </svg>
             <span className="text-xs font-medium text-purple-600">Avg</span>
           </div>
@@ -165,7 +196,11 @@ export default function LineChart({
         <div className="bg-gradient-to-br from-pink-50 to-pink-100 rounded-lg p-3 border border-pink-200">
           <div className="flex items-center gap-2 mb-1">
             <svg className="w-4 h-4 text-pink-600" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 12.586V5a1 1 0 012 0v7.586l2.293-2.293a1 1 0 011.414 0z" clipRule="evenodd" />
+              <path
+                fillRule="evenodd"
+                d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 12.586V5a1 1 0 012 0v7.586l2.293-2.293a1 1 0 011.414 0z"
+                clipRule="evenodd"
+              />
             </svg>
             <span className="text-xs font-medium text-pink-600">Min</span>
           </div>
@@ -185,11 +220,17 @@ export default function LineChart({
             }}
           >
             <div className="flex flex-col gap-1">
-              <span className="text-purple-300 text-xs font-semibold">{filteredData[hoveredPoint].label}</span>
+              <span className="text-purple-300 text-xs font-semibold">
+                {filteredData[hoveredPoint].label}
+              </span>
               <div className="flex items-center gap-2">
                 <svg className="w-3 h-3 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
-                  <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd" />
+                  <path
+                    fillRule="evenodd"
+                    d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"
+                    clipRule="evenodd"
+                  />
                 </svg>
                 <span className="text-lg font-bold">{filteredData[hoveredPoint].value}</span>
                 <span className="text-xs text-gray-300">appointments</span>
@@ -228,10 +269,7 @@ export default function LineChart({
           ))}
 
           {/* Area fill with gradient */}
-          <path
-            d={areaPath}
-            fill={`url(#gradient-${color})`}
-          />
+          <path d={areaPath} fill={`url(#gradient-${color})`} />
 
           {/* Line with enhanced styling */}
           <path
@@ -255,7 +293,7 @@ export default function LineChart({
                 <circle
                   cx={x}
                   cy={y}
-                  r={isHovered ? "5" : "3.5"}
+                  r={isHovered ? '5' : '3.5'}
                   fill="white"
                   stroke={color}
                   strokeWidth="2.5"
@@ -295,7 +333,10 @@ export default function LineChart({
         <div className="relative mt-8 pt-2 border-t border-gray-200">
           <div className="flex justify-between items-end" style={{ height: '40px' }}>
             {filteredData.map((item, index) => {
-              const isHighlighted = index === 0 || index === filteredData.length - 1 || index === Math.floor(filteredData.length / 2);
+              const isHighlighted =
+                index === 0 ||
+                index === filteredData.length - 1 ||
+                index === Math.floor(filteredData.length / 2);
               return (
                 <div
                   key={index}
@@ -304,9 +345,15 @@ export default function LineChart({
                   onMouseLeave={() => setHoveredPoint(null)}
                 >
                   {/* Tick mark */}
-                  <div className={`w-px absolute -top-2 transition-all ${
-                    hoveredPoint === index ? 'h-3 bg-purple-500' : isHighlighted ? 'h-2 bg-gray-400' : 'h-1 bg-gray-300'
-                  }`}></div>
+                  <div
+                    className={`w-px absolute -top-2 transition-all ${
+                      hoveredPoint === index
+                        ? 'h-3 bg-purple-500'
+                        : isHighlighted
+                          ? 'h-2 bg-gray-400'
+                          : 'h-1 bg-gray-300'
+                    }`}
+                  ></div>
 
                   {/* Label */}
                   <span
@@ -319,7 +366,7 @@ export default function LineChart({
                     }`}
                     style={{
                       transform: hoveredPoint === index ? 'scale(1.1)' : 'scale(1)',
-                      transformOrigin: 'top center'
+                      transformOrigin: 'top center',
                     }}
                   >
                     {item.label}
@@ -342,7 +389,12 @@ export default function LineChart({
       <div className="mt-4 flex items-center justify-between text-xs">
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full" style={{ backgroundColor: color }}></div>
-          <span className="text-gray-600">Total: <span className="font-bold text-gray-900">{filteredData.reduce((sum, d) => sum + d.value, 0)}</span></span>
+          <span className="text-gray-600">
+            Total:{' '}
+            <span className="font-bold text-gray-900">
+              {filteredData.reduce((sum, d) => sum + d.value, 0)}
+            </span>
+          </span>
         </div>
         <span className="text-gray-500">{filteredData.length} data points</span>
       </div>

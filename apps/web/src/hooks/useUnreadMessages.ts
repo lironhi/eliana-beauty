@@ -16,7 +16,7 @@ export function useUnreadMessages() {
       const data = await api.getUnreadCount();
       // For clients, the API returns { total, direct, broadcast }
       // For admins, it returns a number
-      const count = typeof data === 'number' ? data : (data.total || 0);
+      const count = typeof data === 'number' ? data : data.total || 0;
       setUnreadCount(count);
     } catch (error) {
       console.error('Failed to fetch unread count:', error);

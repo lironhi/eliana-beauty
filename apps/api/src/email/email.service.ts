@@ -49,8 +49,7 @@ export class EmailService {
       priceIls: number;
     },
   ): Promise<void> {
-    const { serviceName, staffName, startsAt, durationMin, priceIls } =
-      appointmentDetails;
+    const { serviceName, staffName, startsAt, durationMin, priceIls } = appointmentDetails;
 
     const formattedDate = startsAt.toLocaleDateString('en-US', {
       weekday: 'long',

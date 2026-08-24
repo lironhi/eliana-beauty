@@ -118,10 +118,7 @@ export class StaffService {
     });
   }
 
-  async updateStaff(
-    id: string,
-    data: { name?: string; bio?: string; active?: boolean },
-  ) {
+  async updateStaff(id: string, data: { name?: string; bio?: string; active?: boolean }) {
     return this.prisma.staff.update({
       where: { id },
       data,

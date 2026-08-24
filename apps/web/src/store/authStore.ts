@@ -14,7 +14,13 @@ interface AuthStore {
   user: User | null;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (data: { email: string; password: string; name: string; phone?: string; locale?: string }) => Promise<void>;
+  register: (data: {
+    email: string;
+    password: string;
+    name: string;
+    phone?: string;
+    locale?: string;
+  }) => Promise<void>;
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
   updateUser: (user: User) => void;
@@ -66,7 +72,7 @@ export const useAuthStore = create<AuthStore>()(
         try {
           const user = await api.getMe();
           set({ user, isAuthenticated: true });
-        } catch (error) {
+        } catch {
           api.setAccessToken(null);
           set({ user: null, isAuthenticated: false });
         }

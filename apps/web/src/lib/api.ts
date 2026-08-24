@@ -20,7 +20,7 @@ class ApiClient {
         const parsed = JSON.parse(localeStorage);
         locale = parsed?.state?.locale || 'en';
       }
-    } catch (e) {
+    } catch {
       // Ignore parsing errors
     }
 
@@ -84,7 +84,7 @@ class ApiClient {
       const data = await response.json();
       this.accessToken = data.access_token;
       return true;
-    } catch (error) {
+    } catch {
       return false;
     }
   }
@@ -97,7 +97,13 @@ class ApiClient {
     });
   }
 
-  async register(data: { email: string; password: string; name: string; phone?: string; locale?: string }) {
+  async register(data: {
+    email: string;
+    password: string;
+    name: string;
+    phone?: string;
+    locale?: string;
+  }) {
     return this.request<{ access_token: string; user: any }>('/auth/register', {
       method: 'POST',
       body: JSON.stringify(data),
@@ -148,13 +154,21 @@ class ApiClient {
     return this.request<any>(`/availability?staffId=${staffId}&date=${date}`);
   }
 
-  async getAvailableSlots(params: { date: string; serviceId: string; staffId?: string; durationMin?: number }) {
+  async getAvailableSlots(params: {
+    date: string;
+    serviceId: string;
+    staffId?: string;
+    durationMin?: number;
+  }) {
     const query = new URLSearchParams();
     query.append('date', params.date);
     query.append('serviceId', params.serviceId);
     if (params.staffId) query.append('staffId', params.staffId);
     if (params.durationMin) query.append('durationMin', params.durationMin.toString());
-    return this.request<{ available: boolean; slots: { time: string; available: boolean; reason?: 'booked' | 'insufficient_time' }[] }>(`/availability?${query.toString()}`);
+    return this.request<{
+      available: boolean;
+      slots: { time: string; available: boolean; reason?: 'booked' | 'insufficient_time' }[];
+    }>(`/availability?${query.toString()}`);
   }
 
   // Appointments
@@ -189,7 +203,14 @@ class ApiClient {
     return this.request<any>('/admin/dashboard');
   }
 
-  async getAllAppointments(filters?: { status?: string; staffId?: string; date?: string; paymentMethod?: string; page?: number; limit?: number }) {
+  async getAllAppointments(filters?: {
+    status?: string;
+    staffId?: string;
+    date?: string;
+    paymentMethod?: string;
+    page?: number;
+    limit?: number;
+  }) {
     const params = new URLSearchParams();
     if (filters?.status) params.append('status', filters.status);
     if (filters?.staffId) params.append('staffId', filters.staffId);
@@ -198,7 +219,10 @@ class ApiClient {
     if (filters?.page) params.append('page', filters.page.toString());
     if (filters?.limit) params.append('limit', filters.limit.toString());
     const query = params.toString() ? `?${params.toString()}` : '';
-    return this.request<{ data: any[]; pagination: { page: number; limit: number; total: number; totalPages: number } }>(`/admin/appointments${query}`);
+    return this.request<{
+      data: any[];
+      pagination: { page: number; limit: number; total: number; totalPages: number };
+    }>(`/admin/appointments${query}`);
   }
 
   async updateAppointmentStatus(id: string, status: string) {
@@ -212,6 +236,13 @@ class ApiClient {
     return this.request<any>(`/admin/appointments/${id}/price`, {
       method: 'PATCH',
       body: JSON.stringify({ priceIls }),
+    });
+  }
+
+  async updateAppointmentPaymentMethod(id: string, paymentMethod: string) {
+    return this.request<any>(`/admin/appointments/${id}/payment-method`, {
+      method: 'PATCH',
+      body: JSON.stringify({ paymentMethod }),
     });
   }
 
@@ -233,16 +264,22 @@ class ApiClient {
     if (page) params.append('page', page.toString());
     if (limit) params.append('limit', limit.toString());
     const query = params.toString() ? `?${params.toString()}` : '';
-    return this.request<{ data: any[]; pagination: { page: number; limit: number; total: number; totalPages: number } }>(`/admin/clients${query}`);
+    return this.request<{
+      data: any[];
+      pagination: { page: number; limit: number; total: number; totalPages: number };
+    }>(`/admin/clients${query}`);
   }
 
-  async updateClient(id: string, data: {
-    name?: string;
-    email?: string;
-    phone?: string;
-    locale?: string;
-    active?: boolean;
-  }) {
+  async updateClient(
+    id: string,
+    data: {
+      name?: string;
+      email?: string;
+      phone?: string;
+      locale?: string;
+      active?: boolean;
+    },
+  ) {
     return this.request<any>(`/admin/clients/${id}`, {
       method: 'PATCH',
       body: JSON.stringify(data),
@@ -261,7 +298,10 @@ class ApiClient {
     if (page) params.append('page', page.toString());
     if (limit) params.append('limit', limit.toString());
     const query = params.toString() ? `?${params.toString()}` : '';
-    return this.request<{ data: any[]; pagination: { page: number; limit: number; total: number; totalPages: number } }>(`/services/admin/all${query}`);
+    return this.request<{
+      data: any[];
+      pagination: { page: number; limit: number; total: number; totalPages: number };
+    }>(`/services/admin/all${query}`);
   }
 
   async createService(data: {
@@ -279,15 +319,18 @@ class ApiClient {
     });
   }
 
-  async updateService(id: string, data: {
-    name?: string;
-    description?: string;
-    categoryId?: string;
-    durationMin?: number;
-    priceIls?: number;
-    imageUrl?: string;
-    active?: boolean;
-  }) {
+  async updateService(
+    id: string,
+    data: {
+      name?: string;
+      description?: string;
+      categoryId?: string;
+      durationMin?: number;
+      priceIls?: number;
+      imageUrl?: string;
+      active?: boolean;
+    },
+  ) {
     return this.request<any>(`/services/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),
@@ -318,13 +361,16 @@ class ApiClient {
     });
   }
 
-  async updateCategory(id: string, data: {
-    name?: string;
-    slug?: string;
-    imageUrl?: string;
-    order?: number;
-    active?: boolean;
-  }) {
+  async updateCategory(
+    id: string,
+    data: {
+      name?: string;
+      slug?: string;
+      imageUrl?: string;
+      order?: number;
+      active?: boolean;
+    },
+  ) {
     return this.request<any>(`/services/categories/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),
@@ -343,25 +389,27 @@ class ApiClient {
     if (page) params.append('page', page.toString());
     if (limit) params.append('limit', limit.toString());
     const query = params.toString() ? `?${params.toString()}` : '';
-    return this.request<{ data: any[]; pagination: { page: number; limit: number; total: number; totalPages: number } }>(`/staff/admin/all${query}`);
+    return this.request<{
+      data: any[];
+      pagination: { page: number; limit: number; total: number; totalPages: number };
+    }>(`/staff/admin/all${query}`);
   }
 
-  async createStaff(data: {
-    name: string;
-    bio?: string;
-    active?: boolean;
-  }) {
+  async createStaff(data: { name: string; bio?: string; active?: boolean }) {
     return this.request<any>('/staff', {
       method: 'POST',
       body: JSON.stringify(data),
     });
   }
 
-  async updateStaff(id: string, data: {
-    name?: string;
-    bio?: string;
-    active?: boolean;
-  }) {
+  async updateStaff(
+    id: string,
+    data: {
+      name?: string;
+      bio?: string;
+      active?: boolean;
+    },
+  ) {
     return this.request<any>(`/staff/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),
@@ -369,7 +417,7 @@ class ApiClient {
   }
 
   async deleteStaff(id: string) {
-    return this.request<{ message: string }>(`/staff/${id}`, {
+    return this.request<{ message: string; affectedAppointments: number }>(`/staff/${id}`, {
       method: 'DELETE',
     });
   }
@@ -381,11 +429,14 @@ class ApiClient {
     });
   }
 
-  async updateStaffWorkingHours(id: string, workingHours: Array<{
-    weekday: number;
-    startHhmm: string;
-    endHhmm: string;
-  }>) {
+  async updateStaffWorkingHours(
+    id: string,
+    workingHours: Array<{
+      weekday: number;
+      startHhmm: string;
+      endHhmm: string;
+    }>,
+  ) {
     return this.request<any>(`/staff/${id}/working-hours`, {
       method: 'PUT',
       body: JSON.stringify({ workingHours }),
@@ -397,24 +448,30 @@ class ApiClient {
     return this.request<any[]>(`/staff/${staffId}/time-off`);
   }
 
-  async createTimeOff(staffId: string, data: {
-    type: string;
-    startsAt: string;
-    endsAt: string;
-    reason?: string;
-  }) {
+  async createTimeOff(
+    staffId: string,
+    data: {
+      type: string;
+      startsAt: string;
+      endsAt: string;
+      reason?: string;
+    },
+  ) {
     return this.request<any>(`/staff/${staffId}/time-off`, {
       method: 'POST',
       body: JSON.stringify(data),
     });
   }
 
-  async updateTimeOff(timeOffId: string, data: {
-    type?: string;
-    startsAt?: string;
-    endsAt?: string;
-    reason?: string;
-  }) {
+  async updateTimeOff(
+    timeOffId: string,
+    data: {
+      type?: string;
+      startsAt?: string;
+      endsAt?: string;
+      reason?: string;
+    },
+  ) {
     return this.request<any>(`/staff/time-off/${timeOffId}`, {
       method: 'PUT',
       body: JSON.stringify(data),
@@ -428,12 +485,15 @@ class ApiClient {
   }
 
   // Hour Blocks
-  async createHourBlock(staffId: string, data: {
-    date: string;
-    startHhmm: string;
-    endHhmm: string;
-    reason?: string;
-  }) {
+  async createHourBlock(
+    staffId: string,
+    data: {
+      date: string;
+      startHhmm: string;
+      endHhmm: string;
+      reason?: string;
+    },
+  ) {
     return this.request<any>(`/staff/${staffId}/hour-blocks`, {
       method: 'POST',
       body: JSON.stringify(data),
@@ -444,12 +504,15 @@ class ApiClient {
     return this.request<any[]>(`/staff/${staffId}/hour-blocks`);
   }
 
-  async updateHourBlock(blockId: string, data: {
-    date?: string;
-    startHhmm?: string;
-    endHhmm?: string;
-    reason?: string;
-  }) {
+  async updateHourBlock(
+    blockId: string,
+    data: {
+      date?: string;
+      startHhmm?: string;
+      endHhmm?: string;
+      reason?: string;
+    },
+  ) {
     return this.request<any>(`/staff/hour-blocks/${blockId}`, {
       method: 'PUT',
       body: JSON.stringify(data),
@@ -475,11 +538,7 @@ class ApiClient {
     });
   }
 
-  async sendBroadcastMessage(data: {
-    content: string;
-    subject?: string;
-    recipientIds?: string[];
-  }) {
+  async sendBroadcastMessage(data: { content: string; subject?: string; recipientIds?: string[] }) {
     return this.request<any>('/messages/broadcast', {
       method: 'POST',
       body: JSON.stringify({ ...data, type: 'BROADCAST' }),
@@ -527,17 +586,23 @@ class ApiClient {
 
   // Database Management
   async backupDatabase(tables?: string[]) {
-    return this.request<{ success: boolean; message: string; filename?: string }>('/admin/database/backup', {
-      method: 'POST',
-      body: JSON.stringify({ tables }),
-    });
+    return this.request<{ success: boolean; message: string; filename?: string }>(
+      '/admin/database/backup',
+      {
+        method: 'POST',
+        body: JSON.stringify({ tables }),
+      },
+    );
   }
 
   async restoreDatabase(tables?: string[]) {
-    return this.request<{ success: boolean; message: string; restoredTables?: string[] }>('/admin/database/restore', {
-      method: 'POST',
-      body: JSON.stringify({ tables }),
-    });
+    return this.request<{ success: boolean; message: string; restoredTables?: string[] }>(
+      '/admin/database/restore',
+      {
+        method: 'POST',
+        body: JSON.stringify({ tables }),
+      },
+    );
   }
 
   async getLastBackupDate() {
@@ -557,7 +622,12 @@ class ApiClient {
   }
 
   async getImageStats() {
-    return this.request<{ totalImages: number; serviceImages: number; categoryImages: number; totalSize: number }>('/upload/stats');
+    return this.request<{
+      totalImages: number;
+      serviceImages: number;
+      categoryImages: number;
+      totalSize: number;
+    }>('/upload/stats');
   }
 
   // Payment Method Configuration endpoints
@@ -577,12 +647,15 @@ class ApiClient {
     });
   }
 
-  async updatePaymentMethod(id: string, data: {
-    label?: string;
-    emoji?: string;
-    enabled?: boolean;
-    value?: string;
-  }) {
+  async updatePaymentMethod(
+    id: string,
+    data: {
+      label?: string;
+      emoji?: string;
+      enabled?: boolean;
+      value?: string;
+    },
+  ) {
     return this.request<any>(`/admin/payment-methods/${id}`, {
       method: 'PATCH',
       body: JSON.stringify(data),

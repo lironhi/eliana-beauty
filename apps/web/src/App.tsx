@@ -58,9 +58,7 @@ function App() {
       {isLoading && <LoadingScreen onLoadingComplete={handleLoadingComplete} />}
 
       <div
-        className={`transition-opacity duration-500 ${
-          showContent ? 'opacity-100' : 'opacity-0'
-        }`}
+        className={`transition-opacity duration-500 ${showContent ? 'opacity-100' : 'opacity-0'}`}
       >
         <Routes>
           <Route path="/" element={<Layout />}>

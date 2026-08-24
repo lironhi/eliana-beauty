@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  // The root tsconfig also covers prisma/ and the spec files so they get
+  // typechecked. The production build must not ship them: including them makes
+  // tsc widen rootDir to the package root, which emits dist/src/main.js instead
+  // of dist/main.js and breaks `node dist/main`.
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "test", "prisma", "scripts", "**/*.spec.ts"]
+}

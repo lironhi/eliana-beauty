@@ -10,6 +10,15 @@ export class UpdateAppointmentDto {
   status?: string;
 
   @IsOptional()
-  @IsIn(['CASH', 'CREDIT_CARD', 'DEBIT_CARD', 'BIT', 'PAYBOX', 'BANK_TRANSFER', 'OTHER', 'NOT_PAID'])
+  @IsIn([
+    'CASH',
+    'CREDIT_CARD',
+    'DEBIT_CARD',
+    'BIT',
+    'PAYBOX',
+    'BANK_TRANSFER',
+    'OTHER',
+    'NOT_PAID',
+  ])
   paymentMethod?: string;
 }

@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
 import { toast } from 'react-hot-toast';
-import LoadingSpinner from '@/components/LoadingSpinner';
 import DeleteConfirmationModal from '@/components/DeleteConfirmationModal';
 import IconPickerModal from '@/components/IconPickerModal';
 
@@ -20,7 +19,6 @@ export default function More() {
   const [activeSection, setActiveSection] = useState<string>('payment-methods');
   const [isAddingNew, setIsAddingNew] = useState(false);
   const [newMethod, setNewMethod] = useState({ value: '', label: '', emoji: '💳' });
-  const [editingId, setEditingId] = useState<string | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [methodToDelete, setMethodToDelete] = useState<PaymentMethodConfig | null>(null);
   const [iconPickerOpen, setIconPickerOpen] = useState(false);
@@ -45,15 +43,13 @@ export default function More() {
   };
 
   const handleTogglePaymentMethod = async (id: string) => {
-    const method = paymentMethods.find(m => m.id === id);
+    const method = paymentMethods.find((m) => m.id === id);
     if (!method) return;
 
     try {
       await api.updatePaymentMethod(id, { enabled: !method.enabled });
-      setPaymentMethods(prev =>
-        prev.map(m =>
-          m.id === id ? { ...m, enabled: !m.enabled } : m
-        )
+      setPaymentMethods((prev) =>
+        prev.map((m) => (m.id === id ? { ...m, enabled: !m.enabled } : m)),
       );
       toast.success('Payment method updated');
     } catch (error) {
@@ -62,27 +58,11 @@ export default function More() {
     }
   };
 
-  const handleUpdateEmoji = async (id: string, newEmoji: string) => {
-    try {
-      await api.updatePaymentMethod(id, { emoji: newEmoji });
-      setPaymentMethods(prev =>
-        prev.map(method =>
-          method.id === id ? { ...method, emoji: newEmoji } : method
-        )
-      );
-    } catch (error) {
-      console.error('Error updating emoji:', error);
-      toast.error('Failed to update emoji');
-    }
-  };
-
   const handleUpdateLabel = async (id: string, newLabel: string) => {
     try {
       await api.updatePaymentMethod(id, { label: newLabel });
-      setPaymentMethods(prev =>
-        prev.map(method =>
-          method.id === id ? { ...method, label: newLabel } : method
-        )
+      setPaymentMethods((prev) =>
+        prev.map((method) => (method.id === id ? { ...method, label: newLabel } : method)),
       );
     } catch (error) {
       console.error('Error updating label:', error);
@@ -94,10 +74,8 @@ export default function More() {
     const formattedValue = newValue.toUpperCase().replace(/\s+/g, '_');
     try {
       await api.updatePaymentMethod(id, { value: formattedValue });
-      setPaymentMethods(prev =>
-        prev.map(method =>
-          method.id === id ? { ...method, value: formattedValue } : method
-        )
+      setPaymentMethods((prev) =>
+        prev.map((method) => (method.id === id ? { ...method, value: formattedValue } : method)),
       );
     } catch (error) {
       console.error('Error updating value:', error);
@@ -113,7 +91,7 @@ export default function More() {
 
     const value = newMethod.value.toUpperCase().replace(/\s+/g, '_');
 
-    if (paymentMethods.some(m => m.value === value)) {
+    if (paymentMethods.some((m) => m.value === value)) {
       toast.error('A payment method with this value already exists');
       return;
     }
@@ -126,7 +104,7 @@ export default function More() {
         enabled: true,
       });
 
-      setPaymentMethods(prev => [...prev, created]);
+      setPaymentMethods((prev) => [...prev, created]);
       setNewMethod({ value: '', label: '', emoji: '💳' });
       setIsAddingNew(false);
       toast.success('Payment method added');
@@ -151,7 +129,7 @@ export default function More() {
 
     try {
       await api.deletePaymentMethod(methodToDelete.id);
-      setPaymentMethods(prev => prev.filter(m => m.id !== methodToDelete.id));
+      setPaymentMethods((prev) => prev.filter((m) => m.id !== methodToDelete.id));
       toast.success('Payment method deleted successfully');
     } catch (error) {
       console.error('Error deleting payment method:', error);
@@ -181,10 +159,8 @@ export default function More() {
     // Otherwise, update existing method in database
     try {
       await api.updatePaymentMethod(editingIconMethod.id, { emoji: iconPath });
-      setPaymentMethods(prev =>
-        prev.map(m =>
-          m.id === editingIconMethod.id ? { ...m, emoji: iconPath } : m
-        )
+      setPaymentMethods((prev) =>
+        prev.map((m) => (m.id === editingIconMethod.id ? { ...m, emoji: iconPath } : m)),
       );
       toast.success('Icon updated successfully');
     } catch (error) {
@@ -199,7 +175,12 @@ export default function More() {
       name: 'Payment Methods',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+          />
         </svg>
       ),
       color: 'from-green-500 to-emerald-500',
@@ -209,8 +190,18 @@ export default function More() {
       name: 'General Settings',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+          />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+          />
         </svg>
       ),
       color: 'from-blue-500 to-indigo-500',
@@ -220,7 +211,12 @@ export default function More() {
       name: 'Notifications',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+          />
         </svg>
       ),
       color: 'from-purple-500 to-pink-500',
@@ -236,14 +232,21 @@ export default function More() {
         <div className="relative flex items-center gap-4">
           <div className="w-14 h-14 bg-gradient-to-br from-primary-500 to-pink-500 rounded-2xl flex items-center justify-center text-white shadow-xl">
             <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+              />
             </svg>
           </div>
           <div>
             <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
               More <span className="text-gradient">Settings</span>
             </h1>
-            <p className="text-sm text-gray-600 mt-1">Manage additional configurations and options</p>
+            <p className="text-sm text-gray-600 mt-1">
+              Manage additional configurations and options
+            </p>
           </div>
         </div>
       </div>
@@ -281,17 +284,23 @@ export default function More() {
             <div className="relative z-10 flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-lg">
-                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                  <svg
+                    className="w-8 h-8 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+                    />
                   </svg>
                 </div>
                 <div>
-                  <h2 className="text-3xl font-bold text-white mb-1">
-                    Payment Methods
-                  </h2>
-                  <p className="text-white/90 text-sm">
-                    Manage and customize your payment options
-                  </p>
+                  <h2 className="text-3xl font-bold text-white mb-1">Payment Methods</h2>
+                  <p className="text-white/90 text-sm">Manage and customize your payment options</p>
                 </div>
               </div>
               <button
@@ -300,7 +309,12 @@ export default function More() {
                 className="flex items-center gap-2 px-6 py-3 bg-white text-emerald-600 rounded-xl font-semibold hover:shadow-xl hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 4v16m8-8H4"
+                  />
                 </svg>
                 <span>Add New Method</span>
               </button>
@@ -309,14 +323,23 @@ export default function More() {
 
           {/* Payment Methods Grid */}
           <div className="card-premium p-6 lg:p-8">
-
             {/* Add New Form */}
             {isAddingNew && (
               <div className="mb-6 p-6 rounded-2xl border-2 border-emerald-300 bg-gradient-to-br from-emerald-50 to-cyan-50 shadow-lg animate-slideDown">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center">
-                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    <svg
+                      className="w-6 h-6 text-white"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 4v16m8-8H4"
+                      />
                     </svg>
                   </div>
                   <h3 className="text-lg font-bold text-gray-900">Add New Payment Method</h3>
@@ -360,7 +383,9 @@ export default function More() {
 
                   {/* Label Input */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Display Name</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Display Name
+                    </label>
                     <input
                       type="text"
                       value={newMethod.label}
@@ -372,11 +397,15 @@ export default function More() {
 
                   {/* Value Input */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Code (Uppercase)</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Code (Uppercase)
+                    </label>
                     <input
                       type="text"
                       value={newMethod.value}
-                      onChange={(e) => setNewMethod({ ...newMethod, value: e.target.value.toUpperCase() })}
+                      onChange={(e) =>
+                        setNewMethod({ ...newMethod, value: e.target.value.toUpperCase() })
+                      }
                       className="w-full h-16 text-sm text-gray-700 bg-white border-2 border-emerald-200 rounded-xl px-4 outline-none focus:border-emerald-500 transition-colors font-mono uppercase"
                       placeholder="APPLE_PAY"
                     />
@@ -396,7 +425,12 @@ export default function More() {
                     className="px-6 py-3 bg-gradient-to-r from-emerald-500 to-cyan-500 text-white rounded-xl font-semibold hover:shadow-xl hover:scale-105 transition-all duration-200 flex items-center gap-2"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
                     </svg>
                     Save Method
                   </button>
@@ -405,7 +439,6 @@ export default function More() {
             )}
 
             <div className="space-y-3">
-
               {/* Existing Methods */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {paymentMethods.map((method, index) => (
@@ -418,7 +451,7 @@ export default function More() {
                     }`}
                     style={{
                       animationDelay: `${index * 50}ms`,
-                      animation: 'fadeInUp 0.5s ease-out forwards'
+                      animation: 'fadeInUp 0.5s ease-out forwards',
                     }}
                   >
                     {/* Gradient Overlay */}
@@ -462,8 +495,18 @@ export default function More() {
                               {/* Hover overlay */}
                               {method.enabled && (
                                 <div className="absolute inset-0 bg-black/40 rounded-2xl opacity-0 group-hover/icon:opacity-100 transition-opacity flex items-center justify-center">
-                                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                  <svg
+                                    className="w-6 h-6 text-white"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                                    />
                                   </svg>
                                 </div>
                               )}
@@ -487,13 +530,21 @@ export default function More() {
                                 onChange={(e) => handleUpdateValue(method.id, e.target.value)}
                                 className={`text-xs text-gray-600 font-mono bg-gray-100 px-2 py-1 rounded border border-transparent hover:border-emerald-300 focus:border-emerald-500 outline-none transition-colors ${method.isDefault ? 'cursor-not-allowed opacity-50' : ''}`}
                                 disabled={method.isDefault || !method.enabled}
-                                title={method.isDefault ? 'Default methods cannot be renamed' : 'Click to edit identifier'}
+                                title={
+                                  method.isDefault
+                                    ? 'Default methods cannot be renamed'
+                                    : 'Click to edit identifier'
+                                }
                                 placeholder="PAYMENT_CODE"
                               />
                               {method.isDefault && (
                                 <span className="inline-flex items-center gap-1 px-2 py-1 bg-emerald-100 text-emerald-700 text-xs font-semibold rounded-full">
                                   <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                    <path
+                                      fillRule="evenodd"
+                                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                      clipRule="evenodd"
+                                    />
                                   </svg>
                                   Default
                                 </span>
@@ -541,8 +592,18 @@ export default function More() {
                             onClick={() => handleDeleteMethod(method)}
                             className="flex items-center gap-2 px-4 py-2 text-red-600 bg-red-50 hover:bg-red-100 rounded-xl transition-all duration-200 font-medium text-sm border border-red-200 hover:border-red-300 hover:shadow-md"
                           >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                              />
                             </svg>
                             <span>Delete</span>
                           </button>
@@ -564,8 +625,18 @@ export default function More() {
                 {/* Header */}
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg">
-                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <svg
+                      className="w-6 h-6 text-white"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
                     </svg>
                   </div>
                   <h3 className="text-xl font-bold text-gray-900">Quick Guide</h3>
@@ -576,73 +647,136 @@ export default function More() {
                   <div className="flex items-start gap-3 p-3 bg-white/60 backdrop-blur-sm rounded-xl border border-emerald-200/50">
                     <div className="w-6 h-6 bg-emerald-500 rounded-lg flex items-center justify-center flex-shrink-0">
                       <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                        <path
+                          fillRule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                          clipRule="evenodd"
+                        />
                       </svg>
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-gray-900 mb-0.5">Create Custom Methods</p>
-                      <p className="text-xs text-gray-600">Click "Add New Method" to create custom payment types</p>
+                      <p className="text-sm font-semibold text-gray-900 mb-0.5">
+                        Create Custom Methods
+                      </p>
+                      <p className="text-xs text-gray-600">
+                        Click "Add New Method" to create custom payment types
+                      </p>
                     </div>
                   </div>
 
                   <div className="flex items-start gap-3 p-3 bg-white/60 backdrop-blur-sm rounded-xl border border-emerald-200/50">
                     <div className="w-6 h-6 bg-emerald-500 rounded-lg flex items-center justify-center flex-shrink-0">
                       <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                        <path
+                          fillRule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                          clipRule="evenodd"
+                        />
                       </svg>
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-gray-900 mb-0.5">Edit Emojis & Labels</p>
-                      <p className="text-xs text-gray-600">Click directly on emojis and labels to modify them</p>
+                      <p className="text-sm font-semibold text-gray-900 mb-0.5">
+                        Edit Emojis & Labels
+                      </p>
+                      <p className="text-xs text-gray-600">
+                        Click directly on emojis and labels to modify them
+                      </p>
                     </div>
                   </div>
 
                   <div className="flex items-start gap-3 p-3 bg-white/60 backdrop-blur-sm rounded-xl border border-emerald-200/50">
                     <div className="w-6 h-6 bg-emerald-500 rounded-lg flex items-center justify-center flex-shrink-0">
                       <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                        <path
+                          fillRule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                          clipRule="evenodd"
+                        />
                       </svg>
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-gray-900 mb-0.5">Enable/Disable Methods</p>
-                      <p className="text-xs text-gray-600">Use the toggle switch to control method availability</p>
+                      <p className="text-sm font-semibold text-gray-900 mb-0.5">
+                        Enable/Disable Methods
+                      </p>
+                      <p className="text-xs text-gray-600">
+                        Use the toggle switch to control method availability
+                      </p>
                     </div>
                   </div>
 
                   <div className="flex items-start gap-3 p-3 bg-white/60 backdrop-blur-sm rounded-xl border border-emerald-200/50">
                     <div className="w-6 h-6 bg-emerald-500 rounded-lg flex items-center justify-center flex-shrink-0">
                       <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                        <path
+                          fillRule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                          clipRule="evenodd"
+                        />
                       </svg>
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-gray-900 mb-0.5">Default Protection</p>
-                      <p className="text-xs text-gray-600">Default methods can be disabled but not deleted</p>
+                      <p className="text-sm font-semibold text-gray-900 mb-0.5">
+                        Default Protection
+                      </p>
+                      <p className="text-xs text-gray-600">
+                        Default methods can be disabled but not deleted
+                      </p>
                     </div>
                   </div>
 
                   <div className="flex items-start gap-3 p-3 bg-white/60 backdrop-blur-sm rounded-xl border border-emerald-200/50">
                     <div className="w-6 h-6 bg-red-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      <svg
+                        className="w-4 h-4 text-white"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                        />
                       </svg>
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-gray-900 mb-0.5">Delete Custom Methods</p>
-                      <p className="text-xs text-gray-600">Type "DELETE" to confirm removal of custom methods</p>
+                      <p className="text-sm font-semibold text-gray-900 mb-0.5">
+                        Delete Custom Methods
+                      </p>
+                      <p className="text-xs text-gray-600">
+                        Type "DELETE" to confirm removal of custom methods
+                      </p>
                     </div>
                   </div>
 
                   <div className="flex items-start gap-3 p-3 bg-white/60 backdrop-blur-sm rounded-xl border border-emerald-200/50">
                     <div className="w-6 h-6 bg-purple-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      <svg
+                        className="w-4 h-4 text-white"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                        />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                        />
                       </svg>
                     </div>
                     <div>
                       <p className="text-sm font-semibold text-gray-900 mb-0.5">Real-time Sync</p>
-                      <p className="text-xs text-gray-600">All changes are saved automatically to the database</p>
+                      <p className="text-xs text-gray-600">
+                        All changes are saved automatically to the database
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -657,9 +791,24 @@ export default function More() {
         <div className="card-premium p-6 lg:p-8">
           <div className="text-center py-12">
             <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <svg
+                className="w-8 h-8 text-blue-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                />
               </svg>
             </div>
             <h3 className="text-xl font-bold text-gray-900 mb-2">General Settings</h3>
@@ -673,8 +822,18 @@ export default function More() {
         <div className="card-premium p-6 lg:p-8">
           <div className="text-center py-12">
             <div className="w-16 h-16 bg-gradient-to-br from-purple-100 to-pink-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+              <svg
+                className="w-8 h-8 text-purple-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                />
               </svg>
             </div>
             <h3 className="text-xl font-bold text-gray-900 mb-2">Notification Settings</h3>

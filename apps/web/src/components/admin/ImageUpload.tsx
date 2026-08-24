@@ -54,7 +54,7 @@ export function ImageUpload({ type, onImageUploaded, onClose }: ImageUploadProps
       const response = await fetch(`${import.meta.env.VITE_API_URL}/upload/image?type=${type}`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${api.getAccessToken()}`,
+          Authorization: `Bearer ${api.getAccessToken()}`,
         },
         body: formData,
         credentials: 'include',
@@ -93,16 +93,19 @@ export function ImageUpload({ type, onImageUploaded, onClose }: ImageUploadProps
             className="text-gray-400 hover:text-gray-600 hover:rotate-90 transition-all duration-300"
           >
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
 
         <div className="space-y-5">
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-3">
-              Select Image
-            </label>
+            <label className="block text-sm font-semibold text-gray-700 mb-3">Select Image</label>
             <input
               type="file"
               accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
@@ -120,7 +123,12 @@ export function ImageUpload({ type, onImageUploaded, onClose }: ImageUploadProps
             />
             <p className="text-xs text-gray-500 mt-2 flex items-center gap-1">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
               JPEG, PNG, WebP or GIF (max. 5MB)
             </p>
@@ -130,11 +138,7 @@ export function ImageUpload({ type, onImageUploaded, onClose }: ImageUploadProps
             <div className="animate-fadeIn">
               <p className="text-sm font-semibold text-gray-700 mb-3">Preview</p>
               <div className="relative rounded-xl overflow-hidden shadow-lg ring-4 ring-pink-100">
-                <img
-                  src={preview}
-                  alt="Preview"
-                  className="w-full h-56 object-cover"
-                />
+                <img src={preview} alt="Preview" className="w-full h-56 object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
               </div>
             </div>
@@ -156,8 +160,20 @@ export function ImageUpload({ type, onImageUploaded, onClose }: ImageUploadProps
               {uploading ? (
                 <span className="flex items-center justify-center gap-2">
                   <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                      fill="none"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
                   </svg>
                   Uploading...
                 </span>

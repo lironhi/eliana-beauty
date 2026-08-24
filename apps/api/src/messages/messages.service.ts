@@ -1,11 +1,12 @@
 import { Injectable, BadRequestException, OnModuleInit } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { SendMessageDto } from './dto/send-message.dto';
-import * as admin from 'firebase-admin';
+import { App, cert, initializeApp } from 'firebase-admin/app';
+import { getMessaging } from 'firebase-admin/messaging';
 
 @Injectable()
 export class MessagesService implements OnModuleInit {
-  private firebaseApp: admin.app.App;
+  private firebaseApp: App;
 
   constructor(private prisma: PrismaService) {}
 
@@ -13,8 +14,8 @@ export class MessagesService implements OnModuleInit {
     // Initialize Firebase Admin SDK
     if (process.env.FIREBASE_SERVICE_ACCOUNT) {
       const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-      this.firebaseApp = admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount),
+      this.firebaseApp = initializeApp({
+        credential: cert(serviceAccount),
       });
     } else {
       console.warn('Firebase not configured. Push notifications will be disabled.');
@@ -246,7 +247,11 @@ export class MessagesService implements OnModuleInit {
         },
       });
 
-      return { total: directCount + broadcastCount, direct: directCount, broadcast: broadcastCount };
+      return {
+        total: directCount + broadcastCount,
+        direct: directCount,
+        broadcast: broadcastCount,
+      };
     } else {
       // Admin sees unread from clients
       return this.prisma.message.count({
@@ -287,7 +292,7 @@ export class MessagesService implements OnModuleInit {
     }
 
     try {
-      await admin.messaging().sendEachForMulticast({
+      await getMessaging(this.firebaseApp).sendEachForMulticast({
         tokens: tokens.map((t) => t.token),
         notification: {
           title: payload.title,

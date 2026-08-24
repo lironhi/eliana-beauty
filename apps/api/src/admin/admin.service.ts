@@ -140,7 +140,7 @@ export class AdminService {
         date: date.toISOString(),
         label: date.toLocaleDateString('en-US', {
           month: 'short',
-          day: 'numeric'
+          day: 'numeric',
         }),
         value: appointmentsMap.get(dateKey) || 0,
       });
@@ -311,7 +311,6 @@ export class AdminService {
       },
     });
   }
-
 
   async deleteAppointment(id: string) {
     await this.prisma.appointment.delete({ where: { id } });

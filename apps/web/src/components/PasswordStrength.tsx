@@ -26,9 +26,12 @@ export function PasswordStrength({ password }: PasswordStrengthProps) {
     if (pwd.length >= 10 && score >= 4) score += 1;
 
     // Map score to strength
-    if (score <= 2) return { score: 1, label: t('auth.passwordStrength.weak'), color: 'bg-red-500' };
-    if (score <= 4) return { score: 2, label: t('auth.passwordStrength.medium'), color: 'bg-yellow-500' };
-    if (score <= 5) return { score: 3, label: t('auth.passwordStrength.good'), color: 'bg-blue-500' };
+    if (score <= 2)
+      return { score: 1, label: t('auth.passwordStrength.weak'), color: 'bg-red-500' };
+    if (score <= 4)
+      return { score: 2, label: t('auth.passwordStrength.medium'), color: 'bg-yellow-500' };
+    if (score <= 5)
+      return { score: 3, label: t('auth.passwordStrength.good'), color: 'bg-blue-500' };
     return { score: 4, label: t('auth.passwordStrength.excellent'), color: 'bg-green-500' };
   };
 
@@ -50,12 +53,17 @@ export function PasswordStrength({ password }: PasswordStrengthProps) {
           ))}
         </div>
         {label && (
-          <span className={`text-xs font-medium ${
-            color === 'bg-red-500' ? 'text-red-600' :
-            color === 'bg-yellow-500' ? 'text-yellow-600' :
-            color === 'bg-blue-500' ? 'text-blue-600' :
-            'text-green-600'
-          }`}>
+          <span
+            className={`text-xs font-medium ${
+              color === 'bg-red-500'
+                ? 'text-red-600'
+                : color === 'bg-yellow-500'
+                  ? 'text-yellow-600'
+                  : color === 'bg-blue-500'
+                    ? 'text-blue-600'
+                    : 'text-green-600'
+            }`}
+          >
             {label}
           </span>
         )}
@@ -63,7 +71,11 @@ export function PasswordStrength({ password }: PasswordStrengthProps) {
 
       <div className="text-xs text-gray-600 space-y-0.5">
         <div className="flex items-center gap-1.5">
-          <span className={password.length >= 6 && password.length <= 24 ? 'text-green-600' : 'text-gray-400'}>
+          <span
+            className={
+              password.length >= 6 && password.length <= 24 ? 'text-green-600' : 'text-gray-400'
+            }
+          >
             {password.length >= 6 && password.length <= 24 ? '✓' : '○'}
           </span>
           <span>{t('auth.passwordStrength.minLength')}</span>

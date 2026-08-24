@@ -1,4 +1,4 @@
-import React, { Component, ErrorInfo, ReactNode } from 'react';
+import { Component, ErrorInfo, ReactNode } from 'react';
 
 interface Props {
   children: ReactNode;
@@ -69,10 +69,11 @@ export class ErrorBoundary extends Component<Props, State> {
               </h1>
 
               <p className="text-sm text-gray-600 text-center mb-6">
-                Nous sommes désolés, quelque chose s'est mal passé. Veuillez réessayer ou contacter le support si le problème persiste.
+                Nous sommes désolés, quelque chose s'est mal passé. Veuillez réessayer ou contacter
+                le support si le problème persiste.
               </p>
 
-              {process.env.NODE_ENV === 'development' && this.state.error && (
+              {import.meta.env.DEV && this.state.error && (
                 <details className="mb-4 p-4 bg-gray-50 rounded border border-gray-200">
                   <summary className="cursor-pointer text-sm font-medium text-gray-700 mb-2">
                     Détails de l'erreur (dev only)

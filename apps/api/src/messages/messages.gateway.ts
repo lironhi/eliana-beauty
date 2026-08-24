@@ -8,9 +8,7 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { UseGuards } from '@nestjs/common';
 import { MessagesService } from './messages.service';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @WebSocketGateway({
   cors: {
@@ -82,15 +80,15 @@ export class MessagesGateway implements OnGatewayConnection, OnGatewayDisconnect
   }
 
   @SubscribeMessage('markRead')
-  async handleMarkRead(@MessageBody() data: { messageId: string; userId: string }, @ConnectedSocket() client: Socket) {
+  async handleMarkRead(
+    @MessageBody() data: { messageId: string; userId: string },
+    @ConnectedSocket() client: Socket,
+  ) {
     try {
       await this.messagesService.markAsRead(data.messageId, data.userId);
 
-      // Notify the other user that message was read
-      const message = await this.messagesService.getInbox(data.userId, 'CLIENT');
-      // Find the sender and notify them
-      // (Implementation depends on your message structure)
-
+      // TODO: notify the sender that their message was read once we can resolve
+      // the sender's socket from the message id.
       client.emit('markReadSuccess', { messageId: data.messageId });
     } catch (error) {
       client.emit('markReadError', { error: error.message });

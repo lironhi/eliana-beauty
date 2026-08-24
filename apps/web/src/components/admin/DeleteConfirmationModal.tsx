@@ -53,7 +53,12 @@ export default function DeleteConfirmationModal({
         <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-red-50 to-orange-50">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
-              <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg
+                className="w-6 h-6 text-red-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -116,8 +121,8 @@ export default function DeleteConfirmationModal({
                 confirmText === 'DELETE'
                   ? 'border-green-300 focus:ring-green-500 focus:border-green-500 bg-green-50'
                   : confirmText.length > 0
-                  ? 'border-red-300 focus:ring-red-500 focus:border-red-500 bg-red-50'
-                  : 'border-gray-300 focus:ring-gray-500 focus:border-gray-500'
+                    ? 'border-red-300 focus:ring-red-500 focus:border-red-500 bg-red-50'
+                    : 'border-gray-300 focus:ring-gray-500 focus:border-gray-500'
               }`}
               autoFocus
             />

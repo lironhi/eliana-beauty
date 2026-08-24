@@ -108,12 +108,7 @@ export default function Calendar({ appointments, onDateSelect, selectedDate }: C
             className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5l7 7-7 7"
-              />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </button>
         </div>
@@ -146,10 +141,10 @@ export default function Calendar({ appointments, onDateSelect, selectedDate }: C
                 isToday(day)
                   ? 'bg-primary-100 text-primary-700 font-bold ring-2 ring-primary-500'
                   : isSelected(day)
-                  ? 'bg-primary-500 text-white font-semibold'
-                  : hasAppointments
-                  ? 'bg-blue-50 text-blue-700 hover:bg-blue-100'
-                  : 'hover:bg-gray-100 text-gray-700'
+                    ? 'bg-primary-500 text-white font-semibold'
+                    : hasAppointments
+                      ? 'bg-blue-50 text-blue-700 hover:bg-blue-100'
+                      : 'hover:bg-gray-100 text-gray-700'
               }`}
             >
               <span className="block">{day}</span>

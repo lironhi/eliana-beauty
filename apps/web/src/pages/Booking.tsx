@@ -65,7 +65,9 @@ export default function Booking() {
 
   useEffect(() => {
     if (!user) {
-      navigate('/login', { state: { from: `/booking${serviceId ? `?serviceId=${serviceId}` : ''}` } });
+      navigate('/login', {
+        state: { from: `/booking${serviceId ? `?serviceId=${serviceId}` : ''}` },
+      });
       return;
     }
     loadInitialData();
@@ -74,10 +76,7 @@ export default function Booking() {
   const loadInitialData = async () => {
     try {
       setLoading(true);
-      const [servicesData, staffData] = await Promise.all([
-        api.getServices(),
-        api.getStaff(),
-      ]);
+      const [servicesData, staffData] = await Promise.all([api.getServices(), api.getStaff()]);
 
       setServices(servicesData);
       setStaff(staffData);
@@ -115,7 +114,7 @@ export default function Booking() {
           if (response.timeOff) {
             timeOffMap.set(date, response.timeOff);
           }
-        } catch (error) {
+        } catch {
           // Ignore errors for individual dates
         }
       }
@@ -144,7 +143,7 @@ export default function Booking() {
       const response = await api.getAvailableSlots(params);
 
       // Extract the slots array from the response
-      const slotsArray = Array.isArray(response) ? response : (response.slots || []);
+      const slotsArray = Array.isArray(response) ? response : response.slots || [];
       setAvailableSlots(slotsArray);
     } catch (error) {
       console.error('Failed to load slots:', error);
@@ -227,11 +226,13 @@ export default function Booking() {
     oneMonthFromToday.setMonth(oneMonthFromToday.getMonth() + 1);
 
     // Calculate number of days between today and one month from today
-    const daysDiff = Math.ceil((oneMonthFromToday.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    const daysDiff = Math.ceil(
+      (oneMonthFromToday.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
+    );
 
     // Get selected staff member's working hours
-    const selectedStaffMember = staff.find(s => s.id === selectedStaff);
-    const workingDays = selectedStaffMember?.workingHours?.map(wh => wh.weekday) || [];
+    const selectedStaffMember = staff.find((s) => s.id === selectedStaff);
+    const workingDays = selectedStaffMember?.workingHours?.map((wh) => wh.weekday) || [];
 
     // Debug: Log working hours
     if (selectedStaff && selectedStaffMember) {
@@ -253,12 +254,22 @@ export default function Booking() {
 
       // If a staff is selected, only include days they work
       if (selectedStaff && selectedStaffMember && workingDays.length > 0) {
-        const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const dayNames = [
+          'Sunday',
+          'Monday',
+          'Tuesday',
+          'Wednesday',
+          'Thursday',
+          'Friday',
+          'Saturday',
+        ];
         const included = workingDays.includes(dayOfWeek);
 
         // Debug: Log first few dates
         if (i < 10) {
-          console.log(`Date: ${dateStr} (${dayNames[dayOfWeek]}, weekday=${dayOfWeek}) - Included: ${included}`);
+          console.log(
+            `Date: ${dateStr} (${dayNames[dayOfWeek]}, weekday=${dayOfWeek}) - Included: ${included}`,
+          );
         }
 
         if (!included) {
@@ -298,14 +309,23 @@ export default function Booking() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">
-          <Link to="/services" className="inline-flex items-center gap-2 text-gray-600 hover:text-pink-600 mb-4">
+          <Link
+            to="/services"
+            className="inline-flex items-center gap-2 text-gray-600 hover:text-pink-600 mb-4"
+          >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
             </svg>
             {t('common.back')}
           </Link>
           <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
-            {t('booking.title')} <span className="text-gradient">{t('booking.titleHighlight')}</span>
+            {t('booking.title')}{' '}
+            <span className="text-gradient">{t('booking.titleHighlight')}</span>
           </h1>
           <p className="text-xl text-gray-600">{t('booking.subtitle')}</p>
         </div>
@@ -376,7 +396,9 @@ export default function Booking() {
                     <span className="badge-premium">{service.category.name}</span>
                   </div>
                   <div className="flex justify-between items-center mt-4">
-                    <span className="text-gray-600">{service.durationMin} {t('services.minutes')}</span>
+                    <span className="text-gray-600">
+                      {service.durationMin} {t('services.minutes')}
+                    </span>
                     <span className="text-2xl font-bold text-gradient">₪{service.priceIls}</span>
                   </div>
                 </button>
@@ -394,7 +416,8 @@ export default function Booking() {
                 <div>
                   <div className="font-bold">{selectedService.name}</div>
                   <div className="text-sm text-gray-600">
-                    {selectedService.durationMin} {t('services.minutes')} • ₪{selectedService.priceIls}
+                    {selectedService.durationMin} {t('services.minutes')} • ₪
+                    {selectedService.priceIls}
                   </div>
                 </div>
                 <button onClick={() => setStep(1)} className="text-pink-600 hover:text-pink-700">
@@ -459,14 +482,23 @@ export default function Booking() {
                     }`}
                   >
                     <div className={`font-bold ${isBlocked ? 'text-white' : 'text-gray-900'}`}>
-                      {new Date(date).toLocaleDateString(t('common.locale') || 'en', { day: 'numeric', month: 'short' })}
+                      {new Date(date).toLocaleDateString(t('common.locale') || 'en', {
+                        day: 'numeric',
+                        month: 'short',
+                      })}
                     </div>
                     <div className={`text-sm ${isBlocked ? 'text-gray-300' : 'text-gray-600'}`}>
-                      {new Date(date).toLocaleDateString(t('common.locale') || 'en', { weekday: 'short' })}
+                      {new Date(date).toLocaleDateString(t('common.locale') || 'en', {
+                        weekday: 'short',
+                      })}
                     </div>
                     {isBlocked && (
                       <div className="text-xs text-gray-300 mt-1">
-                        {timeOff.type === 'SICK_LEAVE' ? '🤒 Sick' : timeOff.type === 'VACATION' ? '🏖️ Vacation' : '📋 Unavailable'}
+                        {timeOff.type === 'SICK_LEAVE'
+                          ? '🤒 Sick'
+                          : timeOff.type === 'VACATION'
+                            ? '🏖️ Vacation'
+                            : '📋 Unavailable'}
                       </div>
                     )}
                   </button>
@@ -485,7 +517,12 @@ export default function Booking() {
             </div>
             {availableSlots.length === 0 ? (
               <div className="card p-8 text-center">
-                <svg className="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg
+                  className="w-16 h-16 mx-auto mb-4 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -509,8 +546,8 @@ export default function Booking() {
                       slot.available
                         ? 'hover:bg-gradient-to-r hover:from-pink-500 hover:to-purple-600 hover:text-white cursor-pointer'
                         : slot.reason === 'insufficient_time'
-                        ? 'opacity-70 cursor-not-allowed bg-red-100 text-red-600 border border-red-300'
-                        : 'opacity-50 cursor-not-allowed bg-gray-100'
+                          ? 'opacity-70 cursor-not-allowed bg-red-100 text-red-600 border border-red-300'
+                          : 'opacity-50 cursor-not-allowed bg-gray-100'
                     }`}
                   >
                     {formatTime(slot.time)}
@@ -547,12 +584,16 @@ export default function Booking() {
                 </div>
                 <div>
                   <div className="text-sm text-gray-600">{t('booking.duration')}</div>
-                  <div className="font-semibold">{selectedService.durationMin} {t('services.minutes')}</div>
+                  <div className="font-semibold">
+                    {selectedService.durationMin} {t('services.minutes')}
+                  </div>
                 </div>
                 <div>
                   <div className="text-sm text-gray-600">{t('booking.staff')}</div>
                   <div className="font-semibold">
-                    {selectedStaff ? staff.find((s) => s.id === selectedStaff)?.name : t('booking.anyStaff')}
+                    {selectedStaff
+                      ? staff.find((s) => s.id === selectedStaff)?.name
+                      : t('booking.anyStaff')}
                   </div>
                 </div>
               </div>
@@ -560,7 +601,9 @@ export default function Booking() {
 
             {/* Notes */}
             <div className="card p-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">{t('booking.addNotes')}</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                {t('booking.addNotes')}
+              </label>
               <textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
@@ -575,7 +618,11 @@ export default function Booking() {
               <button onClick={() => setStep(4)} className="btn-secondary flex-1">
                 {t('common.back')}
               </button>
-              <button onClick={handleSubmit} disabled={submitting} className="btn-primary flex-1 text-lg py-4">
+              <button
+                onClick={handleSubmit}
+                disabled={submitting}
+                className="btn-primary flex-1 text-lg py-4"
+              >
                 {submitting ? t('common.loading') : t('booking.confirmBooking')}
               </button>
             </div>

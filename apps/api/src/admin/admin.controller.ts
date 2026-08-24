@@ -1,4 +1,14 @@
-import { Controller, Get, Patch, Delete, Param, Body, Query, UseGuards, Post } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Patch,
+  Delete,
+  Param,
+  Body,
+  Query,
+  UseGuards,
+  Post,
+} from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { DatabaseService } from './database.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -16,7 +26,6 @@ export class AdminController {
     private databaseService: DatabaseService,
   ) {}
 
-
   @Get('dashboard')
   getDashboardStats() {
     return this.adminService.getDashboardStats();
@@ -33,7 +42,11 @@ export class AdminController {
   ) {
     const pageNum = page ? parseInt(page, 10) : 1;
     const limitNum = limit ? parseInt(limit, 10) : 10;
-    return this.adminService.getAllAppointments({ status, staffId, date, paymentMethod }, pageNum, limitNum);
+    return this.adminService.getAllAppointments(
+      { status, staffId, date, paymentMethod },
+      pageNum,
+      limitNum,
+    );
   }
 
   @Patch('appointments/:id/status')
@@ -55,10 +68,12 @@ export class AdminController {
 
   @Patch('appointments/:id/payment-method')
   @Roles('ADMIN', 'STAFF')
-  updateAppointmentPaymentMethod(@Param('id') id: string, @Body('paymentMethod') paymentMethod: string) {
+  updateAppointmentPaymentMethod(
+    @Param('id') id: string,
+    @Body('paymentMethod') paymentMethod: string,
+  ) {
     return this.adminService.updateAppointmentPaymentMethod(id, paymentMethod);
   }
-
 
   @Delete('appointments/:id')
   @Roles('ADMIN')
@@ -67,10 +82,7 @@ export class AdminController {
   }
 
   @Get('clients')
-  getAllClients(
-    @Query('page') page?: string,
-    @Query('limit') limit?: string,
-  ) {
+  getAllClients(@Query('page') page?: string, @Query('limit') limit?: string) {
     const pageNum = page ? parseInt(page, 10) : 1;
     const limitNum = limit ? parseInt(limit, 10) : 10;
     return this.adminService.getAllClients(pageNum, limitNum);
@@ -80,7 +92,8 @@ export class AdminController {
   @Roles('ADMIN')
   updateClient(
     @Param('id') id: string,
-    @Body() data: {
+    @Body()
+    data: {
       name?: string;
       email?: string;
       phone?: string;
@@ -125,12 +138,7 @@ export class AdminController {
   @Post('payment-methods')
   @Roles('ADMIN')
   createPaymentMethod(
-    @Body() data: {
-      value: string;
-      label: string;
-      emoji: string;
-      enabled?: boolean;
-    },
+    @Body() data: { value: string; label: string; emoji: string; enabled?: boolean },
   ) {
     return this.adminService.createPaymentMethod(data);
   }
@@ -139,7 +147,8 @@ export class AdminController {
   @Roles('ADMIN')
   updatePaymentMethod(
     @Param('id') id: string,
-    @Body() data: {
+    @Body()
+    data: {
       label?: string;
       emoji?: string;
       enabled?: boolean;

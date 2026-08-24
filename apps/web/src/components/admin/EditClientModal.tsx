@@ -16,7 +16,12 @@ interface EditClientModalProps {
   onSuccess: () => void;
 }
 
-export default function EditClientModal({ isOpen, onClose, client, onSuccess }: EditClientModalProps) {
+export default function EditClientModal({
+  isOpen,
+  onClose,
+  client,
+  onSuccess,
+}: EditClientModalProps) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -77,7 +82,12 @@ export default function EditClientModal({ isOpen, onClose, client, onSuccess }: 
               className="text-gray-400 hover:text-gray-600 transition-colors"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
@@ -110,9 +120,7 @@ export default function EditClientModal({ isOpen, onClose, client, onSuccess }: 
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Phone
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
               <input
                 type="tel"
                 value={phone}

@@ -41,7 +41,7 @@ export class AppointmentsService {
     }
 
     // Check if staff is provided and valid
-    let staffId = dto.staffId;
+    const staffId = dto.staffId;
     if (staffId) {
       const staff = await this.prisma.staff.findUnique({
         where: { id: staffId },
@@ -63,7 +63,9 @@ export class AppointmentsService {
       // Check for overlaps
       const hasOverlap = await this.availabilityService.checkOverlap(staffId, startsAt, endsAt);
       if (hasOverlap) {
-        throw new BadRequestException('Time slot not available - overlaps with existing appointment');
+        throw new BadRequestException(
+          'Time slot not available - overlaps with existing appointment',
+        );
       }
     }
 
@@ -93,17 +95,13 @@ export class AppointmentsService {
       });
 
       if (user && user.email) {
-        await this.emailService.sendAppointmentConfirmation(
-          user.email,
-          user.name,
-          {
-            serviceName: service.name,
-            staffName: appointment.staff?.name,
-            startsAt: appointment.startsAt,
-            durationMin: service.durationMin,
-            priceIls: service.priceIls,
-          },
-        );
+        await this.emailService.sendAppointmentConfirmation(user.email, user.name, {
+          serviceName: service.name,
+          staffName: appointment.staff?.name,
+          startsAt: appointment.startsAt,
+          durationMin: service.durationMin,
+          priceIls: service.priceIls,
+        });
       }
     } catch (error) {
       // Log error but don't fail the appointment creation

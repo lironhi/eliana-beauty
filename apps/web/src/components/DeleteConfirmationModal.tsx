@@ -66,14 +66,13 @@ export default function DeleteConfirmationModal({
           </div>
 
           {/* Title */}
-          <h3 className="text-xl font-bold text-gray-900 text-center mb-2">
-            Delete {itemType}?
-          </h3>
+          <h3 className="text-xl font-bold text-gray-900 text-center mb-2">Delete {itemType}?</h3>
 
           {/* Description */}
           <p className="text-sm text-gray-600 text-center mb-4">
-            You are about to delete <span className="font-semibold text-gray-900">"{itemName}"</span>.
-            This action cannot be undone.
+            You are about to delete{' '}
+            <span className="font-semibold text-gray-900">"{itemName}"</span>. This action cannot be
+            undone.
           </p>
 
           {/* Confirmation Input */}

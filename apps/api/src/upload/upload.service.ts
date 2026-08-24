@@ -13,10 +13,7 @@ export class UploadService {
     return type === 'category' ? 'categories' : 'services';
   }
 
-  async saveUploadedImage(
-    file: Express.Multer.File,
-    type: 'service' | 'category',
-  ) {
+  async saveUploadedImage(file: Express.Multer.File, type: 'service' | 'category') {
     if (!file) {
       throw new BadRequestException('No file provided');
     }

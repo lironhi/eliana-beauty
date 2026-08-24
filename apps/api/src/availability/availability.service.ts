@@ -50,7 +50,7 @@ export class AvailabilityService {
           type: timeOff.type,
           startsAt: timeOff.startsAt,
           endsAt: timeOff.endsAt,
-        }
+        },
       };
     }
 

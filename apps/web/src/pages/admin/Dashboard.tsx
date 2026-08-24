@@ -25,7 +25,7 @@ export default function Dashboard() {
           }
         });
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     );
 
     const timer = setTimeout(() => {
@@ -64,7 +64,12 @@ export default function Dashboard() {
       value: data.stats.todayAppointments,
       icon: (
         <svg className="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+          />
         </svg>
       ),
       color: 'bg-blue-500',
@@ -76,7 +81,12 @@ export default function Dashboard() {
       value: data.stats.weekAppointments,
       icon: (
         <svg className="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+          />
         </svg>
       ),
       color: 'bg-green-500',
@@ -88,7 +98,12 @@ export default function Dashboard() {
       value: data.stats.monthAppointments,
       icon: (
         <svg className="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+          />
         </svg>
       ),
       color: 'bg-purple-500',
@@ -100,7 +115,12 @@ export default function Dashboard() {
       value: `₪${data.stats.monthRevenue.toLocaleString()}`,
       icon: (
         <svg className="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
         </svg>
       ),
       color: 'bg-yellow-500',
@@ -112,7 +132,12 @@ export default function Dashboard() {
       value: data.stats.totalClients,
       icon: (
         <svg className="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+          />
         </svg>
       ),
       color: 'bg-pink-500',
@@ -124,7 +149,12 @@ export default function Dashboard() {
       value: data.stats.activeStaff,
       icon: (
         <svg className="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+          />
         </svg>
       ),
       color: 'bg-indigo-500',
@@ -156,7 +186,10 @@ export default function Dashboard() {
       <div className="card-glass p-4 md:p-6 lg:p-8 relative overflow-hidden">
         {/* Animated background blobs */}
         <div className="absolute top-0 right-0 w-64 md:w-96 h-64 md:h-96 bg-gradient-to-br from-pink-200/30 to-purple-200/30 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 animate-pulse"></div>
-        <div className="absolute bottom-0 left-0 w-48 md:w-72 h-48 md:h-72 bg-gradient-to-tr from-blue-200/20 to-pink-200/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 animate-pulse" style={{ animationDelay: '1s' }}></div>
+        <div
+          className="absolute bottom-0 left-0 w-48 md:w-72 h-48 md:h-72 bg-gradient-to-tr from-blue-200/20 to-pink-200/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 animate-pulse"
+          style={{ animationDelay: '1s' }}
+        ></div>
 
         <div className="relative">
           <div className="flex items-center justify-between flex-wrap gap-3 md:gap-4">
@@ -164,14 +197,35 @@ export default function Dashboard() {
               <h1 className="text-xl md:text-2xl lg:text-4xl font-bold text-gray-900 mb-1 md:mb-2 animate-fadeIn truncate">
                 Dashboard <span className="text-gradient">Overview</span>
               </h1>
-              <p className="text-xs md:text-sm lg:text-base text-gray-600 animate-fadeIn flex items-center gap-2" style={{ animationDelay: '100ms' }}>
-                <svg className="w-4 h-4 md:w-5 md:h-5 text-pink-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+              <p
+                className="text-xs md:text-sm lg:text-base text-gray-600 animate-fadeIn flex items-center gap-2"
+                style={{ animationDelay: '100ms' }}
+              >
+                <svg
+                  className="w-4 h-4 md:w-5 md:h-5 text-pink-500 flex-shrink-0"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                    clipRule="evenodd"
+                  />
                 </svg>
-                <span className="truncate">{new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                <span className="truncate">
+                  {new Date().toLocaleDateString('en-US', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  })}
+                </span>
               </p>
             </div>
-            <div className="flex items-center gap-2 md:gap-3 animate-fadeIn flex-shrink-0" style={{ animationDelay: '200ms' }}>
+            <div
+              className="flex items-center gap-2 md:gap-3 animate-fadeIn flex-shrink-0"
+              style={{ animationDelay: '200ms' }}
+            >
               <div className="px-3 md:px-4 py-1.5 md:py-2 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-lg md:rounded-xl shadow-lg font-medium text-xs md:text-sm flex items-center gap-1.5 md:gap-2">
                 <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
                 <span className="hidden sm:inline">Live</span>
@@ -212,16 +266,28 @@ export default function Dashboard() {
                   </p>
                   {typeof stat.value === 'number' && (
                     <span className="text-[10px] sm:text-xs md:text-sm text-green-600 font-semibold flex items-center flex-shrink-0">
-                      <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-0.5" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586 14.586 7H12z" clipRule="evenodd" />
+                      <svg
+                        className="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-0.5"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586 14.586 7H12z"
+                          clipRule="evenodd"
+                        />
                       </svg>
                       +12%
                     </span>
                   )}
                 </div>
               </div>
-              <div className={`w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 ${stat.bgColor} rounded-xl md:rounded-2xl lg:rounded-3xl flex items-center justify-center shadow-lg md:shadow-xl group-hover:shadow-2xl group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 relative flex-shrink-0`}>
-                <span className="text-lg sm:text-xl md:text-2xl lg:text-4xl group-hover:animate-bounce">{stat.icon}</span>
+              <div
+                className={`w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 ${stat.bgColor} rounded-xl md:rounded-2xl lg:rounded-3xl flex items-center justify-center shadow-lg md:shadow-xl group-hover:shadow-2xl group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 relative flex-shrink-0`}
+              >
+                <span className="text-lg sm:text-xl md:text-2xl lg:text-4xl group-hover:animate-bounce">
+                  {stat.icon}
+                </span>
                 {/* Glow effect */}
                 <div className="absolute inset-0 rounded-xl md:rounded-2xl lg:rounded-3xl bg-gradient-to-br from-white/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </div>
@@ -247,16 +313,33 @@ export default function Dashboard() {
             <div className="flex items-center justify-between relative gap-2 md:gap-3">
               <div className="flex items-center gap-2 md:gap-3 flex-1 min-w-0">
                 <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-pink-500 to-purple-600 rounded-xl md:rounded-2xl flex items-center justify-center text-white shadow-lg group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 relative flex-shrink-0">
-                  <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  <svg
+                    className="w-5 h-5 md:w-6 md:h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    />
                   </svg>
                   {/* Notification badge */}
                   <div className="absolute -top-1 -right-1 w-4 h-4 md:w-5 md:h-5 bg-red-500 rounded-full border-2 border-white flex items-center justify-center text-[9px] md:text-[10px] font-bold animate-pulse">
-                    {data.recentAppointments.filter((apt: any) => apt.status === 'PENDING' || apt.status === 'RESCHEDULE_PENDING').length}
+                    {
+                      data.recentAppointments.filter(
+                        (apt: any) =>
+                          apt.status === 'PENDING' || apt.status === 'RESCHEDULE_PENDING',
+                      ).length
+                    }
                   </div>
                 </div>
                 <div className="min-w-0">
-                  <h2 className="text-sm md:text-base lg:text-lg font-bold text-gray-900 truncate">Recent Appointments</h2>
+                  <h2 className="text-sm md:text-base lg:text-lg font-bold text-gray-900 truncate">
+                    Recent Appointments
+                  </h2>
                   <p className="text-[10px] md:text-xs text-gray-500">Latest bookings</p>
                 </div>
               </div>
@@ -266,8 +349,18 @@ export default function Dashboard() {
               >
                 <span className="hidden sm:inline">View All</span>
                 <span className="sm:hidden">All</span>
-                <svg className="w-3 h-3 md:w-4 md:h-4 group-hover/link:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                <svg
+                  className="w-3 h-3 md:w-4 md:h-4 group-hover/link:translate-x-1 transition-transform"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
                 </svg>
               </Link>
             </div>
@@ -277,53 +370,75 @@ export default function Dashboard() {
               .filter((apt: any) => apt.status === 'PENDING' || apt.status === 'RESCHEDULE_PENDING')
               .slice(0, 5)
               .map((apt: any, index: number) => (
-              <div
-                key={apt.id}
-                className="p-3 md:p-4 hover:bg-gradient-to-r hover:from-pink-50/50 hover:to-purple-50/50 transition-all group/item relative"
-                style={{ animationDelay: `${index * 50}ms` }}
-              >
-                {/* Left accent bar */}
-                <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-pink-500 to-purple-600 scale-y-0 group-hover/item:scale-y-100 transition-transform origin-top"></div>
+                <div
+                  key={apt.id}
+                  className="p-3 md:p-4 hover:bg-gradient-to-r hover:from-pink-50/50 hover:to-purple-50/50 transition-all group/item relative"
+                  style={{ animationDelay: `${index * 50}ms` }}
+                >
+                  {/* Left accent bar */}
+                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-pink-500 to-purple-600 scale-y-0 group-hover/item:scale-y-100 transition-transform origin-top"></div>
 
-                <div className="flex items-start justify-between gap-3 pl-2">
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-gray-900 text-sm md:text-base truncate group-hover/item:text-gradient transition-all">
-                      {apt.client.name}
-                    </p>
-                    <p className="text-xs md:text-sm text-gray-600 truncate">{apt.service.name}</p>
-                    <p className="text-[10px] md:text-xs text-gray-500 mt-1 flex items-center gap-1">
-                      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
-                      </svg>
-                      {new Date(apt.startsAt).toLocaleDateString()} • {' '}
-                      {new Date(apt.startsAt).toLocaleTimeString('en-US', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
-                    </p>
+                  <div className="flex items-start justify-between gap-3 pl-2">
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-gray-900 text-sm md:text-base truncate group-hover/item:text-gradient transition-all">
+                        {apt.client.name}
+                      </p>
+                      <p className="text-xs md:text-sm text-gray-600 truncate">
+                        {apt.service.name}
+                      </p>
+                      <p className="text-[10px] md:text-xs text-gray-500 mt-1 flex items-center gap-1">
+                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                          <path
+                            fillRule="evenodd"
+                            d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                        {new Date(apt.startsAt).toLocaleDateString()} •{' '}
+                        {new Date(apt.startsAt).toLocaleTimeString('en-US', {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                      </p>
+                    </div>
+                    <span
+                      className={`px-2.5 py-1 text-[10px] md:text-xs font-semibold rounded-full flex-shrink-0 border-2 ${getStatusColor(
+                        apt.status,
+                      )} group-hover/item:scale-105 transition-transform`}
+                    >
+                      {apt.status}
+                    </span>
                   </div>
-                  <span
-                    className={`px-2.5 py-1 text-[10px] md:text-xs font-semibold rounded-full flex-shrink-0 border-2 ${getStatusColor(
-                      apt.status,
-                    )} group-hover/item:scale-105 transition-transform`}
-                  >
-                    {apt.status}
-                  </span>
+                  {apt.staff && (
+                    <p className="text-[10px] md:text-xs text-gray-500 mt-2 flex items-center gap-1 pl-2">
+                      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path
+                          fillRule="evenodd"
+                          d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      {apt.staff.name}
+                    </p>
+                  )}
                 </div>
-                {apt.staff && (
-                  <p className="text-[10px] md:text-xs text-gray-500 mt-2 flex items-center gap-1 pl-2">
-                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                    </svg>
-                    {apt.staff.name}
-                  </p>
-                )}
-              </div>
-            ))}
-            {data.recentAppointments.filter((apt: any) => apt.status === 'PENDING' || apt.status === 'RESCHEDULE_PENDING').length === 0 && (
+              ))}
+            {data.recentAppointments.filter(
+              (apt: any) => apt.status === 'PENDING' || apt.status === 'RESCHEDULE_PENDING',
+            ).length === 0 && (
               <div className="p-12 text-center text-gray-500 text-sm">
-                <svg className="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                <svg
+                  className="w-12 h-12 mx-auto mb-3 text-gray-300"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
                 </svg>
                 No pending appointments
               </div>
@@ -343,18 +458,34 @@ export default function Dashboard() {
             <div className="flex items-center justify-between relative gap-2">
               <div className="flex items-center gap-2 md:gap-3 flex-1 min-w-0">
                 <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl md:rounded-2xl flex items-center justify-center text-white shadow-lg group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 relative flex-shrink-0">
-                  <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                  <svg
+                    className="w-5 h-5 md:w-6 md:h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+                    />
                   </svg>
                   {/* Star badge */}
                   <div className="absolute -top-1 -right-1 w-4 h-4 md:w-5 md:h-5 bg-yellow-400 rounded-full border-2 border-white flex items-center justify-center animate-pulse">
-                    <svg className="w-2 h-2 md:w-3 md:h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <svg
+                      className="w-2 h-2 md:w-3 md:h-3 text-white"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
                       <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                     </svg>
                   </div>
                 </div>
                 <div className="min-w-0">
-                  <h2 className="text-sm md:text-base lg:text-lg font-bold text-gray-900 truncate">Popular Services</h2>
+                  <h2 className="text-sm md:text-base lg:text-lg font-bold text-gray-900 truncate">
+                    Popular Services
+                  </h2>
                   <p className="text-[10px] md:text-xs text-gray-500">Top performing</p>
                 </div>
               </div>
@@ -386,7 +517,11 @@ export default function Dashboard() {
                   <p className="text-xs md:text-sm text-gray-600 flex items-center gap-1">
                     <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                       <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
-                      <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd" />
+                      <path
+                        fillRule="evenodd"
+                        d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"
+                        clipRule="evenodd"
+                      />
                     </svg>
                     {service.bookingCount} booking{service.bookingCount !== 1 ? 's' : ''}
                   </p>
@@ -397,7 +532,11 @@ export default function Dashboard() {
                   </p>
                   <p className="text-[10px] md:text-xs text-gray-500 flex items-center justify-end gap-1">
                     <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                        clipRule="evenodd"
+                      />
                     </svg>
                     {service.durationMin} min
                   </p>
@@ -406,8 +545,18 @@ export default function Dashboard() {
             ))}
             {data.popularServices.length === 0 && (
               <div className="text-center text-gray-500 py-12 text-sm">
-                <svg className="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                <svg
+                  className="w-12 h-12 mx-auto mb-3 text-gray-300"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                  />
                 </svg>
                 No data yet
               </div>
@@ -445,19 +594,37 @@ export default function Dashboard() {
       <div className="card-premium scroll-fade-in relative overflow-hidden shadow-lg md:shadow-xl p-4 md:p-6 lg:p-8">
         {/* Animated background decoration */}
         <div className="absolute top-0 left-0 w-48 md:w-64 h-48 md:h-64 bg-gradient-to-br from-pink-200/30 to-purple-200/30 rounded-full blur-2xl md:blur-3xl -translate-x-1/2 -translate-y-1/2 animate-pulse"></div>
-        <div className="absolute bottom-0 right-0 w-48 md:w-64 h-48 md:h-64 bg-gradient-to-br from-purple-200/30 to-pink-200/30 rounded-full blur-2xl md:blur-3xl translate-x-1/2 translate-y-1/2 animate-pulse" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute top-1/2 left-1/2 w-32 md:w-48 h-32 md:h-48 bg-gradient-to-br from-blue-200/20 to-indigo-200/20 rounded-full blur-xl md:blur-2xl -translate-x-1/2 -translate-y-1/2 animate-pulse" style={{ animationDelay: '2s' }}></div>
+        <div
+          className="absolute bottom-0 right-0 w-48 md:w-64 h-48 md:h-64 bg-gradient-to-br from-purple-200/30 to-pink-200/30 rounded-full blur-2xl md:blur-3xl translate-x-1/2 translate-y-1/2 animate-pulse"
+          style={{ animationDelay: '1s' }}
+        ></div>
+        <div
+          className="absolute top-1/2 left-1/2 w-32 md:w-48 h-32 md:h-48 bg-gradient-to-br from-blue-200/20 to-indigo-200/20 rounded-full blur-xl md:blur-2xl -translate-x-1/2 -translate-y-1/2 animate-pulse"
+          style={{ animationDelay: '2s' }}
+        ></div>
 
         <div className="relative">
           <div className="flex items-center justify-between mb-4 md:mb-6 lg:mb-8">
             <div className="flex items-center gap-2 md:gap-3">
               <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-pink-500 to-purple-600 rounded-xl md:rounded-2xl flex items-center justify-center text-white shadow-lg md:shadow-xl animate-pulse">
-                <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                <svg
+                  className="w-5 h-5 md:w-6 md:h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  />
                 </svg>
               </div>
               <div>
-                <h2 className="text-base md:text-lg lg:text-xl font-bold text-gray-900">Quick Actions</h2>
+                <h2 className="text-base md:text-lg lg:text-xl font-bold text-gray-900">
+                  Quick Actions
+                </h2>
                 <p className="text-[10px] md:text-xs text-gray-500">Manage your business</p>
               </div>
             </div>
@@ -475,14 +642,26 @@ export default function Dashboard() {
 
               <div className="relative">
                 <div className="w-12 h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 mx-auto mb-2 md:mb-3 bg-gradient-to-br from-pink-100 to-purple-100 rounded-xl md:rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-md md:shadow-lg">
-                  <svg className="w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  <svg
+                    className="w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 text-pink-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    />
                   </svg>
                 </div>
                 <p className="font-bold text-gray-900 group-hover:text-gradient transition-all text-xs md:text-sm lg:text-base mb-0.5 md:mb-1">
                   Appointments
                 </p>
-                <p className="text-[9px] md:text-[10px] lg:text-xs text-gray-500">Manage bookings</p>
+                <p className="text-[9px] md:text-[10px] lg:text-xs text-gray-500">
+                  Manage bookings
+                </p>
               </div>
             </Link>
 
@@ -495,8 +674,18 @@ export default function Dashboard() {
 
               <div className="relative">
                 <div className="w-12 h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 mx-auto mb-2 md:mb-3 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-xl md:rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-md md:shadow-lg">
-                  <svg className="w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                  <svg
+                    className="w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 text-blue-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                    />
                   </svg>
                 </div>
                 <p className="font-bold text-gray-900 group-hover:text-gradient transition-all text-xs md:text-sm lg:text-base mb-0.5 md:mb-1">
@@ -515,14 +704,26 @@ export default function Dashboard() {
 
               <div className="relative">
                 <div className="w-12 h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 mx-auto mb-2 md:mb-3 bg-gradient-to-br from-purple-100 to-pink-100 rounded-xl md:rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-md md:shadow-lg">
-                  <svg className="w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                  <svg
+                    className="w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 text-purple-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                    />
                   </svg>
                 </div>
                 <p className="font-bold text-gray-900 group-hover:text-gradient transition-all text-xs md:text-sm lg:text-base mb-0.5 md:mb-1">
                   Services
                 </p>
-                <p className="text-[9px] md:text-[10px] lg:text-xs text-gray-500">Manage offerings</p>
+                <p className="text-[9px] md:text-[10px] lg:text-xs text-gray-500">
+                  Manage offerings
+                </p>
               </div>
             </Link>
 
@@ -535,8 +736,18 @@ export default function Dashboard() {
 
               <div className="relative">
                 <div className="w-12 h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 mx-auto mb-2 md:mb-3 bg-gradient-to-br from-indigo-100 to-blue-100 rounded-xl md:rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-md md:shadow-lg">
-                  <svg className="w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  <svg
+                    className="w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 text-indigo-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                    />
                   </svg>
                 </div>
                 <p className="font-bold text-gray-900 group-hover:text-gradient transition-all text-xs md:text-sm lg:text-base mb-0.5 md:mb-1">

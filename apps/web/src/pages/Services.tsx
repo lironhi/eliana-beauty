@@ -32,7 +32,7 @@ export default function Services() {
           }
         });
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     );
 
     const timer = setTimeout(() => {
@@ -77,9 +77,10 @@ export default function Services() {
     }
   };
 
-  const filteredServices = selectedCategory === 'all'
-    ? services
-    : services.filter(s => s.category && s.category.slug === selectedCategory);
+  const filteredServices =
+    selectedCategory === 'all'
+      ? services
+      : services.filter((s) => s.category && s.category.slug === selectedCategory);
 
   if (loading) return <LoadingSpinner />;
 
@@ -89,7 +90,10 @@ export default function Services() {
       <section className="relative py-20 overflow-hidden">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="decorative-blob w-96 h-96 bg-pink-300 -top-20 -right-20"></div>
-          <div className="decorative-blob w-80 h-80 bg-purple-300 bottom-0 -left-20" style={{ animationDelay: '3s' }}></div>
+          <div
+            className="decorative-blob w-80 h-80 bg-purple-300 bottom-0 -left-20"
+            style={{ animationDelay: '3s' }}
+          ></div>
         </div>
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -137,8 +141,18 @@ export default function Services() {
         {filteredServices.length === 0 ? (
           <div className="text-center py-20">
             <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-pink-100 to-purple-100 flex items-center justify-center">
-              <svg className="w-12 h-12 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              <svg
+                className="w-12 h-12 text-pink-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
               </svg>
             </div>
             <p className="text-xl text-gray-600">{t('services.noServicesInCategory')}</p>
@@ -177,8 +191,18 @@ export default function Services() {
                     <div className="text-white transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-medium">{t('services.viewDetails')}</span>
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 5l7 7-7 7"
+                          />
                         </svg>
                       </div>
                     </div>
@@ -200,13 +224,27 @@ export default function Services() {
                   {/* Price and Duration */}
                   <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                     <div className="flex items-center gap-2 text-gray-600">
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
                       </svg>
-                      <span className="text-sm">{service.durationMin} {t('services.minutes')}</span>
+                      <span className="text-sm">
+                        {service.durationMin} {t('services.minutes')}
+                      </span>
                     </div>
                     <div className="text-2xl font-bold text-gradient">
-                      {service.priceFrom && <span className="text-base font-normal mr-1">{t('common.from')}</span>}
+                      {service.priceFrom && (
+                        <span className="text-base font-normal mr-1">{t('common.from')}</span>
+                      )}
                       ₪{service.priceIls}
                     </div>
                   </div>
@@ -225,22 +263,34 @@ export default function Services() {
       {/* CTA Section */}
       <section className="bg-gradient-to-r from-pink-500 via-purple-600 to-pink-600 text-white py-16 animate-gradient">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-            {t('services.cta.title')}
-          </h2>
-          <p className="text-lg mb-8 opacity-90">
-            {t('services.cta.description')}
-          </p>
+          <h2 className="text-3xl sm:text-4xl font-bold mb-4">{t('services.cta.title')}</h2>
+          <p className="text-lg mb-8 opacity-90">{t('services.cta.description')}</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="tel:+972XXXXXXXX" className="btn-secondary inline-flex items-center justify-center gap-2">
+            <a
+              href="tel:+972XXXXXXXX"
+              className="btn-secondary inline-flex items-center justify-center gap-2"
+            >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                />
               </svg>
               {t('services.cta.callUs')}
             </a>
-            <a href="mailto:contact@elianabeauty.com" className="btn-secondary inline-flex items-center justify-center gap-2">
+            <a
+              href="mailto:contact@elianabeauty.com"
+              className="btn-secondary inline-flex items-center justify-center gap-2"
+            >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                />
               </svg>
               {t('services.cta.emailUs')}
             </a>

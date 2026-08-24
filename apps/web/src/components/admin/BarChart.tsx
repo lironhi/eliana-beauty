@@ -1,10 +1,9 @@
 interface BarChartProps {
   data: Array<{ label: string; value: number; color?: string }>;
   title?: string;
-  maxHeight?: number;
 }
 
-export default function BarChart({ data, title, maxHeight = 200 }: BarChartProps) {
+export default function BarChart({ data, title }: BarChartProps) {
   if (data.length === 0) {
     return (
       <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
@@ -13,13 +12,11 @@ export default function BarChart({ data, title, maxHeight = 200 }: BarChartProps
     );
   }
 
-  const maxValue = Math.max(...data.map(d => d.value));
+  const maxValue = Math.max(...data.map((d) => d.value));
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-      {title && (
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">{title}</h3>
-      )}
+      {title && <h3 className="text-lg font-semibold text-gray-900 mb-4">{title}</h3>}
       <div className="space-y-3">
         {data.map((item, index) => {
           const percentage = maxValue > 0 ? (item.value / maxValue) * 100 : 0;

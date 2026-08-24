@@ -29,7 +29,9 @@ export default function ServiceCard({ service }: ServiceCardProps) {
         />
       )}
       <div className="p-4">
-        <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">{service.category.name}</p>
+        <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
+          {service.category.name}
+        </p>
         <h3 className="text-lg font-semibold text-gray-900 mb-2">{service.name}</h3>
         {service.description && (
           <p className="text-sm text-gray-600 mb-3 line-clamp-2">{service.description}</p>

@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { PrismaService } from '../prisma/prisma.service';
-import { addHours, subHours, isAfter, isBefore } from 'date-fns';
+import { addHours } from 'date-fns';
 
 @Injectable()
 export class AppointmentRemindersService {
@@ -53,10 +53,7 @@ export class AppointmentRemindersService {
           type: 'REMINDER',
           recipientId: appointment.clientId,
           appointmentId: appointment.id,
-          OR: [
-            { subject: { contains: '24 hours' } },
-            { subject: { contains: '24 שעות' } },
-          ],
+          OR: [{ subject: { contains: '24 hours' } }, { subject: { contains: '24 שעות' } }],
         },
       });
 
@@ -94,10 +91,7 @@ export class AppointmentRemindersService {
           type: 'REMINDER',
           recipientId: appointment.clientId,
           appointmentId: appointment.id,
-          OR: [
-            { subject: { contains: '2 hours' } },
-            { subject: { contains: 'שעתיים' } },
-          ],
+          OR: [{ subject: { contains: '2 hours' } }, { subject: { contains: 'שעתיים' } }],
         },
       });
 

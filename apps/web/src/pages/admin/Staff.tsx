@@ -5,7 +5,6 @@ import { api } from '../../lib/api';
 import { exportToCSV, exportToPDF, formatStaffForExport } from '../../lib/export';
 import { Pagination } from '../../components/Pagination';
 import TimeOffModal from '../../components/admin/TimeOffModal';
-import TimeOffList from '../../components/admin/TimeOffList';
 import DeleteConfirmationModal from '../../components/admin/DeleteConfirmationModal';
 
 interface Service {
@@ -57,18 +56,22 @@ export default function Staff() {
 
   // Services modal state
   const [showServicesModal, setShowServicesModal] = useState(false);
-  const [selectedStaffForServices, setSelectedStaffForServices] = useState<StaffMember | null>(null);
+  const [selectedStaffForServices, setSelectedStaffForServices] = useState<StaffMember | null>(
+    null,
+  );
   const [selectedServiceIds, setSelectedServiceIds] = useState<string[]>([]);
 
   // Working hours modal state
   const [showWorkingHoursModal, setShowWorkingHoursModal] = useState(false);
   const [selectedStaffForHours, setSelectedStaffForHours] = useState<StaffMember | null>(null);
-  const [workingHours, setWorkingHours] = useState<Array<{ weekday: number; startHhmm: string; endHhmm: string }>>([]);
+  const [workingHours, setWorkingHours] = useState<
+    Array<{ weekday: number; startHhmm: string; endHhmm: string }>
+  >([]);
 
   // Time off modal state
   const [showTimeOffModal, setShowTimeOffModal] = useState(false);
   const [selectedStaffForTimeOff, setSelectedStaffForTimeOff] = useState<StaffMember | null>(null);
-  const [timeOffRefreshTrigger, setTimeOffRefreshTrigger] = useState(0);
+  const [, setTimeOffRefreshTrigger] = useState(0);
 
   // Delete confirmation modal state
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -107,16 +110,6 @@ export default function Staff() {
     setShowStaffModal(true);
   };
 
-  const handleEditStaff = (member: StaffMember) => {
-    setEditingStaff(member);
-    setStaffForm({
-      name: member.name,
-      bio: member.bio || '',
-      active: member.active,
-    });
-    setShowStaffModal(true);
-  };
-
   const handleSaveStaff = async () => {
     try {
       if (editingStaff) {
@@ -141,7 +134,7 @@ export default function Staff() {
       if (result.affectedAppointments > 0) {
         toast.success(
           `Staff member deleted. ${result.affectedAppointments} appointment(s) marked for rescheduling.`,
-          { duration: 5000 }
+          { duration: 5000 },
         );
       } else {
         toast.success('Staff member deleted successfully');
@@ -156,7 +149,7 @@ export default function Staff() {
   // Services assignment handlers
   const handleManageServices = (member: StaffMember) => {
     setSelectedStaffForServices(member);
-    setSelectedServiceIds(member.staffServices.map(ss => ss.service.id));
+    setSelectedServiceIds(member.staffServices.map((ss) => ss.service.id));
     setShowServicesModal(true);
   };
 
@@ -174,21 +167,21 @@ export default function Staff() {
   };
 
   const toggleService = (serviceId: string) => {
-    setSelectedServiceIds(prev =>
-      prev.includes(serviceId)
-        ? prev.filter(id => id !== serviceId)
-        : [...prev, serviceId]
+    setSelectedServiceIds((prev) =>
+      prev.includes(serviceId) ? prev.filter((id) => id !== serviceId) : [...prev, serviceId],
     );
   };
 
   // Working hours handlers
   const handleManageWorkingHours = (member: StaffMember) => {
     setSelectedStaffForHours(member);
-    setWorkingHours(member.workingHours.map(wh => ({
-      weekday: wh.weekday,
-      startHhmm: wh.startHhmm,
-      endHhmm: wh.endHhmm,
-    })));
+    setWorkingHours(
+      member.workingHours.map((wh) => ({
+        weekday: wh.weekday,
+        startHhmm: wh.startHhmm,
+        endHhmm: wh.endHhmm,
+      })),
+    );
     setShowWorkingHoursModal(true);
   };
 
@@ -248,7 +241,9 @@ export default function Staff() {
             <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
               Staff <span className="text-gradient">Management</span>
             </h1>
-            <p className="text-sm md:text-base text-gray-600">Manage staff members, services, and working hours</p>
+            <p className="text-sm md:text-base text-gray-600">
+              Manage staff members, services, and working hours
+            </p>
           </div>
           <div className="flex flex-wrap gap-2">
             <button
@@ -257,7 +252,12 @@ export default function Staff() {
               title="Export to CSV"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
               </svg>
               <span className="hidden sm:inline">CSV</span>
             </button>
@@ -267,7 +267,12 @@ export default function Staff() {
               title="Export to PDF"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                />
               </svg>
               <span className="hidden sm:inline">PDF</span>
             </button>
@@ -284,7 +289,11 @@ export default function Staff() {
       {/* Staff Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
         {staff.map((member, index) => (
-          <div key={member.id} className="card-premium hover-lift group overflow-hidden" style={{ animationDelay: `${index * 50}ms` }}>
+          <div
+            key={member.id}
+            className="card-premium hover-lift group overflow-hidden"
+            style={{ animationDelay: `${index * 50}ms` }}
+          >
             {/* Staff Header with Gradient Background */}
             <div className="bg-gradient-to-r from-pink-500 via-purple-500 to-pink-500 p-6 relative overflow-hidden">
               <div className="absolute inset-0 bg-black/10"></div>
@@ -305,26 +314,31 @@ export default function Staff() {
                     {member.active ? '● Active' : '○ Inactive'}
                   </span>
                 </div>
-                <h3 className="text-xl font-bold text-white mb-1 drop-shadow-lg">
-                  {member.name}
-                </h3>
+                <h3 className="text-xl font-bold text-white mb-1 drop-shadow-lg">{member.name}</h3>
                 {member.bio && (
-                  <p className="text-sm text-white/90 line-clamp-2 drop-shadow">
-                    {member.bio}
-                  </p>
+                  <p className="text-sm text-white/90 line-clamp-2 drop-shadow">{member.bio}</p>
                 )}
               </div>
             </div>
 
             {/* Card Content */}
             <div className="p-4">
-
               {/* Services */}
               <div className="mb-4">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    <svg
+                      className="w-5 h-5 text-purple-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                      />
                     </svg>
                     <span className="text-sm font-semibold text-gray-900">Services</span>
                   </div>
@@ -333,7 +347,12 @@ export default function Staff() {
                     className="flex items-center gap-1 px-2 py-1 text-xs bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-md font-medium transition-all border border-blue-200"
                   >
                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                      />
                     </svg>
                     Edit
                   </button>
@@ -346,7 +365,11 @@ export default function Staff() {
                         className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-gradient-to-r from-pink-100 to-purple-100 text-purple-700 border border-purple-200 hover:shadow-sm transition-shadow"
                       >
                         <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          <path
+                            fillRule="evenodd"
+                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                            clipRule="evenodd"
+                          />
                         </svg>
                         {ss.service.name}
                       </span>
@@ -363,8 +386,18 @@ export default function Staff() {
               <div className="mb-4">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <svg
+                      className="w-5 h-5 text-blue-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
                     </svg>
                     <span className="text-sm font-semibold text-gray-900">Working Hours</span>
                   </div>
@@ -373,7 +406,12 @@ export default function Staff() {
                     className="flex items-center gap-1 px-2 py-1 text-xs bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-md font-medium transition-all border border-blue-200"
                   >
                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                      />
                     </svg>
                     Edit
                   </button>
@@ -382,12 +420,17 @@ export default function Staff() {
                   {member.workingHours.length > 0 ? (
                     <div className="space-y-2">
                       {member.workingHours.slice(0, 3).map((wh) => (
-                        <div key={wh.id} className="flex items-center justify-between bg-white/60 backdrop-blur-sm rounded-lg px-3 py-2">
+                        <div
+                          key={wh.id}
+                          className="flex items-center justify-between bg-white/60 backdrop-blur-sm rounded-lg px-3 py-2"
+                        >
                           <span className="text-xs font-semibold text-gray-700 flex items-center gap-2">
                             <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
                             {WEEKDAYS[wh.weekday]}
                           </span>
-                          <span className="text-xs text-gray-600 font-medium">{wh.startHhmm} - {wh.endHhmm}</span>
+                          <span className="text-xs text-gray-600 font-medium">
+                            {wh.startHhmm} - {wh.endHhmm}
+                          </span>
                         </div>
                       ))}
                       {member.workingHours.length > 3 && (
@@ -411,13 +454,25 @@ export default function Staff() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-purple-600 rounded-lg flex items-center justify-center">
-                          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          <svg
+                            className="w-5 h-5 text-white"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                            />
                           </svg>
                         </div>
                         <div>
                           <p className="text-xs text-gray-600 font-medium">Total Appointments</p>
-                          <p className="text-2xl font-bold text-gradient">{member._count.appointments}</p>
+                          <p className="text-2xl font-bold text-gradient">
+                            {member._count.appointments}
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -432,7 +487,12 @@ export default function Staff() {
                   className="flex-1 px-4 py-2.5 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-lg hover:from-pink-600 hover:to-purple-700 transition-all text-sm font-semibold shadow-lg hover:shadow-xl flex items-center justify-center gap-2 hover:-translate-y-0.5"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
                   </svg>
                   View Profile
                 </button>
@@ -446,7 +506,12 @@ export default function Staff() {
                   title="Delete staff member"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                    />
                   </svg>
                 </button>
               </div>
@@ -476,7 +541,9 @@ export default function Staff() {
           <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-pink-100 to-purple-100 flex items-center justify-center">
             <span className="text-3xl">👥</span>
           </div>
-          <p className="text-gray-500 text-sm md:text-base">No staff members yet. Add your first one!</p>
+          <p className="text-gray-500 text-sm md:text-base">
+            No staff members yet. Add your first one!
+          </p>
         </div>
       )}
 
@@ -559,7 +626,9 @@ export default function Staff() {
               <h2 className="text-lg md:text-xl font-bold text-gray-900">
                 Manage Services for {selectedStaffForServices.name}
               </h2>
-              <p className="text-xs md:text-sm text-gray-600 mt-1">Select which services this staff member can provide</p>
+              <p className="text-xs md:text-sm text-gray-600 mt-1">
+                Select which services this staff member can provide
+              </p>
             </div>
             <div className="p-6">
               <div className="space-y-2">
@@ -575,7 +644,9 @@ export default function Staff() {
                       className="w-4 h-4 text-pink-600 border-gray-300 rounded focus:ring-pink-500"
                     />
                     <div className="ml-3 flex-1 min-w-0">
-                      <div className="font-medium text-gray-900 text-sm md:text-base truncate">{service.name}</div>
+                      <div className="font-medium text-gray-900 text-sm md:text-base truncate">
+                        {service.name}
+                      </div>
                       <div className="text-xs md:text-sm text-gray-500 truncate">
                         {service.category.name} • {service.durationMin} min • ₪{service.priceIls}
                       </div>
@@ -615,14 +686,21 @@ export default function Staff() {
             <div className="p-6">
               <div className="space-y-3">
                 {workingHours.map((wh, index) => (
-                  <div key={index} className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 p-3 border border-gray-200 rounded-lg bg-gradient-to-r from-pink-50/50 to-purple-50/50">
+                  <div
+                    key={index}
+                    className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 p-3 border border-gray-200 rounded-lg bg-gradient-to-r from-pink-50/50 to-purple-50/50"
+                  >
                     <select
                       value={wh.weekday}
-                      onChange={(e) => updateWorkingHour(index, 'weekday', parseInt(e.target.value))}
+                      onChange={(e) =>
+                        updateWorkingHour(index, 'weekday', parseInt(e.target.value))
+                      }
                       className="w-full sm:w-auto px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 text-sm"
                     >
                       {WEEKDAYS.map((day, i) => (
-                        <option key={i} value={i}>{day}</option>
+                        <option key={i} value={i}>
+                          {day}
+                        </option>
                       ))}
                     </select>
                     <div className="flex items-center gap-2 w-full sm:w-auto">

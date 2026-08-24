@@ -40,7 +40,9 @@ export default function StaffProfile() {
   const [staff, setStaff] = useState<StaffMember | null>(null);
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'info' | 'services' | 'hours' | 'timeoff' | 'hourblocks'>('info');
+  const [activeTab, setActiveTab] = useState<
+    'info' | 'services' | 'hours' | 'timeoff' | 'hourblocks'
+  >('info');
   const [timeOffRefreshTrigger, setTimeOffRefreshTrigger] = useState(0);
   const [hourBlockRefreshTrigger, setHourBlockRefreshTrigger] = useState(0);
 
@@ -54,7 +56,9 @@ export default function StaffProfile() {
   const [bio, setBio] = useState('');
   const [active, setActive] = useState(true);
   const [selectedServiceIds, setSelectedServiceIds] = useState<string[]>([]);
-  const [workingHours, setWorkingHours] = useState<Array<{ weekday: number; startHhmm: string; endHhmm: string }>>([]);
+  const [workingHours, setWorkingHours] = useState<
+    Array<{ weekday: number; startHhmm: string; endHhmm: string }>
+  >([]);
 
   // Time off modal state
   const [showTimeOffForm, setShowTimeOffForm] = useState(false);
@@ -105,7 +109,7 @@ export default function StaffProfile() {
           weekday: wh.weekday,
           startHhmm: wh.startHhmm,
           endHhmm: wh.endHhmm,
-        }))
+        })),
       );
     } catch (error: any) {
       console.error('Failed to load staff data:', error);
@@ -141,7 +145,7 @@ export default function StaffProfile() {
 
   const toggleService = (serviceId: string) => {
     setSelectedServiceIds((prev) =>
-      prev.includes(serviceId) ? prev.filter((id) => id !== serviceId) : [...prev, serviceId]
+      prev.includes(serviceId) ? prev.filter((id) => id !== serviceId) : [...prev, serviceId],
     );
   };
 
@@ -193,10 +197,12 @@ export default function StaffProfile() {
 
       if (!editingTimeOffId && result.affectedAppointments > 0) {
         toast.success(
-          `Time off created. ${result.affectedAppointments} appointment(s) marked for rescheduling.`
+          `Time off created. ${result.affectedAppointments} appointment(s) marked for rescheduling.`,
         );
       } else {
-        toast.success(editingTimeOffId ? 'Time off updated successfully' : 'Time off created successfully');
+        toast.success(
+          editingTimeOffId ? 'Time off updated successfully' : 'Time off created successfully',
+        );
       }
 
       resetTimeOffForm();
@@ -245,10 +251,14 @@ export default function StaffProfile() {
 
       if (!editingHourBlockId && result.affectedAppointments > 0) {
         toast.success(
-          `Hour block created. ${result.affectedAppointments} appointment(s) marked for rescheduling.`
+          `Hour block created. ${result.affectedAppointments} appointment(s) marked for rescheduling.`,
         );
       } else {
-        toast.success(editingHourBlockId ? 'Hour block updated successfully' : 'Hour block created successfully');
+        toast.success(
+          editingHourBlockId
+            ? 'Hour block updated successfully'
+            : 'Hour block created successfully',
+        );
       }
 
       resetHourBlockForm();
@@ -286,7 +296,7 @@ export default function StaffProfile() {
       if (result.affectedAppointments > 0) {
         toast.success(
           `Staff member deleted. ${result.affectedAppointments} appointment(s) marked for rescheduling.`,
-          { duration: 5000 }
+          { duration: 5000 },
         );
       } else {
         toast.success('Staff member deleted successfully');
@@ -314,7 +324,12 @@ export default function StaffProfile() {
             className="mb-4 flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
             </svg>
             Back to Staff
           </button>
@@ -351,7 +366,12 @@ export default function StaffProfile() {
               className="px-4 py-2 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition-colors text-sm font-medium border border-red-200 flex items-center gap-2"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                />
               </svg>
               Delete Staff
             </button>
@@ -552,7 +572,8 @@ export default function StaffProfile() {
                       >
                         <h3 className="font-semibold text-gray-900 mb-1">{ss.service.name}</h3>
                         <p className="text-sm text-gray-600">
-                          {ss.service.category.name} • {ss.service.durationMin} min • ₪{ss.service.priceIls}
+                          {ss.service.category.name} • {ss.service.durationMin} min • ₪
+                          {ss.service.priceIls}
                         </p>
                       </div>
                     ))
@@ -588,7 +609,7 @@ export default function StaffProfile() {
                             weekday: wh.weekday,
                             startHhmm: wh.startHhmm,
                             endHhmm: wh.endHhmm,
-                          }))
+                          })),
                         );
                       }}
                       className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium"
@@ -614,7 +635,9 @@ export default function StaffProfile() {
                     >
                       <select
                         value={wh.weekday}
-                        onChange={(e) => updateWorkingHour(index, 'weekday', parseInt(e.target.value))}
+                        onChange={(e) =>
+                          updateWorkingHour(index, 'weekday', parseInt(e.target.value))
+                        }
                         className="w-full sm:w-auto px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
                       >
                         {WEEKDAYS.map((day, i) => (
@@ -691,7 +714,10 @@ export default function StaffProfile() {
               </div>
 
               {showTimeOffForm ? (
-                <form onSubmit={handleTimeOffSubmit} className="space-y-6 bg-white border-2 border-pink-200 rounded-lg p-6">
+                <form
+                  onSubmit={handleTimeOffSubmit}
+                  className="space-y-6 bg-white border-2 border-pink-200 rounded-lg p-6"
+                >
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Type <span className="text-red-500">*</span>
@@ -791,8 +817,8 @@ export default function StaffProfile() {
                           ? 'Updating...'
                           : 'Creating...'
                         : editingTimeOffId
-                        ? 'Update Time Off'
-                        : 'Create Time Off'}
+                          ? 'Update Time Off'
+                          : 'Create Time Off'}
                     </button>
                   </div>
                 </form>
@@ -813,7 +839,9 @@ export default function StaffProfile() {
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <h2 className="text-xl font-bold text-gray-900">Blocked Hours</h2>
-                  <p className="text-sm text-gray-500 mt-1">Block specific hours on a particular day</p>
+                  <p className="text-sm text-gray-500 mt-1">
+                    Block specific hours on a particular day
+                  </p>
                 </div>
                 {!showHourBlockForm && (
                   <button
@@ -826,7 +854,10 @@ export default function StaffProfile() {
               </div>
 
               {showHourBlockForm ? (
-                <form onSubmit={handleHourBlockSubmit} className="space-y-6 bg-white border-2 border-purple-200 rounded-lg p-6">
+                <form
+                  onSubmit={handleHourBlockSubmit}
+                  className="space-y-6 bg-white border-2 border-purple-200 rounded-lg p-6"
+                >
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Date <span className="text-red-500">*</span>
@@ -900,8 +931,8 @@ export default function StaffProfile() {
                           ? 'Updating...'
                           : 'Creating...'
                         : editingHourBlockId
-                        ? 'Update Hour Block'
-                        : 'Block Hours'}
+                          ? 'Update Hour Block'
+                          : 'Block Hours'}
                     </button>
                   </div>
                 </form>

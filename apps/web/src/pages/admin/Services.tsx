@@ -92,7 +92,7 @@ export default function Services() {
     } catch (error: any) {
       console.error('Failed to load data:', error);
       toast.error(error.message || 'Failed to load data');
-    } finally{
+    } finally {
       setLoading(false);
     }
   };
@@ -214,14 +214,22 @@ export default function Services() {
   };
 
   const handleDeleteCategory = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this category? All services in this category will need to be reassigned.')) return;
+    if (
+      !confirm(
+        'Are you sure you want to delete this category? All services in this category will need to be reassigned.',
+      )
+    )
+      return;
     try {
       await api.deleteCategory(id);
       toast.success('Category deleted successfully');
       loadData();
     } catch (error: any) {
       console.error('Failed to delete category:', error);
-      toast.error(error.message || 'Failed to delete category. Make sure there are no services in this category.');
+      toast.error(
+        error.message ||
+          'Failed to delete category. Make sure there are no services in this category.',
+      );
     }
   };
 
@@ -254,7 +262,9 @@ export default function Services() {
             <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
               Services & <span className="text-gradient">Categories</span>
             </h1>
-            <p className="text-sm md:text-base text-gray-600">Manage your services, categories, and pricing</p>
+            <p className="text-sm md:text-base text-gray-600">
+              Manage your services, categories, and pricing
+            </p>
           </div>
           <div className="flex gap-2">
             <button
@@ -263,7 +273,12 @@ export default function Services() {
               title="Export to CSV"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
               </svg>
               <span className="hidden sm:inline">CSV</span>
             </button>
@@ -273,7 +288,12 @@ export default function Services() {
               title="Export to PDF"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                />
               </svg>
               <span className="hidden sm:inline">PDF</span>
             </button>
@@ -322,7 +342,12 @@ export default function Services() {
                 title="Card view"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+                  />
                 </svg>
               </button>
               <button
@@ -335,7 +360,12 @@ export default function Services() {
                 title="Table view"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+                  />
                 </svg>
               </button>
             </div>
@@ -351,94 +381,137 @@ export default function Services() {
             <div className="card-premium overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full">
-                <thead className="bg-gradient-to-r from-pink-50 to-purple-50 border-b border-gray-200">
-                  <tr>
-                    <th className="text-left py-3 px-3 md:px-4 text-xs md:text-sm font-semibold text-gray-700">Service</th>
-                    <th className="text-left py-3 px-3 md:px-4 text-xs md:text-sm font-semibold text-gray-700">Category</th>
-                    <th className="hidden sm:table-cell text-left py-3 px-3 md:px-4 text-xs md:text-sm font-semibold text-gray-700">Duration</th>
-                    <th className="text-left py-3 px-3 md:px-4 text-xs md:text-sm font-semibold text-gray-700">Price</th>
-                    <th className="hidden md:table-cell text-left py-3 px-3 md:px-4 text-xs md:text-sm font-semibold text-gray-700">Status</th>
-                    <th className="text-right py-3 px-3 md:px-4 text-xs md:text-sm font-semibold text-gray-700">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
-                  {services.map((service) => (
-                    <tr key={service.id} className="hover:bg-gradient-to-r hover:from-pink-50/30 hover:to-purple-50/30 transition-all">
-                      <td className="py-3 px-3 md:px-4">
-                        <div className="min-w-0">
-                          <div className="font-medium text-gray-900 text-sm md:text-base truncate">{service.name}</div>
-                          {service.description && (
-                            <div className="text-xs md:text-sm text-gray-500 line-clamp-1">{service.description}</div>
-                          )}
-                        </div>
-                      </td>
-                      <td className="py-3 px-3 md:px-4">
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gradient-to-r from-pink-100 to-purple-100 text-purple-700 border border-purple-200">
-                          {service.category.name}
-                        </span>
-                      </td>
-                      <td className="hidden sm:table-cell py-3 px-3 md:px-4 text-gray-700 text-sm md:text-base">{service.durationMin} min</td>
-                      <td className="py-3 px-3 md:px-4 text-gray-900 font-medium text-sm md:text-base">₪{service.priceIls}</td>
-                      <td className="hidden md:table-cell py-3 px-3 md:px-4">
-                        <span
-                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                            service.active
-                              ? 'bg-green-100 text-green-800 border border-green-200'
-                              : 'bg-gray-100 text-gray-800 border border-gray-200'
-                          }`}
-                        >
-                          {service.active ? 'Active' : 'Inactive'}
-                        </span>
-                      </td>
-                      <td className="py-3 px-3 md:px-4">
-                        <div className="flex justify-end gap-2">
-                          <button
-                            onClick={() => handleEditService(service)}
-                            className="flex items-center gap-1 px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-all text-xs md:text-sm font-medium border border-blue-200 hover:border-blue-300"
-                            title="Edit service"
-                          >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                            </svg>
-                            <span className="hidden md:inline">Edit</span>
-                          </button>
-                          <button
-                            onClick={() => handleDeleteService(service.id)}
-                            className="flex items-center gap-1 px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg transition-all text-xs md:text-sm font-medium border border-red-200 hover:border-red-300"
-                            title="Delete service"
-                          >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
-                            <span className="hidden md:inline">Delete</span>
-                          </button>
-                        </div>
-                      </td>
+                  <thead className="bg-gradient-to-r from-pink-50 to-purple-50 border-b border-gray-200">
+                    <tr>
+                      <th className="text-left py-3 px-3 md:px-4 text-xs md:text-sm font-semibold text-gray-700">
+                        Service
+                      </th>
+                      <th className="text-left py-3 px-3 md:px-4 text-xs md:text-sm font-semibold text-gray-700">
+                        Category
+                      </th>
+                      <th className="hidden sm:table-cell text-left py-3 px-3 md:px-4 text-xs md:text-sm font-semibold text-gray-700">
+                        Duration
+                      </th>
+                      <th className="text-left py-3 px-3 md:px-4 text-xs md:text-sm font-semibold text-gray-700">
+                        Price
+                      </th>
+                      <th className="hidden md:table-cell text-left py-3 px-3 md:px-4 text-xs md:text-sm font-semibold text-gray-700">
+                        Status
+                      </th>
+                      <th className="text-right py-3 px-3 md:px-4 text-xs md:text-sm font-semibold text-gray-700">
+                        Actions
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            {services.length === 0 && (
-              <div className="p-8 md:p-12 text-center">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-pink-100 to-purple-100 flex items-center justify-center">
-                  <span className="text-3xl">💅</span>
-                </div>
-                <p className="text-gray-500 text-sm md:text-base">
-                  No services yet. Create your first service!
-                </p>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {services.map((service) => (
+                      <tr
+                        key={service.id}
+                        className="hover:bg-gradient-to-r hover:from-pink-50/30 hover:to-purple-50/30 transition-all"
+                      >
+                        <td className="py-3 px-3 md:px-4">
+                          <div className="min-w-0">
+                            <div className="font-medium text-gray-900 text-sm md:text-base truncate">
+                              {service.name}
+                            </div>
+                            {service.description && (
+                              <div className="text-xs md:text-sm text-gray-500 line-clamp-1">
+                                {service.description}
+                              </div>
+                            )}
+                          </div>
+                        </td>
+                        <td className="py-3 px-3 md:px-4">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gradient-to-r from-pink-100 to-purple-100 text-purple-700 border border-purple-200">
+                            {service.category.name}
+                          </span>
+                        </td>
+                        <td className="hidden sm:table-cell py-3 px-3 md:px-4 text-gray-700 text-sm md:text-base">
+                          {service.durationMin} min
+                        </td>
+                        <td className="py-3 px-3 md:px-4 text-gray-900 font-medium text-sm md:text-base">
+                          ₪{service.priceIls}
+                        </td>
+                        <td className="hidden md:table-cell py-3 px-3 md:px-4">
+                          <span
+                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                              service.active
+                                ? 'bg-green-100 text-green-800 border border-green-200'
+                                : 'bg-gray-100 text-gray-800 border border-gray-200'
+                            }`}
+                          >
+                            {service.active ? 'Active' : 'Inactive'}
+                          </span>
+                        </td>
+                        <td className="py-3 px-3 md:px-4">
+                          <div className="flex justify-end gap-2">
+                            <button
+                              onClick={() => handleEditService(service)}
+                              className="flex items-center gap-1 px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-all text-xs md:text-sm font-medium border border-blue-200 hover:border-blue-300"
+                              title="Edit service"
+                            >
+                              <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                                />
+                              </svg>
+                              <span className="hidden md:inline">Edit</span>
+                            </button>
+                            <button
+                              onClick={() => handleDeleteService(service.id)}
+                              className="flex items-center gap-1 px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg transition-all text-xs md:text-sm font-medium border border-red-200 hover:border-red-300"
+                              title="Delete service"
+                            >
+                              <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                />
+                              </svg>
+                              <span className="hidden md:inline">Delete</span>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
-            )}
-            {services.length > 0 && (
-              <Pagination
-                currentPage={pagination.page}
-                totalPages={pagination.totalPages}
-                totalItems={pagination.total}
-                itemsPerPage={pagination.limit}
-                onPageChange={handlePageChange}
-              />
-            )}
-          </div>
+              {services.length === 0 && (
+                <div className="p-8 md:p-12 text-center">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-pink-100 to-purple-100 flex items-center justify-center">
+                    <span className="text-3xl">💅</span>
+                  </div>
+                  <p className="text-gray-500 text-sm md:text-base">
+                    No services yet. Create your first service!
+                  </p>
+                </div>
+              )}
+              {services.length > 0 && (
+                <Pagination
+                  currentPage={pagination.page}
+                  totalPages={pagination.totalPages}
+                  totalItems={pagination.total}
+                  itemsPerPage={pagination.limit}
+                  onPageChange={handlePageChange}
+                />
+              )}
+            </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
               {services.map((service, index) => (
@@ -480,9 +553,7 @@ export default function Services() {
                         {service.name}
                       </h3>
                       {service.description && (
-                        <p className="text-sm text-gray-600 line-clamp-2">
-                          {service.description}
-                        </p>
+                        <p className="text-sm text-gray-600 line-clamp-2">{service.description}</p>
                       )}
                     </div>
 
@@ -490,15 +561,11 @@ export default function Services() {
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gradient-to-r from-pink-100 to-purple-100 text-purple-700 border border-purple-200">
                         {service.category.name}
                       </span>
-                      <span className="text-sm text-gray-600">
-                        {service.durationMin} min
-                      </span>
+                      <span className="text-sm text-gray-600">{service.durationMin} min</span>
                     </div>
 
                     <div className="flex items-center justify-between mb-4">
-                      <span className="text-2xl font-bold text-gradient">
-                        ₪{service.priceIls}
-                      </span>
+                      <span className="text-2xl font-bold text-gradient">₪{service.priceIls}</span>
                     </div>
 
                     {/* Action Buttons */}
@@ -507,8 +574,18 @@ export default function Services() {
                         onClick={() => handleEditService(service)}
                         className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-all text-sm font-medium border border-blue-200 hover:border-blue-300 hover:shadow-md"
                       >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                          />
                         </svg>
                         Edit
                       </button>
@@ -516,8 +593,18 @@ export default function Services() {
                         onClick={() => handleDeleteService(service.id)}
                         className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg transition-all text-sm font-medium border border-red-200 hover:border-red-300 hover:shadow-md"
                       >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                          />
                         </svg>
                         Delete
                       </button>
@@ -575,7 +662,9 @@ export default function Services() {
                     <h3 className="text-base md:text-lg font-semibold text-gray-900 truncate group-hover:text-gradient transition-all">
                       {category.name}
                     </h3>
-                    <p className="text-xs md:text-sm text-gray-500 mt-1 truncate">/{category.slug}</p>
+                    <p className="text-xs md:text-sm text-gray-500 mt-1 truncate">
+                      /{category.slug}
+                    </p>
                   </div>
                   <span
                     className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${
@@ -598,7 +687,9 @@ export default function Services() {
                 )}
                 <div className="flex items-center justify-between text-xs md:text-sm text-gray-600 mb-4 px-3 py-2 bg-gradient-to-r from-pink-50 to-purple-50 rounded-lg">
                   <span className="font-medium">Order: {category.order}</span>
-                  <span className="font-medium">{services.filter(s => s.categoryId === category.id).length} services</span>
+                  <span className="font-medium">
+                    {services.filter((s) => s.categoryId === category.id).length} services
+                  </span>
                 </div>
                 <div className="flex gap-2">
                   <button
@@ -644,7 +735,9 @@ export default function Services() {
                     {editingService ? '✏️ Edit Service' : '✨ Create New Service'}
                   </h2>
                   <p className="text-pink-100 text-sm">
-                    {editingService ? 'Update service details below' : 'Fill in the details to add a new service'}
+                    {editingService
+                      ? 'Update service details below'
+                      : 'Fill in the details to add a new service'}
                   </p>
                 </div>
                 <button
@@ -652,7 +745,12 @@ export default function Services() {
                   className="text-white/80 hover:text-white hover:bg-white/20 rounded-full p-2 transition-all duration-300 hover:rotate-90"
                 >
                   <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </button>
               </div>
@@ -664,7 +762,12 @@ export default function Services() {
               <div className="space-y-4">
                 <div className="flex items-center gap-2 text-pink-600 mb-3">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
+                    />
                   </svg>
                   <h3 className="font-semibold text-gray-800">Service Name</h3>
                 </div>
@@ -700,7 +803,12 @@ export default function Services() {
               <div className="space-y-4">
                 <div className="flex items-center gap-2 text-purple-600 mb-3">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
                   </svg>
                   <h3 className="font-semibold text-gray-800">Description</h3>
                 </div>
@@ -711,7 +819,9 @@ export default function Services() {
                     </label>
                     <textarea
                       value={serviceForm.description}
-                      onChange={(e) => setServiceForm({ ...serviceForm, description: e.target.value })}
+                      onChange={(e) =>
+                        setServiceForm({ ...serviceForm, description: e.target.value })
+                      }
                       className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all resize-none"
                       rows={3}
                       placeholder="Brief description of the service"
@@ -723,7 +833,9 @@ export default function Services() {
                     </label>
                     <textarea
                       value={serviceForm.descriptionHe}
-                      onChange={(e) => setServiceForm({ ...serviceForm, descriptionHe: e.target.value })}
+                      onChange={(e) =>
+                        setServiceForm({ ...serviceForm, descriptionHe: e.target.value })
+                      }
                       className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all resize-none"
                       rows={3}
                       placeholder="תיאור קצר של השירות"
@@ -741,7 +853,9 @@ export default function Services() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Category *</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Category *
+                  </label>
                   <select
                     value={serviceForm.categoryId}
                     onChange={(e) => setServiceForm({ ...serviceForm, categoryId: e.target.value })}
@@ -757,22 +871,30 @@ export default function Services() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Duration (minutes) *</label>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Duration (minutes) *
+                    </label>
                     <input
                       type="number"
                       value={serviceForm.durationMin}
-                      onChange={(e) => setServiceForm({ ...serviceForm, durationMin: parseInt(e.target.value) })}
+                      onChange={(e) =>
+                        setServiceForm({ ...serviceForm, durationMin: parseInt(e.target.value) })
+                      }
                       className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
                       min="15"
                       step="15"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Price (₪) *</label>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Price (₪) *
+                    </label>
                     <input
                       type="number"
                       value={serviceForm.priceIls}
-                      onChange={(e) => setServiceForm({ ...serviceForm, priceIls: parseFloat(e.target.value) })}
+                      onChange={(e) =>
+                        setServiceForm({ ...serviceForm, priceIls: parseFloat(e.target.value) })
+                      }
                       className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
                       min="0"
                       step="10"
@@ -811,7 +933,10 @@ export default function Services() {
                       onChange={(e) => setServiceForm({ ...serviceForm, active: e.target.checked })}
                       className="w-5 h-5 text-green-600 border-gray-300 rounded focus:ring-green-500"
                     />
-                    <label htmlFor="serviceActive" className="ml-3 text-sm font-medium text-gray-800">
+                    <label
+                      htmlFor="serviceActive"
+                      className="ml-3 text-sm font-medium text-gray-800"
+                    >
                       ✅ Active (visible to clients)
                     </label>
                   </div>
@@ -821,10 +946,15 @@ export default function Services() {
                       type="checkbox"
                       id="servicePriceFrom"
                       checked={serviceForm.priceFrom}
-                      onChange={(e) => setServiceForm({ ...serviceForm, priceFrom: e.target.checked })}
+                      onChange={(e) =>
+                        setServiceForm({ ...serviceForm, priceFrom: e.target.checked })
+                      }
                       className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                     />
-                    <label htmlFor="servicePriceFrom" className="ml-3 text-sm font-medium text-gray-800">
+                    <label
+                      htmlFor="servicePriceFrom"
+                      className="ml-3 text-sm font-medium text-gray-800"
+                    >
                       💰 Display "from" before price (for variable pricing)
                     </label>
                   </div>
@@ -875,9 +1005,7 @@ export default function Services() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    שם (עברית)
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">שם (עברית)</label>
                   <input
                     type="text"
                     value={categoryForm.nameHe}
@@ -895,7 +1023,9 @@ export default function Services() {
                   </label>
                   <textarea
                     value={categoryForm.description}
-                    onChange={(e) => setCategoryForm({ ...categoryForm, description: e.target.value })}
+                    onChange={(e) =>
+                      setCategoryForm({ ...categoryForm, description: e.target.value })
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     placeholder="e.g., Professional nail care services"
                     rows={3}
@@ -907,7 +1037,9 @@ export default function Services() {
                   </label>
                   <textarea
                     value={categoryForm.descriptionHe}
-                    onChange={(e) => setCategoryForm({ ...categoryForm, descriptionHe: e.target.value })}
+                    onChange={(e) =>
+                      setCategoryForm({ ...categoryForm, descriptionHe: e.target.value })
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     placeholder="לדוגמה: שירותי טיפוח ציפורניים מקצועיים"
                     rows={3}
@@ -932,11 +1064,15 @@ export default function Services() {
                 label="Image de la catégorie"
               />
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Display Order *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Display Order *
+                </label>
                 <input
                   type="number"
                   value={categoryForm.order}
-                  onChange={(e) => setCategoryForm({ ...categoryForm, order: parseInt(e.target.value) })}
+                  onChange={(e) =>
+                    setCategoryForm({ ...categoryForm, order: parseInt(e.target.value) })
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   min="0"
                 />

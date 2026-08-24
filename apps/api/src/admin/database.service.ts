@@ -1,11 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { exec } from 'child_process';
-import { promisify } from 'util';
 import * as fs from 'fs/promises';
 import * as path from 'path';
-
-const execAsync = promisify(exec);
 
 @Injectable()
 export class DatabaseService {
@@ -33,15 +29,15 @@ export class DatabaseService {
 
       // Map display names to Prisma model names
       const tableMapping: Record<string, string> = {
-        'User': 'user',
-        'Service': 'service',
-        'Category': 'category',
-        'Appointment': 'appointment',
-        'Message': 'message',
-        'MessageRecipient': 'messageRecipient',
-        'FcmToken': 'fcmToken',
-        'Staff': 'staff',
-        'RefreshToken': 'refreshToken',
+        User: 'user',
+        Service: 'service',
+        Category: 'category',
+        Appointment: 'appointment',
+        Message: 'message',
+        MessageRecipient: 'messageRecipient',
+        FcmToken: 'fcmToken',
+        Staff: 'staff',
+        RefreshToken: 'refreshToken',
       };
 
       const availableTables = Object.keys(tableMapping);
@@ -105,15 +101,15 @@ export class DatabaseService {
 
       // Map display names to Prisma model names
       const tableMapping: Record<string, string> = {
-        'User': 'user',
-        'Service': 'service',
-        'Category': 'category',
-        'Appointment': 'appointment',
-        'Message': 'message',
-        'MessageRecipient': 'messageRecipient',
-        'FcmToken': 'fcmToken',
-        'Staff': 'staff',
-        'RefreshToken': 'refreshToken',
+        User: 'user',
+        Service: 'service',
+        Category: 'category',
+        Appointment: 'appointment',
+        Message: 'message',
+        MessageRecipient: 'messageRecipient',
+        FcmToken: 'fcmToken',
+        Staff: 'staff',
+        RefreshToken: 'refreshToken',
       };
 
       // Determine which tables to restore
@@ -183,7 +179,7 @@ export class DatabaseService {
       return {
         date: metadata?.lastBackupDate || null,
       };
-    } catch (error) {
+    } catch {
       return { date: null };
     }
   }
@@ -192,7 +188,7 @@ export class DatabaseService {
     try {
       const content = await fs.readFile(this.metadataFile, 'utf-8');
       return JSON.parse(content);
-    } catch (error) {
+    } catch {
       return null;
     }
   }

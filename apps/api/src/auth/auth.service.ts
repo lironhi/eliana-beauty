@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcryptjs';
 import { RegisterDto, LoginDto } from './dto';
-import { JWT_ACCESS_TOKEN_EXPIRATION, JWT_REFRESH_TOKEN_EXPIRATION } from './constants';
+import { JWT_ACCESS_TOKEN_EXPIRATION } from './constants';
 import { randomBytes } from 'crypto';
 
 @Injectable()
@@ -80,7 +80,13 @@ export class AuthService {
     });
 
     // Generate new tokens
-    return this.generateTokens(tokenRecord.user.id, tokenRecord.user.email, tokenRecord.user.role, tokenRecord.user.name, tokenRecord.user.phone);
+    return this.generateTokens(
+      tokenRecord.user.id,
+      tokenRecord.user.email,
+      tokenRecord.user.role,
+      tokenRecord.user.name,
+      tokenRecord.user.phone,
+    );
   }
 
   async logout(refreshToken: string) {
@@ -181,7 +187,13 @@ export class AuthService {
     return { message: 'Password updated successfully' };
   }
 
-  private async generateTokens(userId: string, email: string, role: string, name: string, phone: string | null) {
+  private async generateTokens(
+    userId: string,
+    email: string,
+    role: string,
+    name: string,
+    phone: string | null,
+  ) {
     const payload = { sub: userId, email, role };
 
     // Generate access token (15 minutes)

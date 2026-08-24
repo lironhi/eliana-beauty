@@ -25,7 +25,11 @@ export class AppointmentsController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @GetUser('id') userId: string, @Body() dto: UpdateAppointmentDto) {
+  update(
+    @Param('id') id: string,
+    @GetUser('id') userId: string,
+    @Body() dto: UpdateAppointmentDto,
+  ) {
     return this.appointmentsService.update(id, userId, dto);
   }
 

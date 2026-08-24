@@ -55,7 +55,6 @@ export default function IconPickerModal({
     // Check which icons actually exist
     const checkIcons = async () => {
       setLoading(true);
-      const existingIcons: string[] = [];
 
       // Check each icon to see if it exists
       const checkPromises = iconList.map(async (icon) => {
@@ -70,7 +69,7 @@ export default function IconPickerModal({
           img.src = `/payment-icons/${icon}`;
           const exists = await promise;
           return exists ? icon : null;
-        } catch (error) {
+        } catch {
           return null;
         }
       });
@@ -182,7 +181,11 @@ export default function IconPickerModal({
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">No Icons Found</h3>
               <p className="text-gray-600 mb-4">
-                Place your PNG icons in the <code className="bg-gray-100 px-2 py-1 rounded font-mono text-sm">public/payment-icons/</code> folder
+                Place your PNG icons in the{' '}
+                <code className="bg-gray-100 px-2 py-1 rounded font-mono text-sm">
+                  public/payment-icons/
+                </code>{' '}
+                folder
               </p>
               <p className="text-sm text-gray-500">
                 Supported files: cash.png, credit-card.png, bit.png, etc.
@@ -208,11 +211,7 @@ export default function IconPickerModal({
                     {/* Selected Checkmark */}
                     {isSelected && (
                       <div className="absolute -top-2 -right-2 w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center shadow-lg z-10">
-                        <svg
-                          className="w-4 h-4 text-white"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                        >
+                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                           <path
                             fillRule="evenodd"
                             d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
