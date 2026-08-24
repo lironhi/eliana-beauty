@@ -4,7 +4,7 @@
   "private": true,
   "description": "Booking system for beauty services - Eliana Beauty",
   "engines": {
-    "node": ">=20.19.0",
+    "node": ">=22.12.0 <25.0.0",
     "pnpm": ">=8.0.0"
   },
   "packageManager": "pnpm@8.15.0",

@@ -17,6 +17,23 @@ import { GetUser } from './decorators/get-user.decorator';
 import { Request, Response } from 'express';
 import { REFRESH_TOKEN_COOKIE_NAME } from './constants';
 
+// The front end is served from a different site than the API in production
+// (Vercel vs Render), and a SameSite=Strict cookie is never sent on those
+// cross-site requests -- /auth/refresh would silently stop working. Cross-site
+// cookies require SameSite=None, which browsers only accept together with
+// Secure. Locally the front and API are both on localhost, so Strict is fine
+// and Secure must stay off because dev runs over plain http.
+const isProduction = process.env.NODE_ENV === 'production';
+
+const REFRESH_COOKIE_OPTIONS = {
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: isProduction ? ('none' as const) : ('strict' as const),
+  path: '/',
+};
+
+const REFRESH_TOKEN_MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 7 days
+
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
@@ -27,10 +44,8 @@ export class AuthController {
 
     // Set refresh token as httpOnly cookie
     res.cookie(REFRESH_TOKEN_COOKIE_NAME, result.refresh_token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      ...REFRESH_COOKIE_OPTIONS,
+      maxAge: REFRESH_TOKEN_MAX_AGE,
     });
 
     // Don't send refresh token in response body
@@ -44,10 +59,8 @@ export class AuthController {
 
     // Set refresh token as httpOnly cookie
     res.cookie(REFRESH_TOKEN_COOKIE_NAME, result.refresh_token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      ...REFRESH_COOKIE_OPTIONS,
+      maxAge: REFRESH_TOKEN_MAX_AGE,
     });
 
     // Don't send refresh token in response body
@@ -68,10 +81,8 @@ export class AuthController {
 
     // Set new refresh token as httpOnly cookie
     res.cookie(REFRESH_TOKEN_COOKIE_NAME, result.refresh_token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      ...REFRESH_COOKIE_OPTIONS,
+      maxAge: REFRESH_TOKEN_MAX_AGE,
     });
 
     // Don't send refresh token in response body
@@ -89,7 +100,7 @@ export class AuthController {
     }
 
     // Clear the cookie
-    res.clearCookie(REFRESH_TOKEN_COOKIE_NAME);
+    res.clearCookie(REFRESH_TOKEN_COOKIE_NAME, REFRESH_COOKIE_OPTIONS);
 
     return { message: 'Logged out successfully' };
   }
