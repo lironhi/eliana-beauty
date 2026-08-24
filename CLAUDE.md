@@ -62,6 +62,30 @@ se limite à `src/` hors specs : sans lui, tsc élargit le `rootDir` à la racin
 package, émet `dist/src/main.js` au lieu de `dist/main.js` — et `pnpm start`
 casse — tout en embarquant les tests et les seeds dans le bundle de production.
 
+## Déploiement
+
+L'API a besoin d'un serveur Node qui tourne en continu (WebSocket Socket.io,
+cron des rappels via `@nestjs/schedule`, pool Prisma persistant) : Render ou
+équivalent, **pas** Vercel, qui ne fait que du serverless. Le front `apps/web`,
+lui, est un build statique et va très bien sur Vercel comme sur Render.
+
+Trois pièges rencontrés en production, tous déjà corrigés :
+
+1. **`NODE_ENV=production` fait sauter les devDependencies à l'installation.**
+   Or `prisma` et `@nestjs/cli` en font partie et sont nécessaires au build. La
+   commande de build doit donc forcer leur installation :
+   `pnpm install --prod=false && pnpm --filter api build`.
+2. **Borner `engines.node`.** Un `>=20.19.0` non borné fait choisir la dernière
+   version disponible à l'hébergeur (Node 26), que Prisma ne supporte pas. Le
+   `.node-version` à la racine fixe Node 22.
+3. **Le cookie de refresh est cross-site en production.** Front et API sont sur
+   deux domaines différents, donc `SameSite=Strict` empêcherait le navigateur
+   d'envoyer le cookie à `/auth/refresh`. `auth.controller.ts` bascule sur
+   `SameSite=None` + `Secure` dès que `NODE_ENV=production`.
+
+Le disque des hébergeurs gratuits est éphémère : `apps/api/uploads/` est perdu à
+chaque redéploiement. À migrer vers Supabase Storage avant la mise en service.
+
 ## Pièges connus
 
 - **Ne jamais créer de fichier nommé `nul`** (ni `con`, `aux`, `prn`) : ce sont
