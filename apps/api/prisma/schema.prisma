@@ -53,7 +53,8 @@ model User {
   email     String   @unique
   phone     String?
   name      String
-  password  String
+  // Nul pour les comptes créés via Google : ils n'ont jamais eu de mot de passe.
+  password  String?
   role      Role     @default(CLIENT)
   locale    Locale   @default(en)
   active    Boolean  @default(true)

@@ -38,7 +38,12 @@ class ApiClient {
     });
 
     // If we get a 401, try to refresh the token
-    if (response.status === 401 && endpoint !== '/auth/refresh' && endpoint !== '/auth/login') {
+    if (
+      response.status === 401 &&
+      endpoint !== '/auth/refresh' &&
+      endpoint !== '/auth/login' &&
+      endpoint !== '/auth/google'
+    ) {
       const refreshed = await this.refreshToken();
       if (refreshed) {
         // Retry the original request with new token
@@ -107,6 +112,13 @@ class ApiClient {
     return this.request<{ access_token: string; user: any }>('/auth/register', {
       method: 'POST',
       body: JSON.stringify(data),
+    });
+  }
+
+  async loginWithGoogle(credential: string) {
+    return this.request<{ access_token: string; user: any }>('/auth/google', {
+      method: 'POST',
+      body: JSON.stringify({ credential }),
     });
   }
 

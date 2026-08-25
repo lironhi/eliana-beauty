@@ -1,4 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
+
+const mockVerifyIdToken = jest.fn();
+jest.mock('google-auth-library', () => ({
+  OAuth2Client: jest.fn().mockImplementation(() => ({ verifyIdToken: mockVerifyIdToken })),
+}));
 import { JwtService } from '@nestjs/jwt';
 import { ConflictException, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
@@ -204,5 +209,78 @@ describe('AuthService', () => {
       expect(written).not.toBe('N3wPass!');
       await expect(bcrypt.compare('N3wPass!', written)).resolves.toBe(true);
     });
+  });
+
+  describe('loginWithGoogle', () => {
+    const ticket = (payload: Record<string, unknown>) => ({ getPayload: () => payload });
+
+    beforeEach(() => {
+      process.env.GOOGLE_CLIENT_ID = 'client-id-de-test';
+      mockVerifyIdToken.mockReset();
+    });
+
+    it('refuse un jeton que Google ne valide pas', async () => {
+      mockVerifyIdToken.mockRejectedValue(new Error('bad signature'));
+
+      await expect(service.loginWithGoogle('jeton-bidon')).rejects.toThrow(UnauthorizedException);
+      expect(prisma.user.create).not.toHaveBeenCalled();
+    });
+
+    // Sans cette garde, on pourrait revendiquer l'e-mail de quelqu'un d'autre.
+    it('refuse un e-mail non verifie par Google', async () => {
+      mockVerifyIdToken.mockResolvedValue(
+        ticket({ email: 'usurpateur@example.com', email_verified: false, name: 'X' }),
+      );
+
+      await expect(service.loginWithGoogle('jeton')).rejects.toThrow(UnauthorizedException);
+      expect(prisma.user.create).not.toHaveBeenCalled();
+    });
+
+    it('cree un compte sans mot de passe au premier passage', async () => {
+      mockVerifyIdToken.mockResolvedValue(
+        ticket({ email: 'Nouvelle@Example.com', email_verified: true, name: 'Nouvelle' }),
+      );
+      prisma.user.findUnique.mockResolvedValue(null);
+      prisma.user.create.mockImplementation(({ data }: { data: User }) =>
+        Promise.resolve(makeUser(data)),
+      );
+      prisma.refreshToken.create.mockResolvedValue(makeRefreshToken());
+
+      await service.loginWithGoogle('jeton');
+
+      const { data } = prisma.user.create.mock.calls[0][0];
+      expect(data.password).toBeNull();
+      expect(data.email).toBe('nouvelle@example.com');
+    });
+
+    it('rattache un e-mail Google a un compte existant', async () => {
+      mockVerifyIdToken.mockResolvedValue(
+        ticket({ email: 'eliana@example.com', email_verified: true, name: 'Eliana' }),
+      );
+      prisma.user.findUnique.mockResolvedValue(makeUser());
+      prisma.refreshToken.create.mockResolvedValue(makeRefreshToken());
+
+      const result = await service.loginWithGoogle('jeton');
+
+      expect(prisma.user.create).not.toHaveBeenCalled();
+      expect(result.user).toMatchObject({ id: 'user-1' });
+    });
+
+    it('refuse un compte desactive', async () => {
+      mockVerifyIdToken.mockResolvedValue(
+        ticket({ email: 'eliana@example.com', email_verified: true, name: 'Eliana' }),
+      );
+      prisma.user.findUnique.mockResolvedValue(makeUser({ active: false }));
+
+      await expect(service.loginWithGoogle('jeton')).rejects.toThrow(UnauthorizedException);
+    });
+  });
+
+  it('refuse la connexion par mot de passe sur un compte Google', async () => {
+    prisma.user.findUnique.mockResolvedValue(makeUser({ password: null }));
+
+    await expect(
+      service.login({ email: 'eliana@example.com', password: 'peu importe' }),
+    ).rejects.toThrow(UnauthorizedException);
   });
 });

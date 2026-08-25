@@ -9,6 +9,7 @@ import { AppointmentsModule } from './appointments/appointments.module';
 import { AdminModule } from './admin/admin.module';
 import { MessagesModule } from './messages/messages.module';
 import { UploadModule } from './upload/upload.module';
+import { CronModule } from './cron/cron.module';
 import { HealthController } from './health.controller';
 
 @Module({
@@ -23,6 +24,7 @@ import { HealthController } from './health.controller';
     AdminModule,
     MessagesModule,
     UploadModule,
+    CronModule,
   ],
   controllers: [HealthController],
 })

@@ -174,6 +174,7 @@ export default {
     cancelSuccess: 'התור בוטל בהצלחה',
   },
   auth: {
+    or: 'או',
     login: 'התחברות',
     register: 'הרשמה',
     email: 'אימייל',

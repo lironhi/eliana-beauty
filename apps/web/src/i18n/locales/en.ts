@@ -174,6 +174,7 @@ export default {
     cancelSuccess: 'Booking cancelled successfully',
   },
   auth: {
+    or: 'or',
     login: 'Login',
     register: 'Register',
     email: 'Email',

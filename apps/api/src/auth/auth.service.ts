@@ -3,11 +3,14 @@ import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcryptjs';
 import { RegisterDto, LoginDto } from './dto';
-import { JWT_ACCESS_TOKEN_EXPIRATION } from './constants';
+import { JWT_ACCESS_TOKEN_EXPIRATION, REFRESH_TOKEN_DAYS } from './constants';
 import { randomBytes } from 'crypto';
+import { OAuth2Client } from 'google-auth-library';
 
 @Injectable()
 export class AuthService {
+  private readonly googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
   constructor(
     private prisma: PrismaService,
     private jwt: JwtService,
@@ -47,6 +50,11 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
+    if (!user.password) {
+      // Compte créé via Google : il n'y a pas de mot de passe à comparer.
+      throw new UnauthorizedException('This account uses Google sign-in');
+    }
+
     const passwordValid = await bcrypt.compare(dto.password, user.password);
     if (!passwordValid) {
       throw new UnauthorizedException('Invalid credentials');
@@ -59,6 +67,61 @@ export class AuthService {
     return this.generateTokens(user.id, user.email, user.role, user.name, user.phone);
   }
 
+  /**
+   * Connexion via Google Identity Services.
+   *
+   * Le front envoie l'ID token signé par Google ; on le vérifie côté serveur
+   * contre notre client ID, puis on émet nos propres jetons. On ne fait jamais
+   * confiance à l'e-mail transmis par le navigateur sans cette vérification.
+   */
+  async loginWithGoogle(credential: string) {
+    const clientId = process.env.GOOGLE_CLIENT_ID;
+    if (!clientId) {
+      throw new UnauthorizedException('Google sign-in is not configured');
+    }
+
+    let payload;
+    try {
+      const ticket = await this.googleClient.verifyIdToken({
+        idToken: credential,
+        audience: clientId,
+      });
+      payload = ticket.getPayload();
+    } catch {
+      throw new UnauthorizedException('Invalid Google token');
+    }
+
+    if (!payload?.email) {
+      throw new UnauthorizedException('Invalid Google token');
+    }
+
+    // Sans cette garde, quelqu'un pourrait revendiquer une adresse qu'il ne
+    // contrôle pas et récupérer un compte existant portant le même e-mail.
+    if (!payload.email_verified) {
+      throw new UnauthorizedException('Google account email is not verified');
+    }
+
+    const email = payload.email.toLowerCase();
+    let user = await this.prisma.user.findUnique({ where: { email } });
+
+    if (!user) {
+      user = await this.prisma.user.create({
+        data: {
+          email,
+          name: payload.name || email.split('@')[0],
+          password: null,
+          role: 'CLIENT',
+          locale: payload.locale?.startsWith('he') ? 'he' : 'en',
+        },
+      });
+    }
+
+    if (!user.active) {
+      throw new UnauthorizedException('Account is deactivated');
+    }
+
+    return this.generateTokens(user.id, user.email, user.role, user.name, user.phone);
+  }
   async refreshTokens(refreshToken: string) {
     const tokenRecord = await this.prisma.refreshToken.findUnique({
       where: { token: refreshToken },
@@ -169,6 +232,11 @@ export class AuthService {
       throw new UnauthorizedException('User not found');
     }
 
+    if (!user.password) {
+      // Compte Google : aucun mot de passe actuel à vérifier.
+      throw new UnauthorizedException('This account uses Google sign-in');
+    }
+
     // Verify current password
     const passwordValid = await bcrypt.compare(data.currentPassword, user.password);
     if (!passwordValid) {
@@ -204,7 +272,7 @@ export class AuthService {
     // Generate refresh token (7 days)
     const refreshToken = randomBytes(40).toString('hex');
     const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 7);
+    expiresAt.setDate(expiresAt.getDate() + REFRESH_TOKEN_DAYS);
 
     // Store refresh token in database
     await this.prisma.refreshToken.create({

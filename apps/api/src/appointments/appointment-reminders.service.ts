@@ -19,17 +19,17 @@ export class AppointmentRemindersService {
     const in2Hours = addHours(now, 2);
 
     try {
-      // Find appointments that need 24h reminders
-      await this.send24HourReminders(now, in24Hours);
-
-      // Find appointments that need 2h reminders
-      await this.send2HourReminders(now, in2Hours);
+      const sent24h = await this.send24HourReminders(now, in24Hours);
+      const sent2h = await this.send2HourReminders(now, in2Hours);
+      return { sent24h, sent2h };
     } catch (error) {
       this.logger.error('Error sending reminders:', error);
+      return { sent24h: 0, sent2h: 0 };
     }
   }
 
-  private async send24HourReminders(now: Date, in24Hours: Date) {
+  private async send24HourReminders(now: Date, in24Hours: Date): Promise<number> {
+    let sent = 0;
     // Find appointments starting in ~24 hours that haven't received a 24h reminder
     const appointments = await this.prisma.appointment.findMany({
       where: {
@@ -59,15 +59,19 @@ export class AppointmentRemindersService {
 
       if (!existingReminder) {
         await this.sendReminder(appointment, '24h');
+        sent++;
       }
     }
 
-    if (appointments.length > 0) {
-      this.logger.log(`Sent ${appointments.length} 24-hour reminders`);
+    if (sent > 0) {
+      this.logger.log(`Sent ${sent} 24-hour reminder(s)`);
     }
+
+    return sent;
   }
 
-  private async send2HourReminders(now: Date, in2Hours: Date) {
+  private async send2HourReminders(now: Date, in2Hours: Date): Promise<number> {
+    let sent = 0;
     // Find appointments starting in ~2 hours that haven't received a 2h reminder
     const appointments = await this.prisma.appointment.findMany({
       where: {
@@ -97,12 +101,15 @@ export class AppointmentRemindersService {
 
       if (!existingReminder) {
         await this.sendReminder(appointment, '2h');
+        sent++;
       }
     }
 
-    if (appointments.length > 0) {
-      this.logger.log(`Sent ${appointments.length} 2-hour reminders`);
+    if (sent > 0) {
+      this.logger.log(`Sent ${sent} 2-hour reminder(s)`);
     }
+
+    return sent;
   }
 
   private async sendReminder(appointment: any, type: '24h' | '2h') {

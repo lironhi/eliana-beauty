@@ -14,6 +14,7 @@ interface AuthStore {
   user: User | null;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
+  loginWithGoogle: (credential: string) => Promise<void>;
   register: (data: {
     email: string;
     password: string;
@@ -35,6 +36,15 @@ export const useAuthStore = create<AuthStore>()(
       login: async (email: string, password: string) => {
         const response = await api.login(email, password);
         // Store access token in memory (API client)
+        api.setAccessToken(response.access_token);
+        set({
+          user: response.user,
+          isAuthenticated: true,
+        });
+      },
+
+      loginWithGoogle: async (credential: string) => {
+        const response = await api.loginWithGoogle(credential);
         api.setAccessToken(response.access_token);
         set({
           user: response.user,

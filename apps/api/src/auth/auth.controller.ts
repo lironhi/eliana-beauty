@@ -11,11 +11,11 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { RegisterDto, LoginDto } from './dto';
+import { RegisterDto, LoginDto, GoogleLoginDto } from './dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { GetUser } from './decorators/get-user.decorator';
 import { Request, Response } from 'express';
-import { REFRESH_TOKEN_COOKIE_NAME } from './constants';
+import { REFRESH_TOKEN_COOKIE_NAME, REFRESH_TOKEN_MAX_AGE_MS } from './constants';
 
 // The front end is served from a different site than the API in production
 // (Vercel vs Render), and a SameSite=Strict cookie is never sent on those
@@ -32,8 +32,6 @@ const REFRESH_COOKIE_OPTIONS = {
   path: '/',
 };
 
-const REFRESH_TOKEN_MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 7 days
-
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
@@ -45,7 +43,7 @@ export class AuthController {
     // Set refresh token as httpOnly cookie
     res.cookie(REFRESH_TOKEN_COOKIE_NAME, result.refresh_token, {
       ...REFRESH_COOKIE_OPTIONS,
-      maxAge: REFRESH_TOKEN_MAX_AGE,
+      maxAge: REFRESH_TOKEN_MAX_AGE_MS,
     });
 
     // Don't send refresh token in response body
@@ -60,7 +58,7 @@ export class AuthController {
     // Set refresh token as httpOnly cookie
     res.cookie(REFRESH_TOKEN_COOKIE_NAME, result.refresh_token, {
       ...REFRESH_COOKIE_OPTIONS,
-      maxAge: REFRESH_TOKEN_MAX_AGE,
+      maxAge: REFRESH_TOKEN_MAX_AGE_MS,
     });
 
     // Don't send refresh token in response body
@@ -68,6 +66,19 @@ export class AuthController {
     return response;
   }
 
+  @Post('google')
+  @HttpCode(HttpStatus.OK)
+  async google(@Body() dto: GoogleLoginDto, @Res({ passthrough: true }) res: Response) {
+    const result = await this.authService.loginWithGoogle(dto.credential);
+
+    res.cookie(REFRESH_TOKEN_COOKIE_NAME, result.refresh_token, {
+      ...REFRESH_COOKIE_OPTIONS,
+      maxAge: REFRESH_TOKEN_MAX_AGE_MS,
+    });
+
+    const { refresh_token, ...response } = result;
+    return response;
+  }
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
   async refresh(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
@@ -82,7 +93,7 @@ export class AuthController {
     // Set new refresh token as httpOnly cookie
     res.cookie(REFRESH_TOKEN_COOKIE_NAME, result.refresh_token, {
       ...REFRESH_COOKIE_OPTIONS,
-      maxAge: REFRESH_TOKEN_MAX_AGE,
+      maxAge: REFRESH_TOKEN_MAX_AGE_MS,
     });
 
     // Don't send refresh token in response body

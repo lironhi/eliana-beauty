@@ -4,6 +4,8 @@ import { useI18n } from '@/i18n';
 import { useAuthStore } from '@/store/authStore';
 import { PasswordStrength } from '@/components/PasswordStrength';
 
+import GoogleSignInButton from '@/components/GoogleSignInButton';
+
 export default function Register() {
   const { t, locale } = useI18n();
   const navigate = useNavigate();
@@ -443,6 +445,16 @@ export default function Register() {
                 )}
               </button>
             </form>
+
+            <div className="my-6 flex items-center gap-3">
+              <span className="h-px flex-1 bg-gray-200" />
+              <span className="text-xs font-medium uppercase tracking-wide text-gray-400">
+                {t('auth.or')}
+              </span>
+              <span className="h-px flex-1 bg-gray-200" />
+            </div>
+
+            <GoogleSignInButton />
 
             {/* Divider */}
             <div className="relative my-6">

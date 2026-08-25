@@ -9,5 +9,6 @@ import { EmailModule } from '../email/email.module';
   imports: [AvailabilityModule, EmailModule],
   controllers: [AppointmentsController],
   providers: [AppointmentsService, AppointmentRemindersService],
+  exports: [AppointmentRemindersService],
 })
 export class AppointmentsModule {}

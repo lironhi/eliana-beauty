@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useI18n } from '@/i18n';
 import { useAuthStore } from '@/store/authStore';
 
+import GoogleSignInButton from '@/components/GoogleSignInButton';
+
 export default function Login() {
   const { t } = useI18n();
   const navigate = useNavigate();
@@ -285,6 +287,16 @@ export default function Login() {
                 </span>
               </button>
             </form>
+
+            <div className="my-6 flex items-center gap-3">
+              <span className="h-px flex-1 bg-gray-200" />
+              <span className="text-xs font-medium uppercase tracking-wide text-gray-400">
+                {t('auth.or')}
+              </span>
+              <span className="h-px flex-1 bg-gray-200" />
+            </div>
+
+            <GoogleSignInButton />
 
             {/* Divider */}
             <div className="my-8 flex items-center gap-4">

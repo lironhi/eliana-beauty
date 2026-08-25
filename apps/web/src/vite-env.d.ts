@@ -3,6 +3,8 @@
 
 interface ImportMetaEnv {
   readonly VITE_API_URL: string;
+  /** Absent tant que la connexion Google n'est pas configurée. */
+  readonly VITE_GOOGLE_CLIENT_ID?: string;
 }
 
 interface ImportMeta {
