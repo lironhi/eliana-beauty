@@ -4,6 +4,16 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Le site est conçu uniquement en clair : aucune variante `dark:`, aucun
+ * `prefers-color-scheme` dans le projet. Le déclarer empêche le mode sombre
+ * forcé du navigateur de réinterpréter les couleurs, et garde les contrôles
+ * natifs (scrollbars, champs, sélecteurs de date) en version claire.
+ */
+:root {
+  color-scheme: light;
+}
+
 * {
   margin: 0;
   padding: 0;

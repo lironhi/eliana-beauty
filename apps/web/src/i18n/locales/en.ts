@@ -256,4 +256,11 @@ export default {
     broadcastSentSuccess: 'Message sent to all clients!',
     broadcastSentError: 'Error sending broadcast message',
   },
+  install: {
+    title: 'Install Eliana Beauty',
+    subtitle: 'Add the app to your home screen for quick access.',
+    button: 'Install',
+    later: 'Not now',
+    iosHint: 'Tap the Share button, then choose "Add to Home Screen".',
+  },
 };

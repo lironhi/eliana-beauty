@@ -24,6 +24,8 @@ import SystemStatus from './pages/admin/SystemStatus';
 import More from './pages/admin/More';
 import LoadingScreen from './components/LoadingScreen';
 
+import InstallPrompt from './components/InstallPrompt';
+
 function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [showContent, setShowContent] = useState(false);
@@ -121,6 +123,7 @@ function App() {
             <Route path="more" element={<More />} />
           </Route>
         </Routes>
+        <InstallPrompt />
       </div>
     </>
   );
