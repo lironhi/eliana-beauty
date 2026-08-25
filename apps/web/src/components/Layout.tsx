@@ -1,4 +1,5 @@
 import { Outlet, Link, useNavigate } from 'react-router-dom';
+import FlagIcon from './FlagIcon';
 import { useState, useRef, useEffect } from 'react';
 import { useAuthStore } from '@/store/authStore';
 import { useI18n } from '@/i18n';
@@ -36,8 +37,8 @@ export default function Layout() {
   }, []);
 
   const languages = [
-    { code: 'en', flag: '🇺🇸', name: 'English' },
-    { code: 'he', flag: '🇮🇱', name: 'עברית' },
+    { code: 'en' as const, name: 'English' },
+    { code: 'he' as const, name: 'עברית' },
   ];
 
   const currentLanguage = languages.find((lang) => lang.code === locale) || languages[0];
@@ -84,7 +85,7 @@ export default function Layout() {
                 className="flex items-center gap-1 sm:gap-2 px-3 py-2 bg-gradient-to-br from-white to-gray-50 border-2 border-gray-200 rounded-xl hover:border-pink-300 hover:shadow-lg transition-all duration-300 group"
               >
                 <div className="w-6 h-6 rounded-full overflow-hidden flex items-center justify-center text-lg bg-white shadow-md border-2 border-pink-100 group-hover:scale-110 transition-transform duration-300">
-                  {currentLanguage.flag}
+                  <FlagIcon code={currentLanguage.code} />
                 </div>
                 <svg
                   className={`w-3 h-3 sm:w-4 sm:h-4 text-gray-600 transition-all duration-300 ${isLanguageOpen ? 'rotate-180 text-pink-600' : 'group-hover:text-pink-600'}`}
@@ -114,7 +115,7 @@ export default function Layout() {
                       }`}
                     >
                       <div className="w-9 h-9 rounded-full overflow-hidden flex items-center justify-center text-xl bg-white shadow-lg border-2 border-pink-100">
-                        {lang.flag}
+                        <FlagIcon code={lang.code} />
                       </div>
                       <span
                         className={`text-sm font-semibold ${locale === lang.code ? 'text-pink-600' : 'text-gray-700'}`}
