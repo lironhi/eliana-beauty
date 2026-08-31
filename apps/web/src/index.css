@@ -21,8 +21,19 @@
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
-    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    'Roboto',
+    'Oxygen',
+    'Ubuntu',
+    'Cantarell',
+    'Fira Sans',
+    'Droid Sans',
+    'Helvetica Neue',
+    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background: linear-gradient(135deg, #fdf2f8 0%, #faf5ff 100%);
@@ -35,7 +46,12 @@ body {
 }
 
 /* Typography */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: 'Playfair Display', serif;
   font-weight: 700;
   letter-spacing: -0.02em;
@@ -105,7 +121,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -114,7 +131,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 @keyframes glow {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow: 0 0 20px rgba(236, 72, 153, 0.3);
   }
   50% {
@@ -135,7 +153,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 @keyframes pulse-slow {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
@@ -144,7 +163,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 @keyframes bounce-gentle {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -162,7 +182,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 @keyframes wiggle {
-  0%, 100% {
+  0%,
+  100% {
     transform: rotate(0deg);
   }
   25% {
@@ -174,7 +195,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 @keyframes bounce-slow {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -195,7 +217,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 @keyframes rotate-y-2 {
-  0%, 100% {
+  0%,
+  100% {
     transform: perspective(1000px) rotateY(2deg);
   }
   50% {
@@ -289,7 +312,9 @@ h1, h2, h3, h4, h5, h6 {
 .scroll-fade-in {
   opacity: 0;
   transform: translateY(30px);
-  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+  transition:
+    opacity 0.8s ease-out,
+    transform 0.8s ease-out;
 }
 
 .scroll-fade-in.visible {
@@ -398,12 +423,7 @@ html {
 
 /* Loading skeleton */
 .skeleton {
-  background: linear-gradient(
-    90deg,
-    #f0f0f0 0%,
-    #e0e0e0 50%,
-    #f0f0f0 100%
-  );
+  background: linear-gradient(90deg, #f0f0f0 0%, #e0e0e0 50%, #f0f0f0 100%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
@@ -451,7 +471,122 @@ html {
 
 /* Responsive Typography Scale */
 @media (max-width: 640px) {
-  h1 { font-size: 2rem; }
-  h2 { font-size: 1.75rem; }
-  h3 { font-size: 1.5rem; }
+  h1 {
+    font-size: 2rem;
+  }
+  h2 {
+    font-size: 1.75rem;
+  }
+  h3 {
+    font-size: 1.5rem;
+  }
+}
+
+/*
+ * Chrome peint un fond jaune sur les champs remplis automatiquement, ce qui
+ * casse toute charte graphique. On ne peut pas le supprimer : la seule parade
+ * est de le recouvrir par une ombre interne massive.
+ */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px #ffffff inset;
+  -webkit-text-fill-color: #1f2937;
+  caret-color: #1f2937;
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+/*
+ * Respecter le réglage système : certaines personnes souffrent de nausées ou
+ * de vertiges face aux animations. On les neutralise plutôt que de les
+ * ralentir, tout en gardant l'interface utilisable.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================================
+   Décor animé de la page de connexion
+   ============================================================ */
+
+/* Nappes de couleur qui dérivent lentement en arrière-plan. */
+@keyframes aurora-drift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  33% {
+    transform: translate3d(7%, -9%, 0) scale(1.18);
+  }
+  66% {
+    transform: translate3d(-6%, 7%, 0) scale(0.92);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+/* Zoom lent sur les photos, façon documentaire. */
+@keyframes ken-burns {
+  from {
+    transform: scale(1) translate3d(0, 0, 0);
+  }
+  to {
+    transform: scale(1.14) translate3d(-2%, -2%, 0);
+  }
+}
+
+/* Reflet qui balaie le bouton principal. */
+@keyframes sheen {
+  0% {
+    transform: translateX(-140%) skewX(-20deg);
+  }
+  55%,
+  100% {
+    transform: translateX(260%) skewX(-20deg);
+  }
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.15;
+    transform: scale(0.75);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.2);
+  }
+}
+
+.animate-aurora {
+  animation: aurora-drift 24s ease-in-out infinite;
+}
+
+.animate-ken-burns {
+  animation: ken-burns 9s ease-out forwards;
+}
+
+.animate-sheen {
+  animation: sheen 3.4s ease-in-out infinite;
+}
+
+.animate-twinkle {
+  animation: twinkle 4s ease-in-out infinite;
+}
+
+/*
+ * `both` est indispensable dès qu'on combine une entrée et un délai : sans lui
+ * l'élément apparaît d'abord à sa place définitive, disparaît le temps du
+ * délai, puis rejoue l'animation. C'est le clignotement classique des entrées
+ * décalées.
+ */
+.animate-fade-in-up {
+  animation: fadeInUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
 }

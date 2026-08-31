@@ -63,8 +63,9 @@ model User {
 
   appointments     Appointment[]
   refreshTokens    RefreshToken[]
-  sentMessages     Message[]        @relation("SentMessages")
-  receivedMessages Message[]        @relation("ReceivedMessages")
+  passwordResets   PasswordResetToken[]
+  sentMessages     Message[]            @relation("SentMessages")
+  receivedMessages Message[]            @relation("ReceivedMessages")
   messageReceipts  MessageRecipient[]
   fcmTokens        FcmToken[]
 
@@ -72,30 +73,48 @@ model User {
 }
 
 model RefreshToken {
-  id        String   @id @default(cuid())
-  token     String   @unique
+  id        String    @id @default(cuid())
+  token     String    @unique
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   expiresAt DateTime
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
   revokedAt DateTime?
 
   @@index([userId])
   @@map("refresh_tokens")
 }
 
+/// Jeton de reinitialisation de mot de passe.
+///
+/// On stocke le SHA-256 du jeton, jamais le jeton lui-meme : une fuite de la
+/// base ne permettrait donc pas de reinitialiser les mots de passe. Le jeton
+/// en clair n'existe que dans le lien envoye par e-mail.
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  tokenHash String    @unique
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+  @@map("password_reset_tokens")
+}
+
 model Category {
-  id          String   @id @default(cuid())
-  name        String
-  nameHe      String?  @map("name_he")
-  description String?
-  descriptionHe String? @map("description_he")
-  slug        String   @unique
-  active      Boolean  @default(true)
-  order       Int?
-  imageUrl    String?  @map("image_url")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            String   @id @default(cuid())
+  name          String
+  nameHe        String?  @map("name_he")
+  description   String?
+  descriptionHe String?  @map("description_he")
+  slug          String   @unique
+  active        Boolean  @default(true)
+  order         Int?
+  imageUrl      String?  @map("image_url")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   services Service[]
 
@@ -103,24 +122,24 @@ model Category {
 }
 
 model Service {
-  id          String   @id @default(cuid())
-  categoryId  String   @map("category_id")
-  name        String
-  nameHe      String?  @map("name_he")
-  description String?
-  descriptionHe String? @map("description_he")
-  durationMin Int      @map("duration_min")
-  priceIls    Float    @map("price_ils")
-  priceFrom   Boolean  @default(false) @map("price_from")
-  active      Boolean  @default(true)
-  imageUrl    String?  @map("image_url")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            String   @id @default(cuid())
+  categoryId    String   @map("category_id")
+  name          String
+  nameHe        String?  @map("name_he")
+  description   String?
+  descriptionHe String?  @map("description_he")
+  durationMin   Int      @map("duration_min")
+  priceIls      Float    @map("price_ils")
+  priceFrom     Boolean  @default(false) @map("price_from")
+  active        Boolean  @default(true)
+  imageUrl      String?  @map("image_url")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-  category        Category          @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  images          ServiceImage[]
-  staffServices   StaffService[]
-  appointments    Appointment[]
+  category      Category       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  images        ServiceImage[]
+  staffServices StaffService[]
+  appointments  Appointment[]
 
   @@map("services")
 }
@@ -132,7 +151,7 @@ model ServiceImage {
   type       ImageType @default(gallery)
   order      Int?
   altText    String?   @map("alt_text")
-  uploadedAt DateTime? @map("uploaded_at") @default(now())
+  uploadedAt DateTime? @default(now()) @map("uploaded_at")
 
   service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
 
@@ -170,9 +189,9 @@ model StaffService {
 model WorkingHours {
   id        String   @id @default(cuid())
   staffId   String   @map("staff_id")
-  weekday   Int      // 0=Sunday, 6=Saturday
+  weekday   Int // 0=Sunday, 6=Saturday
   startHhmm String   @map("start_hhmm") // format: "HH:MM"
-  endHhmm   String   @map("end_hhmm")   // format: "HH:MM"
+  endHhmm   String   @map("end_hhmm") // format: "HH:MM"
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -197,14 +216,14 @@ model TimeOff {
 }
 
 model HourBlock {
-  id         String   @id @default(cuid())
-  staffId    String   @map("staff_id")
-  date       DateTime // Just the date (time set to 00:00:00)
-  startHhmm  String   @map("start_hhmm") // e.g., "09:00"
-  endHhmm    String   @map("end_hhmm") // e.g., "12:00"
-  reason     String?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id        String   @id @default(cuid())
+  staffId   String   @map("staff_id")
+  date      DateTime // Just the date (time set to 00:00:00)
+  startHhmm String   @map("start_hhmm") // e.g., "09:00"
+  endHhmm   String   @map("end_hhmm") // e.g., "12:00"
+  reason    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   staff Staff @relation(fields: [staffId], references: [id], onDelete: Cascade)
 
@@ -222,7 +241,7 @@ model Appointment {
   priceIls      Float?            @map("price_ils")
   paymentMethod PaymentMethod?    @default(NOT_PAID) @map("payment_method")
   notes         String?
-  source        String?           // e.g., "web", "mobile", "admin"
+  source        String? // e.g., "web", "mobile", "admin"
   createdAt     DateTime          @default(now())
   updatedAt     DateTime          @updatedAt
 
@@ -249,30 +268,30 @@ enum NotificationStatus {
 }
 
 model Message {
-  id            String       @id @default(cuid())
-  content       String
-  subject       String?
-  type          MessageType  @default(DIRECT)
+  id      String      @id @default(cuid())
+  content String
+  subject String?
+  type    MessageType @default(DIRECT)
 
   // Sender
-  senderId      String       @map("sender_id")
-  sender        User         @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  senderId String @map("sender_id")
+  sender   User   @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
 
   // For direct messages
-  recipientId   String?      @map("recipient_id")
-  recipient     User?        @relation("ReceivedMessages", fields: [recipientId], references: [id], onDelete: Cascade)
+  recipientId String? @map("recipient_id")
+  recipient   User?   @relation("ReceivedMessages", fields: [recipientId], references: [id], onDelete: Cascade)
 
   // For broadcasts
-  recipients    MessageRecipient[]
+  recipients MessageRecipient[]
 
   // Metadata
-  readAt        DateTime?    @map("read_at")
-  sentAt        DateTime     @default(now()) @map("sent_at")
-  createdAt     DateTime     @default(now()) @map("created_at")
-  updatedAt     DateTime     @updatedAt @map("updated_at")
+  readAt    DateTime? @map("read_at")
+  sentAt    DateTime  @default(now()) @map("sent_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
 
   // Soft delete
-  deleted       Boolean      @default(false)
+  deleted Boolean @default(false)
 
   // Related appointment (optional)
   appointmentId String?      @map("appointment_id")
@@ -319,7 +338,7 @@ model UploadedImage {
   mimeType     String   @map("mime_type")
   size         Int
   path         String
-  type         String   // 'service' or 'category'
+  type         String // 'service' or 'category'
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
 
@@ -330,11 +349,11 @@ model UploadedImage {
 model PaymentMethodConfig {
   id        String   @id @default(cuid())
   value     String   @unique // e.g., "APPLE_PAY", "GOOGLE_PAY"
-  label     String   // Display name
-  emoji     String   // Emoji icon
+  label     String // Display name
+  emoji     String // Emoji icon
   enabled   Boolean  @default(true)
   isDefault Boolean  @default(false) @map("is_default") // Cannot be deleted if true
-  order     Int?     // Display order
+  order     Int? // Display order
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 

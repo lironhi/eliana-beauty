@@ -11,7 +11,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { RegisterDto, LoginDto, GoogleLoginDto } from './dto';
+import { RegisterDto, LoginDto, GoogleLoginDto, ForgotPasswordDto, ResetPasswordDto } from './dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { GetUser } from './decorators/get-user.decorator';
 import { Request, Response } from 'express';
@@ -79,6 +79,20 @@ export class AuthController {
     const { refresh_token, ...response } = result;
     return response;
   }
+  /** Envoie le lien de réinitialisation. Répond pareil pour un e-mail inconnu. */
+  @Post('forgot-password')
+  @HttpCode(HttpStatus.OK)
+  forgotPassword(@Body() dto: ForgotPasswordDto) {
+    return this.authService.requestPasswordReset(dto);
+  }
+
+  /** Consomme le lien et enregistre le nouveau mot de passe. */
+  @Post('reset-password')
+  @HttpCode(HttpStatus.OK)
+  resetPassword(@Body() dto: ResetPasswordDto) {
+    return this.authService.resetPassword(dto);
+  }
+
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
   async refresh(@Req() req: Request, @Res({ passthrough: true }) res: Response) {

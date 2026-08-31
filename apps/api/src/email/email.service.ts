@@ -227,6 +227,95 @@ Thank you for choosing Eliana Beauty!
   }
 
   /**
+   * Send the password reset link.
+   *
+   * The link carries a single-use token that expires; the body deliberately
+   * says so, and tells the reader to ignore the message if they did not ask --
+   * that is what turns an unexpected reset mail into a non-event rather than
+   * an alarm.
+   */
+  async sendPasswordReset(
+    userEmail: string,
+    userName: string,
+    resetUrl: string,
+    expiresInMinutes: number,
+    locale: 'en' | 'he' = 'en',
+  ): Promise<void> {
+    const isHebrew = locale === 'he';
+
+    const copy = isHebrew
+      ? {
+          dir: 'rtl',
+          subject: 'איפוס הסיסמה שלך - Eliana Beauty',
+          title: 'איפוס סיסמה',
+          greeting: `שלום ${userName},`,
+          intro: 'קיבלנו בקשה לאיפוס הסיסמה שלך. לחצי על הכפתור כדי לבחור סיסמה חדשה.',
+          cta: 'בחירת סיסמה חדשה',
+          expiry: `הקישור תקף ${expiresInMinutes} דקות וניתן לשימוש פעם אחת בלבד.`,
+          ignore: 'אם לא ביקשת לאפס את הסיסמה, אפשר להתעלם מההודעה — הסיסמה שלך לא תשתנה.',
+          fallback: 'אם הכפתור לא עובד, העתיקי את הכתובת הבאה לדפדפן:',
+        }
+      : {
+          dir: 'ltr',
+          subject: 'Reset your password - Eliana Beauty',
+          title: 'Password reset',
+          greeting: `Hi ${userName},`,
+          intro:
+            'We received a request to reset your password. Use the button below to choose a new one.',
+          cta: 'Choose a new password',
+          expiry: `This link is valid for ${expiresInMinutes} minutes and can only be used once.`,
+          ignore:
+            'If you did not ask for this, you can ignore this email — your password will not change.',
+          fallback: 'If the button does not work, copy this address into your browser:',
+        };
+
+    const html = `
+      <!DOCTYPE html>
+      <html dir="${copy.dir}">
+      <head>
+        <meta charset="utf-8" />
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+          .content { background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px; }
+          .button { display: inline-block; background: #ec4899; color: #ffffff !important; text-decoration: none; padding: 14px 28px; border-radius: 999px; font-weight: bold; }
+          .muted { color: #6b7280; font-size: 14px; }
+          .url { word-break: break-all; color: #6b7280; font-size: 13px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>${copy.title}</h1>
+          </div>
+          <div class="content">
+            <p>${copy.greeting}</p>
+            <p>${copy.intro}</p>
+            <p style="text-align: center; margin: 30px 0;">
+              <a class="button" href="${resetUrl}">${copy.cta}</a>
+            </p>
+            <p class="muted">${copy.expiry}</p>
+            <p class="muted">${copy.ignore}</p>
+            <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 24px 0;" />
+            <p class="muted">${copy.fallback}</p>
+            <p class="url">${resetUrl}</p>
+            <p class="muted">Eliana Beauty</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+
+    await this.sendEmail({
+      to: userEmail,
+      subject: copy.subject,
+      html,
+      text: `${copy.greeting}\n\n${copy.intro}\n\n${resetUrl}\n\n${copy.expiry}\n${copy.ignore}`,
+    });
+  }
+
+  /**
    * Send appointment cancellation email
    */
   async sendAppointmentCancellation(

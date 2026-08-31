@@ -1,19 +1,34 @@
-import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  UnauthorizedException,
+  ConflictException,
+  BadRequestException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
+import { EmailService } from '../email/email.service';
 import * as bcrypt from 'bcryptjs';
-import { RegisterDto, LoginDto } from './dto';
-import { JWT_ACCESS_TOKEN_EXPIRATION, REFRESH_TOKEN_DAYS } from './constants';
-import { randomBytes } from 'crypto';
+import { RegisterDto, LoginDto, ForgotPasswordDto, ResetPasswordDto } from './dto';
+import {
+  JWT_ACCESS_TOKEN_EXPIRATION,
+  REFRESH_TOKEN_DAYS,
+  PASSWORD_RESET_MIN_INTERVAL_MS,
+  PASSWORD_RESET_TTL_MIN,
+  PASSWORD_RESET_TTL_MS,
+} from './constants';
+import { createHash, randomBytes } from 'crypto';
 import { OAuth2Client } from 'google-auth-library';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
   private readonly googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
   constructor(
     private prisma: PrismaService,
     private jwt: JwtService,
+    private email: EmailService,
   ) {}
 
   async register(dto: RegisterDto) {
@@ -253,6 +268,122 @@ export class AuthService {
     });
 
     return { message: 'Password updated successfully' };
+  }
+
+  /**
+   * Demande de réinitialisation.
+   *
+   * La réponse est volontairement la même que le compte existe ou non : la
+   * distinguer transformerait ce formulaire en annuaire des clientes du salon.
+   */
+  async requestPasswordReset(dto: ForgotPasswordDto) {
+    const genericResponse = {
+      message: 'If an account exists for this email, a reset link has been sent',
+    };
+
+    const email = dto.email.toLowerCase();
+    const user = await this.prisma.user.findUnique({ where: { email } });
+
+    if (!user || !user.active) {
+      return genericResponse;
+    }
+
+    // Sans ce garde-fou, marteler le formulaire inonderait la boîte mail de la
+    // personne visée.
+    const recent = await this.prisma.passwordResetToken.findFirst({
+      where: {
+        userId: user.id,
+        createdAt: { gt: new Date(Date.now() - PASSWORD_RESET_MIN_INTERVAL_MS) },
+      },
+    });
+
+    if (recent) {
+      return genericResponse;
+    }
+
+    // Un seul lien valable à la fois : demander un nouveau lien doit périmer
+    // le précédent, sinon un ancien courriel resterait exploitable.
+    await this.prisma.passwordResetToken.deleteMany({ where: { userId: user.id } });
+
+    const token = randomBytes(32).toString('hex');
+
+    await this.prisma.passwordResetToken.create({
+      data: {
+        tokenHash: this.hashResetToken(token),
+        userId: user.id,
+        expiresAt: new Date(Date.now() + PASSWORD_RESET_TTL_MS),
+      },
+    });
+
+    const frontendUrl = (process.env.FRONTEND_URL || 'http://localhost:5173').replace(/\/+$/, '');
+    const resetUrl = `${frontendUrl}/reset-password?token=${token}`;
+
+    await this.email.sendPasswordReset(
+      user.email,
+      user.name,
+      resetUrl,
+      PASSWORD_RESET_TTL_MIN,
+      dto.locale || user.locale,
+    );
+
+    // EmailService est encore une maquette : sans cette trace, aucun lien
+    // n'est récupérable pour tester le parcours en local.
+    if (process.env.NODE_ENV !== 'production') {
+      this.logger.warn(`[DEV] Lien de réinitialisation pour ${user.email} : ${resetUrl}`);
+    }
+
+    return genericResponse;
+  }
+
+  /**
+   * Consommation du lien reçu par courriel.
+   *
+   * Le jeton est à usage unique et les sessions ouvertes ailleurs sont
+   * coupées : on réinitialise généralement un mot de passe parce qu'on le
+   * soupçonne compromis.
+   */
+  async resetPassword(dto: ResetPasswordDto) {
+    const record = await this.prisma.passwordResetToken.findUnique({
+      where: { tokenHash: this.hashResetToken(dto.token) },
+      include: { user: true },
+    });
+
+    if (!record || record.usedAt || record.expiresAt < new Date()) {
+      throw new BadRequestException('This reset link is invalid or has expired');
+    }
+
+    if (!record.user.active) {
+      throw new UnauthorizedException('Account is deactivated');
+    }
+
+    const hashedPassword = await bcrypt.hash(dto.password, 10);
+
+    await this.prisma.$transaction([
+      this.prisma.user.update({
+        where: { id: record.userId },
+        data: { password: hashedPassword },
+      }),
+      this.prisma.passwordResetToken.update({
+        where: { id: record.id },
+        data: { usedAt: new Date() },
+      }),
+      this.prisma.refreshToken.updateMany({
+        where: { userId: record.userId, revokedAt: null },
+        data: { revokedAt: new Date() },
+      }),
+    ]);
+
+    return { message: 'Password updated successfully' };
+  }
+
+  /**
+   * On ne stocke que l'empreinte du jeton : une fuite de la base ne
+   * permettrait donc pas de fabriquer un lien de réinitialisation valide.
+   * Un SHA-256 suffit — le jeton fait déjà 256 bits d'aléa, il n'y a rien à
+   * deviner par force brute, contrairement à un mot de passe.
+   */
+  private hashResetToken(token: string): string {
+    return createHash('sha256').update(token).digest('hex');
   }
 
   private async generateTokens(

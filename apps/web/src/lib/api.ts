@@ -42,7 +42,11 @@ class ApiClient {
       response.status === 401 &&
       endpoint !== '/auth/refresh' &&
       endpoint !== '/auth/login' &&
-      endpoint !== '/auth/google'
+      endpoint !== '/auth/google' &&
+      // Ces deux-là s'utilisent justement quand on n'a plus de session : un
+      // rafraîchissement ne peut rien y changer.
+      endpoint !== '/auth/forgot-password' &&
+      endpoint !== '/auth/reset-password'
     ) {
       const refreshed = await this.refreshToken();
       if (refreshed) {
@@ -119,6 +123,21 @@ class ApiClient {
     return this.request<{ access_token: string; user: any }>('/auth/google', {
       method: 'POST',
       body: JSON.stringify({ credential }),
+    });
+  }
+
+  /** Demande un lien de réinitialisation. Répond pareil si l'e-mail est inconnu. */
+  async forgotPassword(email: string, locale?: string) {
+    return this.request<{ message: string }>('/auth/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify({ email, locale }),
+    });
+  }
+
+  async resetPassword(token: string, password: string) {
+    return this.request<{ message: string }>('/auth/reset-password', {
+      method: 'POST',
+      body: JSON.stringify({ token, password }),
     });
   }
 

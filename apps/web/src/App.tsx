@@ -10,6 +10,8 @@ import Profile from './pages/Profile';
 import Messages from './pages/Messages';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
 import AdminLayout from './components/admin/AdminLayout';
@@ -69,6 +71,8 @@ function App() {
             <Route path="services/:id" element={<ServiceDetail />} />
             <Route path="login" element={<Login />} />
             <Route path="register" element={<Register />} />
+            <Route path="forgot-password" element={<ForgotPassword />} />
+            <Route path="reset-password" element={<ResetPassword />} />
             <Route
               path="booking"
               element={
