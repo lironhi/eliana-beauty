@@ -3,6 +3,7 @@ import toast from 'react-hot-toast';
 import { useI18n } from '@/i18n';
 import { api } from '@/lib/api';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import { serviceImage } from '@/lib/serviceImages';
 import { format, isPast, isFuture, isToday } from 'date-fns';
 
 type FilterType = 'all' | 'upcoming' | 'past' | 'cancelled';
@@ -262,9 +263,9 @@ export default function MyBookings() {
                         <div className="flex items-start gap-4 mb-4">
                           {/* Service Image */}
                           <div className="flex-shrink-0 w-16 h-16 md:w-20 md:h-20 rounded-2xl overflow-hidden bg-gradient-to-br from-pink-100 to-purple-100 shadow-md">
-                            {booking.service.imageUrl ? (
+                            {serviceImage(booking.service) ? (
                               <img
-                                src={booking.service.imageUrl}
+                                src={serviceImage(booking.service)!}
                                 alt={booking.service.name}
                                 className="w-full h-full object-cover"
                                 onError={(e) => {

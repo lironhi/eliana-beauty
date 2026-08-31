@@ -4,6 +4,7 @@ import { api } from '@/lib/api';
 import { useAuthStore } from '@/store/authStore';
 import { useI18n } from '@/i18n';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import { serviceImage } from '@/lib/serviceImages';
 
 export default function ServiceDetail() {
   const { t, locale } = useI18n();
@@ -106,9 +107,9 @@ export default function ServiceDetail() {
           {/* Image Gallery */}
           <div className="space-y-3 md:space-y-4">
             <div className="aspect-[4/3] rounded-xl md:rounded-2xl overflow-hidden shadow-lg md:shadow-2xl animate-fade-in">
-              {service.imageUrl ? (
+              {serviceImage(service) ? (
                 <img
-                  src={service.imageUrl}
+                  src={serviceImage(service)!}
                   alt={service.name}
                   className="w-full h-full object-cover"
                 />
@@ -365,10 +366,11 @@ export default function ServiceDetail() {
                 className="group card-premium hover-lift"
               >
                 <div className="aspect-[4/3] overflow-hidden relative bg-gradient-to-br from-pink-100 to-purple-100">
-                  {relatedService.imageUrl ? (
+                  {serviceImage(relatedService) ? (
                     <img
-                      src={relatedService.imageUrl}
+                      src={serviceImage(relatedService)!}
                       alt={relatedService.name}
+                      loading="lazy"
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
                   ) : (

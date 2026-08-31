@@ -4,6 +4,7 @@ import { api } from '../../lib/api';
 import { exportToCSV, exportToPDF, formatServicesForExport } from '../../lib/export';
 import { Pagination } from '../../components/Pagination';
 import { ImageSelector } from '../../components/admin/ImageSelector';
+import { serviceImage, categoryImage } from '../../lib/serviceImages';
 
 interface Category {
   id: string;
@@ -522,12 +523,22 @@ export default function Services() {
                 >
                   {/* Service Image */}
                   <div className="aspect-[4/3] overflow-hidden relative bg-gradient-to-br from-pink-100 to-purple-100">
-                    {service.imageUrl ? (
-                      <img
-                        src={service.imageUrl}
-                        alt={service.name}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                      />
+                    {serviceImage(service) ? (
+                      <>
+                        <img
+                          src={serviceImage(service)!}
+                          alt={service.name}
+                          loading="lazy"
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                        />
+                        {/* Sans ce repere, impossible de distinguer une photo
+                            livree avec le site d'une image enregistree en base. */}
+                        {!service.imageUrl && (
+                          <span className="absolute bottom-2 left-2 rounded-full bg-black/55 px-2.5 py-0.5 text-[11px] font-medium text-white backdrop-blur-sm">
+                            Default image
+                          </span>
+                        )}
+                      </>
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
                         <span className="text-6xl">💅</span>
@@ -676,13 +687,19 @@ export default function Services() {
                     {category.active ? 'Active' : 'Inactive'}
                   </span>
                 </div>
-                {category.imageUrl && (
-                  <div className="aspect-video overflow-hidden rounded-lg mb-4 bg-gradient-to-br from-pink-100 to-purple-100">
+                {categoryImage(category) && (
+                  <div className="relative aspect-video overflow-hidden rounded-lg mb-4 bg-gradient-to-br from-pink-100 to-purple-100">
                     <img
-                      src={category.imageUrl}
+                      src={categoryImage(category)!}
                       alt={category.name}
+                      loading="lazy"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
+                    {!category.imageUrl && (
+                      <span className="absolute bottom-2 left-2 rounded-full bg-black/55 px-2.5 py-0.5 text-[11px] font-medium text-white backdrop-blur-sm">
+                        Default image
+                      </span>
+                    )}
                   </div>
                 )}
                 <div className="flex items-center justify-between text-xs md:text-sm text-gray-600 mb-4 px-3 py-2 bg-gradient-to-r from-pink-50 to-purple-50 rounded-lg">

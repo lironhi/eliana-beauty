@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { api } from '@/lib/api';
 import { useI18n } from '@/i18n';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import { serviceImage } from '@/lib/serviceImages';
 
 export default function Services() {
   const { t, locale } = useI18n();
@@ -167,10 +168,11 @@ export default function Services() {
               >
                 {/* Service Image */}
                 <div className="aspect-[4/3] overflow-hidden relative bg-gradient-to-br from-pink-100 to-purple-100">
-                  {service.imageUrl ? (
+                  {serviceImage(service) ? (
                     <img
-                      src={service.imageUrl}
+                      src={serviceImage(service)!}
                       alt={service.name}
+                      loading="lazy"
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
                   ) : (

@@ -1,6 +1,7 @@
 import { Role, Locale } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
 import { createPrismaClient } from '../src/prisma/create-prisma-client';
+import { CATALOG } from './catalog';
 
 const prisma = createPrismaClient();
 
@@ -36,100 +37,107 @@ async function main() {
   });
   console.log('✅ Staff member created:', staff.name);
 
-  // Create categories
-  const categories = [
-    { name: 'Nails', slug: 'nails', order: 1, imageUrl: 'https://placehold.co/400x300/pink/white?text=Nails' },
-    { name: 'Lashes', slug: 'lashes', order: 2, imageUrl: 'https://placehold.co/400x300/purple/white?text=Lashes' },
-    { name: 'Brows', slug: 'brows', order: 3, imageUrl: 'https://placehold.co/400x300/brown/white?text=Brows' },
-    { name: 'Waxing', slug: 'waxing', order: 4, imageUrl: 'https://placehold.co/400x300/blue/white?text=Waxing' },
-    { name: 'Makeup', slug: 'makeup', order: 5, imageUrl: 'https://placehold.co/400x300/red/white?text=Makeup' },
-  ];
+  // ---------------------------------------------------------------- catalogue
+  //
+  // Tout passe par des upsert sur des identifiants stables : relancer le seed
+  // met les tarifs à jour au lieu de créer une deuxième fiche par prestation.
 
-  for (const cat of categories) {
-    await prisma.category.upsert({
-      where: { slug: cat.slug },
-      update: {},
-      create: cat,
-    });
+  // Les anciens seeds remplissaient `imageUrl` avec des vignettes placehold.co.
+  // Ce champ est prioritaire sur les photos livrées dans le front : tant qu'il
+  // porte une URL de démonstration, les vraies photos restent invisibles. On ne
+  // vide que celles-là, jamais une image réellement téléversée.
+  const placeholders = { imageUrl: { contains: 'placehold.co' } };
+  const [clearedCategories, clearedServices] = await Promise.all([
+    prisma.category.updateMany({ where: placeholders, data: { imageUrl: null } }),
+    prisma.service.updateMany({ where: placeholders, data: { imageUrl: null } }),
+  ]);
+
+  if (clearedCategories.count + clearedServices.count > 0) {
+    console.log(
+      `🧽 ${clearedCategories.count} catégorie(s) et ${clearedServices.count} prestation(s) débarrassées d'une vignette de démonstration`,
+    );
   }
-  console.log('✅ Categories created');
 
-  // Create services
-  const nailsCategory = await prisma.category.findUnique({ where: { slug: 'nails' } });
-  const browsCategory = await prisma.category.findUnique({ where: { slug: 'brows' } });
+  const keptServiceIds: string[] = [];
 
-  if (nailsCategory) {
-    const services = [
-      {
-        categoryId: nailsCategory.id,
-        name: 'Manicure',
-        description: 'Classic manicure with nail shaping and polish',
-        durationMin: 30,
-        priceIls: 50,
-        imageUrl: 'https://placehold.co/400x300/pink/white?text=Manicure',
-      },
-      {
-        categoryId: nailsCategory.id,
-        name: 'Gel Nails',
-        description: 'Long-lasting gel polish application',
-        durationMin: 120,
-        priceIls: 230,
-        imageUrl: 'https://placehold.co/400x300/pink/white?text=Gel+Nails',
-      },
-      {
-        categoryId: nailsCategory.id,
-        name: 'Gel Extension',
-        description: 'Gel nail extensions for length and strength',
-        durationMin: 120,
-        priceIls: 230,
-        imageUrl: 'https://placehold.co/400x300/pink/white?text=Gel+Extension',
-      },
-    ];
+  for (const category of CATALOG) {
+    const { services, ...categoryData } = category;
+
+    const savedCategory = await prisma.category.upsert({
+      where: { slug: category.slug },
+      update: categoryData,
+      create: { ...categoryData, active: true },
+    });
 
     for (const service of services) {
-      const created = await prisma.service.create({ data: service });
-      await prisma.staffService.create({
-        data: {
-          staffId: staff.id,
-          serviceId: created.id,
-        },
+      const data = {
+        categoryId: savedCategory.id,
+        name: service.name,
+        nameHe: service.nameHe,
+        durationMin: service.durationMin,
+        priceIls: service.priceIls,
+        priceFrom: service.priceFrom ?? false,
+        active: true,
+      };
+
+      await prisma.service.upsert({
+        where: { id: service.id },
+        update: data,
+        create: { id: service.id, ...data },
       });
+
+      // Eliana réalise toutes les prestations : sans cette liaison, aucun
+      // créneau n'est proposé à la réservation.
+      await prisma.staffService.upsert({
+        where: { staffId_serviceId: { staffId: staff.id, serviceId: service.id } },
+        update: {},
+        create: { staffId: staff.id, serviceId: service.id },
+      });
+
+      keptServiceIds.push(service.id);
     }
-    console.log('✅ Nails services created');
   }
 
-  if (browsCategory) {
-    const browService = await prisma.service.create({
-      data: {
-        categoryId: browsCategory.id,
-        name: 'Brow Design',
-        description: 'Professional brow shaping and tinting',
-        durationMin: 30,
-        priceIls: 60,
-        imageUrl: 'https://placehold.co/400x300/brown/white?text=Brow+Design',
-      },
-    });
-    await prisma.staffService.create({
-      data: {
-        staffId: staff.id,
-        serviceId: browService.id,
-      },
-    });
-    console.log('✅ Brows service created');
+  const servicesCount = CATALOG.reduce((total, c) => total + c.services.length, 0);
+  console.log(`✅ ${CATALOG.length} catégories et ${servicesCount} prestations à jour`);
+
+  // Ménage des fiches de démonstration laissées par les anciens seeds. On ne
+  // touche pas à celles qui portent un rendez-vous : la suppression est en
+  // cascade et effacerait l'historique de la cliente.
+  const obsolete = await prisma.service.findMany({
+    where: { id: { notIn: keptServiceIds } },
+    include: { _count: { select: { appointments: true } } },
+  });
+
+  const deletable = obsolete.filter((s) => s._count.appointments === 0);
+  const booked = obsolete.filter((s) => s._count.appointments > 0);
+
+  if (deletable.length > 0) {
+    await prisma.service.deleteMany({ where: { id: { in: deletable.map((s) => s.id) } } });
+    console.log(`🧹 ${deletable.length} prestation(s) obsolète(s) supprimée(s)`);
   }
 
-  // Create working hours (Sunday to Thursday: 9:00-18:00)
-  const workingDays = [0, 1, 2, 3, 4]; // Sunday to Thursday
-  for (const day of workingDays) {
-    await prisma.workingHours.create({
-      data: {
-        staffId: staff.id,
-        weekday: day,
-        startHhmm: '09:00',
-        endHhmm: '18:00',
-      },
-    });
+  for (const service of booked) {
+    await prisma.service.update({ where: { id: service.id }, data: { active: false } });
+    console.log(
+      `⚠️  « ${service.name} » hors catalogue mais porte ${service._count.appointments} rendez-vous : désactivée, pas supprimée`,
+    );
   }
+
+  // ------------------------------------------------------------------ horaires
+  //
+  // Dimanche à jeudi, 9h-18h. Un create sec dupliquerait les lignes à chaque
+  // exécution du seed, d'où le nettoyage préalable.
+  const workingDays = [0, 1, 2, 3, 4];
+  await prisma.workingHours.deleteMany({ where: { staffId: staff.id } });
+  await prisma.workingHours.createMany({
+    data: workingDays.map((weekday) => ({
+      staffId: staff.id,
+      weekday,
+      startHhmm: '09:00',
+      endHhmm: '18:00',
+    })),
+  });
   console.log('✅ Working hours created (Sun-Thu, 9:00-18:00)');
 
   console.log('🎉 Seed completed successfully!');

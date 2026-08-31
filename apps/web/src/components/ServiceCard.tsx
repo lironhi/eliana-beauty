@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useI18n } from '@/i18n';
+import { serviceImage } from '@/lib/serviceImages';
 
 interface ServiceCardProps {
   service: {
@@ -11,22 +12,19 @@ interface ServiceCardProps {
     imageUrl?: string;
     category: {
       name: string;
+      slug?: string;
     };
   };
 }
 
 export default function ServiceCard({ service }: ServiceCardProps) {
   const { t } = useI18n();
+  const image = serviceImage(service);
 
   return (
     <Link to={`/services/${service.id}`} className="card hover:shadow-md transition-shadow">
-      {service.imageUrl && (
-        <img
-          src={service.imageUrl}
-          alt={service.name}
-          className="w-full h-48 object-cover"
-          loading="lazy"
-        />
+      {image && (
+        <img src={image} alt={service.name} className="w-full h-48 object-cover" loading="lazy" />
       )}
       <div className="p-4">
         <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">

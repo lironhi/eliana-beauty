@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { api } from '@/lib/api';
 import { useI18n } from '@/i18n';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import { categoryImage } from '@/lib/serviceImages';
 
 export default function Home() {
   const { t, locale } = useI18n();
@@ -260,10 +261,11 @@ export default function Home() {
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 <div className="aspect-[4/3] overflow-hidden relative">
-                  {category.imageUrl ? (
+                  {categoryImage(category) ? (
                     <img
-                      src={category.imageUrl}
+                      src={categoryImage(category)!}
                       alt={category.name}
+                      loading="lazy"
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
                   ) : (
